@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 보는 곳!!</title>
+<title>글 보는 곳!</title>
 
 <style>
 body{
@@ -16,8 +16,6 @@ body{
 .header{
   text-align:center;
   padding:20px;
-  font-size:26px;
-  font-weight:bold;
 }
 
 .card{
@@ -73,14 +71,14 @@ if(sessionStorage.getItem("auth") !== "ok"){
 </script>
 
 <div class="header">
-  <div style="font-size:34px; font-weight:bold;">
+  <div style="font-size:34px;font-weight:bold;">
     🌟 나의 사랑하는 별에게 🌟
   </div>
-  <div style="font-size:16px; margin-top:5px; opacity:0.8;">
+  <div style="font-size:16px;opacity:0.8;">
     우리의 빛나는 글들
   </div>
 </div>
-  
+
 <div class="card">
 
   <div class="controls">
@@ -98,15 +96,24 @@ if(sessionStorage.getItem("auth") !== "ok"){
 </div>
 
 <script>
+// 🔥 폰 안정화
+let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+if(!Array.isArray(posts)){
+  posts = [];
+  localStorage.setItem("posts", JSON.stringify(posts));
+}
+
 let currentPage = 1;
 const perPage = 3;
 
-// 🔥 글 가져오기 + 예전 데이터 자동 보정
 function getPosts(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  posts = posts.map(p => {
+  if(!Array.isArray(posts)){
+    posts = [];
+  }
 
+  posts = posts.map(p=>{
     if(!p.time){
       let d = new Date(p.date);
       if(isNaN(d.getTime())) d = new Date();
@@ -117,11 +124,6 @@ function getPosts(){
         `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ` +
         `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     }
-
-    if(!p.pinned){
-      p.pinned = false;
-    }
-
     return p;
   });
 
@@ -129,8 +131,7 @@ function getPosts(){
   return posts;
 }
 
-// 🔥 렌더링
-function render(reset = true){
+function render(reset=true){
 
   let posts = getPosts();
   let user = sessionStorage.getItem("user");
@@ -138,11 +139,8 @@ function render(reset = true){
   const keyword = document.getElementById("search").value;
   let sort = document.getElementById("sort").value;
 
-  if(reset){
-    currentPage = 1;
-  }
+  if(reset) currentPage = 1;
 
-  // 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -150,47 +148,44 @@ function render(reset = true){
     );
   }
 
-  // 🔥 고정 + 시간 정렬
   posts.sort((a,b)=>{
-
     if(a.pinned && !b.pinned) return -1;
     if(!a.pinned && b.pinned) return 1;
 
-    return sort === "new"
+    return sort==="new"
       ? b.time - a.time
       : a.time - b.time;
   });
 
   const box = document.getElementById("posts");
-  box.innerHTML = "";
+  box.innerHTML="";
 
-  let start = (currentPage - 1) * perPage;
-  let pagePosts = posts.slice(start, start + perPage);
+  let start = (currentPage-1)*perPage;
+  let pagePosts = posts.slice(start,start+perPage);
 
   pagePosts.forEach(p=>{
 
-    let isOwner = (p.writer === user);
+    let isOwner = (p.writer===user);
 
     let realIndex = getPosts().findIndex(x =>
-      x.title === p.title &&
-      x.time === p.time
+      x.title===p.title && x.time===p.time
     );
 
     const div = document.createElement("div");
-    div.className = "post";
+    div.className="post";
 
-    div.innerHTML = `
-      <h3>${p.pinned ? "📌 " : ""}${p.title}</h3>
+    div.innerHTML=`
+      <h3>${p.pinned?"📌 ":""}${p.title}</h3>
       <small>${p.writer} · ${p.date}</small>
       <p>${p.content}</p>
 
-      ${isOwner ? `
+      ${isOwner?`
         <button onclick="edit(${realIndex})">수정</button>
         <button onclick="del(${realIndex})">삭제</button>
         <button onclick="togglePin(${realIndex})">
-          ${p.pinned ? "고정 해제" : "고정"}
+          ${p.pinned?"고정 해제":"고정"}
         </button>
-      ` : ""}
+      `:""}
     `;
 
     box.appendChild(div);
@@ -199,87 +194,75 @@ function render(reset = true){
   renderPage(posts.length);
 }
 
-// 🔥 페이지
 function renderPage(total){
-  let pageCount = Math.ceil(total / perPage);
+  let pageCount=Math.ceil(total/perPage);
 
-  let old = document.getElementById("pagination");
+  let old=document.getElementById("pagination");
   if(old) old.remove();
 
-  const div = document.createElement("div");
-  div.id = "pagination";
-  div.style.textAlign = "center";
+  const div=document.createElement("div");
+  div.id="pagination";
+  div.style.textAlign="center";
 
   for(let i=1;i<=pageCount;i++){
-    const btn = document.createElement("button");
-    btn.innerText = i;
-
-    btn.onclick = ()=>{
-      currentPage = i;
-      render(false);
-    };
-
+    const btn=document.createElement("button");
+    btn.innerText=i;
+    btn.onclick=()=>{currentPage=i;render(false);};
     div.appendChild(btn);
   }
 
   document.body.appendChild(div);
 }
 
-// 🔥 고정 토글 (핵심 기능)
 function togglePin(i){
-  let posts = getPosts();
-  let user = sessionStorage.getItem("user");
+  let posts=getPosts();
+  let user=sessionStorage.getItem("user");
 
-  if(posts[i].writer !== user){
-    alert("본인 글만 고정 가능");
+  if(posts[i].writer!==user){
+    alert("본인만 가능");
     return;
   }
 
-  posts[i].pinned = !posts[i].pinned;
-
-  localStorage.setItem("posts", JSON.stringify(posts));
+  posts[i].pinned=!posts[i].pinned;
+  localStorage.setItem("posts",JSON.stringify(posts));
   render(false);
 }
 
-// 삭제
 function del(i){
-  let posts = getPosts();
-  let user = sessionStorage.getItem("user");
+  let posts=getPosts();
+  let user=sessionStorage.getItem("user");
 
-  if(posts[i].writer !== user){
-    alert("본인 글만 삭제 가능");
+  if(posts[i].writer!==user){
+    alert("본인만 가능");
     return;
   }
 
   posts.splice(i,1);
-  localStorage.setItem("posts", JSON.stringify(posts));
+  localStorage.setItem("posts",JSON.stringify(posts));
   render(false);
 }
 
-// 수정
 function edit(i){
-  let posts = getPosts();
-  let user = sessionStorage.getItem("user");
+  let posts=getPosts();
+  let user=sessionStorage.getItem("user");
 
-  if(posts[i].writer !== user){
-    alert("본인 글만 수정 가능");
+  if(posts[i].writer!==user){
+    alert("본인만 가능");
     return;
   }
 
-  localStorage.setItem("editIndex", i);
-  localStorage.setItem("editTitle", posts[i].title);
-  localStorage.setItem("editContent", posts[i].content);
+  localStorage.setItem("editIndex",i);
+  localStorage.setItem("editTitle",posts[i].title);
+  localStorage.setItem("editContent",posts[i].content);
 
   location.href="admin.html";
 }
 
-// 이벤트
-document.getElementById("search").oninput = () => render(true);
-document.getElementById("sort").onchange = () => render(true);
+document.getElementById("search").oninput=()=>render(true);
+document.getElementById("sort").onchange=()=>render(true);
 
-document.getElementById("sort").value = "new";
+document.getElementById("sort").value="new";
 
-// 🔥 최초 실행 = 최신순
 render(true);
 </script>
 
