@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 보는 곳</title>
+<title>글 보는 곳!</title>
 
 <style>
 *{ box-sizing:border-box; }
@@ -20,23 +20,32 @@ body{
   padding:20px;
 }
 
-.section{
+.card{
   width:80%;
-  margin:0 auto 20px auto;
+  margin:20px auto;
 }
 
-.section-title{
-  font-size:18px;
-  font-weight:bold;
-  margin:10px 0;
-  opacity:0.9;
+.controls{
+  text-align:center;
+  margin-bottom:15px;
+}
+
+input,select{
+  padding:8px;
+  margin:5px;
+  border:none;
+  border-radius:8px;
 }
 
 .post{
   background: rgba(255,255,255,0.12);
   padding:15px;
-  margin:10px 0;
+  margin:15px 0;
   border-radius:15px;
+}
+
+.post p{
+  white-space:pre-wrap;
 }
 
 button{
@@ -59,20 +68,31 @@ if(sessionStorage.getItem("auth") !== "ok"){
 }
 </script>
 
+<!-- 🔥 기존 헤더 유지 -->
 <div class="header">
-  <h1>🌟 나의 사랑하는 별에게 🌟</h1>
+  <div style="font-size:34px;font-weight:bold;">
+    🌟 나의 사랑하는 별에게 🌟
+  </div>
+  <div style="font-size:16px;opacity:0.8;">
+    우리의 빛나는 글들
+  </div>
 </div>
 
-<!-- 📌 고정글 -->
-<div class="section">
-  <div class="section-title">📌 고정 글</div>
-  <div id="pinned"></div>
-</div>
+<div class="card">
 
-<!-- 🆕 일반글 -->
-<div class="section">
-  <div class="section-title">🆕 최신 글</div>
-  <div id="normal"></div>
+  <!-- 🔥 기존 컨트롤 유지 (삭제 안함) -->
+  <div class="controls">
+    <input id="search" placeholder="제목 / 작성자">
+
+    <select id="sort">
+      <option value="new">최신순</option>
+      <option value="old">오래된순</option>
+    </select>
+
+    <button onclick="location.href='admin.html'">글 쓰러가기!</button>
+  </div>
+
+  <div id="posts"></div>
 </div>
 
 <script type="module">
@@ -116,52 +136,54 @@ onSnapshot(collection(db,"posts"), snap=>{
 function render(){
 
   const user = sessionStorage.getItem("user");
+  const box = document.getElementById("posts");
+  box.innerHTML = "";
 
-  const pinnedBox = document.getElementById("pinned");
-  const normalBox = document.getElementById("normal");
+  let keyword = document.getElementById("search").value;
+  let sort = document.getElementById("sort").value;
 
-  pinnedBox.innerHTML = "";
-  normalBox.innerHTML = "";
+  let filtered = [...posts];
 
-  // 📌 고정 / 일반 분리
-  const pinnedPosts = posts.filter(p => p.pinned);
-  const normalPosts = posts.filter(p => !p.pinned);
+  // 🔍 검색
+  if(keyword){
+    filtered = filtered.filter(p =>
+      p.title.includes(keyword) ||
+      p.writer.includes(keyword)
+    );
+  }
 
-  // 🆕 최신순 정렬 (일반글만)
-  normalPosts.sort((a,b)=> b.time - a.time);
+  // 📌 고정 먼저 + 나머지 정렬
+  filtered.sort((a,b)=>{
 
-  // 📌 고정글 표시
-  pinnedPosts.forEach(p=>{
-    pinnedBox.appendChild(createPost(p, user));
+    if(a.pinned && !b.pinned) return -1;
+    if(!a.pinned && b.pinned) return 1;
+
+    return sort === "new"
+      ? b.time - a.time
+      : a.time - b.time;
   });
 
-  // 🆕 일반글 표시
-  normalPosts.forEach(p=>{
-    normalBox.appendChild(createPost(p, user));
+  filtered.forEach(p=>{
+
+    const div = document.createElement("div");
+    div.className="post";
+
+    div.innerHTML = `
+      <h3>${p.pinned ? "📌 " : ""}${p.title}</h3>
+      <small>${p.writer} · ${p.date}</small>
+      <p>${p.content}</p>
+
+      ${p.writer === user ? `
+        <button onclick="editPost('${p.id}')">수정</button>
+        <button onclick="deletePost('${p.id}','${p.writer}')">삭제</button>
+        <button onclick="togglePin('${p.id}',${p.pinned})">
+          ${p.pinned ? "고정 해제" : "고정"}
+        </button>
+      ` : ""}
+    `;
+
+    box.appendChild(div);
   });
-}
-
-/* 🔥 글 카드 생성 함수 */
-function createPost(p, user){
-
-  const div = document.createElement("div");
-  div.className = "post";
-
-  div.innerHTML = `
-    <h3>📌 ${p.pinned ? p.title : p.title}</h3>
-    <small>${p.writer} · ${p.date}</small>
-    <p>${p.content}</p>
-
-    ${p.writer === user ? `
-      <button onclick="editPost('${p.id}')">수정</button>
-      <button onclick="deletePost('${p.id}','${p.writer}')">삭제</button>
-      <button onclick="togglePin('${p.id}',${p.pinned})">
-        ${p.pinned ? "고정 해제" : "고정"}
-      </button>
-    ` : ""}
-  `;
-
-  return div;
 }
 
 /* 삭제 */
@@ -185,6 +207,9 @@ window.editPost = function(id){
   localStorage.setItem("editId",id);
   location.href="admin.html";
 };
+
+document.getElementById("search").oninput = render;
+document.getElementById("sort").onchange = render;
 
 </script>
 
