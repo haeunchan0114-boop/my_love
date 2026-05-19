@@ -97,13 +97,29 @@ const perPage = 3;
 function getPosts(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  // 🔥 time 보정 (핵심)
-  return posts.map(p=>{
+  // 🔥 핵심: 예전 글 자동 시간 보정
+  posts = posts.map(p => {
+
     if(!p.time){
-      p.time = new Date(p.date).getTime();
+      let parsed = new Date(p.date);
+
+      if(isNaN(parsed.getTime())){
+        parsed = new Date();
+      }
+
+      p.time = parsed.getTime();
+
+      const d = parsed;
+      p.date =
+        `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ` +
+        `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     }
+
     return p;
   });
+
+  localStorage.setItem("posts", JSON.stringify(posts));
+  return posts;
 }
 
 function render(reset = true){
@@ -228,8 +244,8 @@ function edit(i){
 document.getElementById("search").oninput = () => render(true);
 document.getElementById("sort").onchange = () => render(true);
 
-// 🔥 기본 = 최신순
 document.getElementById("sort").value = "new";
+
 render(true);
 </script>
 
