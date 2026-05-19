@@ -13,41 +13,136 @@ body{
   align-items:center;
   flex-direction:column;
   font-family:Arial;
-  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
+  
+  /* 🔥 메인 화면과 완벽히 일치하는 무수한 별빛 밤하늘 배경 */
+  background: 
+    radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
+    radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
+    radial-gradient(circle at 70% 25%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 90px 90px,
+    radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 110px 110px,
+    radial-gradient(circle at 25% 65%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1.5px) 0 0 / 150px 150px,
+    radial-gradient(circle at 55% 80%, rgba(255, 255, 255, 0.25) 1.5px, transparent 1.5px) 0 0 / 130px 130px,
+    radial-gradient(circle at 85% 45%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1.5px) 0 0 / 160px 160px,
+    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.4) 2px, transparent 2px) 0 0 / 220px 220px,
+    radial-gradient(circle at 15% 45%, rgba(255, 255, 255, 0.35) 2px, transparent 2px) 0 0 / 260px 260px,
+    radial-gradient(circle at 75% 60%, rgba(255, 255, 255, 0.4) 2.5px, transparent 2.5px) 0 0 / 300px 300px,
+    linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 75%, #103b66 100%);
+    
   color:white;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 🔥 떨어지는 별똥별 효과 (동일하게 추가) */
+.shooting-stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+.star {
+  position: absolute;
+  top: -50px;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.1), 0 0 0 8px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,1);
+  animation: animateStar 4s linear infinite;
+  opacity: 0;
+}
+.star::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;
+  height: 1px;
+  background: linear-gradient(90deg, #fff, transparent);
+}
+.star:nth-child(1) { left: 15%; animation-delay: 0s; animation-duration: 3s; }
+.star:nth-child(2) { left: 45%; animation-delay: 1.5s; animation-duration: 4.5s; }
+.star:nth-child(3) { left: 75%; animation-delay: 3s; animation-duration: 3.5s; }
+
+@keyframes animateStar {
+  0% { transform: rotate(-45deg) translateX(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: rotate(-45deg) translateX(-1000px); opacity: 0; }
 }
 
 .title{
-  font-size:28px;
+  font-size:32px;
   font-weight:bold;
-  margin-bottom:20px;
+  margin-bottom:25px;
+  /* 글자가 밤하늘 위에서 빛나는 효과 */
+  text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
 
 .card{
-  background: rgba(255,255,255,0.12);
-  padding:30px;
-  border-radius:15px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  /* 감성적인 투명 유리 상자 효과 */
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 35px 30px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-input,button{
-  width:240px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  box-sizing:border-box;
+input, button{
+  width: 260px;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 14px;
+  transition: all 0.3s;
 }
 
+/* 입력창 디자인 맞춤 */
+input {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  outline: none;
+}
+input:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #00bcd4;
+}
+input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 버튼 디자인 맞춤 */
 button{
-  background:#00bcd4;
-  color:white;
+  background: linear-gradient(135deg, #00bcd4, #0097a7);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4);
+  margin-top: 5px;
+}
+button:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6);
 }
 </style>
 </head>
 
 <body>
+
+<div class="shooting-stars">
+  <div class="star"></div>
+  <div class="star"></div>
+  <div class="star"></div>
+</div>
 
 <div class="title">🌟 나의 사랑하는 별에게 🌟</div>
 
@@ -59,7 +154,7 @@ button{
 
 <script>
 function login(){
-  const name = document.getElementById("name").value;
+  const name = document.getElementById("name").value.trim();
   const pw = document.getElementById("pw").value;
 
   if(!name || !pw){
