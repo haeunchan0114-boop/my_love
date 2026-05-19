@@ -7,19 +7,20 @@
 <style>
 body{
   margin:0;
-  height:100vh;
+  min-height:100vh;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
   font-family:Arial;
-  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
-  min-height:100vh;
-  background-attachment: fixed;
+
+  /* 🔥 배경 안정화 */
+  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
+  background-repeat:no-repeat;
+  background-attachment:fixed;
 }
 
-/* 🔥 제목 */
 .title{
   font-size:28px;
   font-weight:bold;
@@ -28,11 +29,9 @@ body{
 
 .card{
   background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
   padding:30px;
   border-radius:15px;
   text-align:center;
-  box-shadow: 0 0 20px rgba(0,200,255,0.3);
 }
 
 input,button{
@@ -46,24 +45,19 @@ input,button{
 button{
   background:#00bcd4;
   color:white;
-  cursor:pointer;
-}
-button:hover{
-  background:#009bb0;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔥 추가된 제목 -->
 <div class="title">나의 빛나는 별에게</div>
 
 <div class="card">
   <h2>로그인</h2>
   <input type="password" id="pw" placeholder="비밀번호">
   <br>
-  <button onclick="login()">시작하기</button>
+  <button onclick="login()">입장</button>
 </div>
 
 <script>
@@ -72,7 +66,7 @@ function login(){
     sessionStorage.setItem("auth","ok");
     location.href="home.html";
   } else {
-    alert("비밀번호가 틀렸어!! 다시 시도해줘!");
+    alert("비밀번호가 틀렸어! 다시 시도해줘~!");
   }
 }
 </script>
