@@ -16,6 +16,7 @@ body{
   color:white;
 }
 
+/* 🔥 카드 */
 .card{
   width:380px;
   background: rgba(255,255,255,0.12);
@@ -24,22 +25,33 @@ body{
 
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:12px;
 }
 
-input,textarea{
+/* 🔥 공통 크기 통일 */
+input, textarea, button{
   width:100%;
-  padding:10px;
-  border:none;
+  box-sizing:border-box;
   border-radius:10px;
-  outline:none;
+  border:none;
+  font-size:14px;
 }
 
+/* 제목 */
+input{
+  padding:12px;
+}
+
+/* 본문 */
+textarea{
+  padding:12px;
+  height:160px;
+  resize:none;
+}
+
+/* 저장 버튼 */
 button{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
+  padding:12px;
   background:#00bcd4;
   color:white;
   cursor:pointer;
@@ -55,10 +67,10 @@ button:hover{
 <body>
 
 <div class="card">
-  <h2 style="text-align:center;">글 쓰기</h2>
+  <h2 style="text-align:center;margin:0;">글 쓰기</h2>
 
   <input id="title" placeholder="제목">
-  <textarea id="content" rows="8" placeholder="내용"></textarea>
+  <textarea id="content" placeholder="내용"></textarea>
 
   <button id="saveBtn">저장</button>
 </div>
@@ -88,11 +100,11 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 🔥 수정 글 불러오기 (무조건 안정 방식) */
+/* 수정 데이터 로딩 */
 window.addEventListener("load", async () => {
 
   if(editId){
-    const ref = doc(db, "posts", editId);
+    const ref = doc(db,"posts",editId);
     const snap = await getDoc(ref);
 
     if(snap.exists()){
@@ -101,17 +113,19 @@ window.addEventListener("load", async () => {
       document.getElementById("content").value = data.content || "";
     }
   }
+
+  document.getElementById("saveBtn").addEventListener("click", savePost);
 });
 
-/* 🔥 저장 */
+/* 저장 */
 async function savePost(){
 
-  const user = sessionStorage.getItem("user");
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
+  const user = sessionStorage.getItem("user");
 
   if(!title || !content){
-    alert("제목/내용 입력");
+    alert("내용 입력해");
     return;
   }
 
@@ -122,16 +136,9 @@ async function savePost(){
     `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
   if(editId){
-
-    await updateDoc(doc(db,"posts",editId),{
-      title,
-      content
-    });
-
+    await updateDoc(doc(db,"posts",editId),{ title, content });
     localStorage.removeItem("editId");
-
   } else {
-
     await addDoc(collection(db,"posts"),{
       writer:user,
       title,
@@ -144,9 +151,6 @@ async function savePost(){
 
   location.href="home.html";
 }
-
-/* 🔥 버튼 연결 (이게 핵심) */
-document.getElementById("saveBtn").addEventListener("click", savePost);
 
 </script>
 
