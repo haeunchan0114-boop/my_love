@@ -56,6 +56,7 @@ button{
   border-radius:8px;
   background:#00bcd4;
   color:white;
+  cursor:pointer;
 }
 
 #pagination button{
@@ -116,12 +117,11 @@ function render(){
     );
   }
 
-  // 🔥 정렬 (핵심 수정 완료)
-  posts = posts.sort((a,b)=>{
-    let da = new Date(a.date);
-    let db = new Date(b.date);
-
-    return sort === "new" ? db - da : da - db;
+  // 🔥 정렬 (완전 정상)
+  posts.sort((a,b)=>{
+    return sort === "new"
+      ? new Date(b.date) - new Date(a.date)
+      : new Date(a.date) - new Date(b.date);
   });
 
   const box = document.getElementById("posts");
@@ -132,10 +132,11 @@ function render(){
 
   let pagePosts = posts.slice(start, end);
 
-  pagePosts.forEach((p, i)=>{
+  pagePosts.forEach((p)=>{
+
     let isOwner = (p.writer === user);
 
-    // 🔥 핵심: 실제 index를 찾는다 (정렬 때문에 필수)
+    // 🔥 핵심: 안전한 index 찾기 (이게 안되면 버튼 다 망가짐)
     let realIndex = getPosts().findIndex(x =>
       x.title === p.title &&
       x.date === p.date &&
@@ -187,6 +188,7 @@ function renderPage(total){
   document.body.appendChild(div);
 }
 
+// 🔥 삭제
 function del(i){
   let posts = getPosts();
   let user = sessionStorage.getItem("user");
@@ -201,6 +203,7 @@ function del(i){
   render();
 }
 
+// 🔥 수정
 function edit(i){
   let posts = getPosts();
   let user = sessionStorage.getItem("user");
