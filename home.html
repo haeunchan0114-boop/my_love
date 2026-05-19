@@ -2,79 +2,541 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 보는 공간!</title>
+<title>나의 사랑하는 별에게</title>
 
 <style>
+
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   min-height:100vh;
+  overflow-x:hidden;
   font-family:Arial;
-  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
+  position:relative;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(255,255,255,0.10),
+      transparent 35%
+    ),
+
+    linear-gradient(
+      to bottom,
+      #020611 0%,
+      #081527 18%,
+      #10294a 38%,
+      #154e73 62%,
+      #1e78a8 82%,
+      #3ea9d8 100%
+    );
+
+  background-attachment:fixed;
+}
+
+/* 🌫 몽환 안개 */
+
+.fog{
+
+  position:fixed;
+
+  inset:0;
+
+  background:
+    radial-gradient(
+      circle at 20% 30%,
+      rgba(255,255,255,0.05),
+      transparent 35%
+    ),
+
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(173,216,255,0.06),
+      transparent 40%
+    ),
+
+    radial-gradient(
+      circle at 50% 60%,
+      rgba(255,255,255,0.04),
+      transparent 45%
+    );
+
+  filter:blur(25px);
+
+  z-index:0;
+
+  pointer-events:none;
+
+  animation:
+    fogMove 18s ease-in-out infinite alternate;
+}
+
+@keyframes fogMove{
+
+  from{
+    transform:
+      translateY(0)
+      translateX(0);
+  }
+
+  to{
+    transform:
+      translateY(-20px)
+      translateX(10px);
+  }
+
+}
+
+/* 🌌 밤하늘 */
+
+.sky{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* ⭐ 별 */
+
+.stars span{
+
+  position:absolute;
+
+  border-radius:50%;
+
+  background:white;
+
+  animation:
+    twinkle 3s infinite;
+}
+
+/* 작은 별 */
+
+.stars span.small{
+
+  width:2px;
+  height:2px;
+
+  box-shadow:
+    0 0 6px white,
+    0 0 12px white;
+}
+
+/* 큰 별 */
+
+.stars span.big{
+
+  width:4px;
+  height:4px;
+
+  box-shadow:
+    0 0 12px white,
+    0 0 24px white;
+}
+
+@keyframes twinkle{
+
+  0%{
+    opacity:0.2;
+    transform:scale(1);
+  }
+
+  50%{
+    opacity:1;
+    transform:scale(2);
+  }
+
+  100%{
+    opacity:0.2;
+    transform:scale(1);
+  }
+
+}
+
+/* 🌊 바다 */
+
+.oceanGlow{
+
+  position:fixed;
+
+  left:0;
+  bottom:0;
+
+  width:100%;
+  height:48vh;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,180,255,0.25),
+      transparent
+    );
+
+  z-index:0;
+
+  pointer-events:none;
+}
+
+.waves{
+  position:fixed;
+  left:0;
+  bottom:-25px;
+  width:100%;
+  height:340px;
+  overflow:hidden;
+  z-index:0;
+  pointer-events:none;
+}
+
+.wave{
+
+  position:absolute;
+
+  width:400%;
+  height:100%;
+
+  left:0;
+
+  background-repeat:repeat-x;
+
+  background-size:25% 100%;
+
+  filter:blur(1px);
+}
+
+.wave1{
+
+  bottom:0;
+
+  opacity:0.5;
+
+  background-image:url(
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 320'%3E%3Cpath fill='%23ffffff' fill-opacity='1' d='M0,192L48,186.7C96,181,192,171,288,186.7C384,203,480,245,576,240C672,235,768,181,864,160C960,139,1056,149,1152,176C1248,203,1344,245,1440,245.3C1536,245,1632,203,1680,181.3L1728,160L1728,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"
+  );
+
+  animation:
+    oceanMove 22s linear infinite;
+}
+
+.wave2{
+
+  bottom:-28px;
+
+  opacity:0.28;
+
+  background-image:url(
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 320'%3E%3Cpath fill='%23b9e8ff' fill-opacity='1' d='M0,224L60,202.7C120,181,240,139,360,149.3C480,160,600,224,720,229.3C840,235,960,181,1080,165.3C1200,149,1320,171,1440,192C1560,213,1680,235,1740,245.3L1800,256L1800,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"
+  );
+
+  animation:
+    oceanMoveReverse 30s linear infinite;
+}
+
+.wave3{
+
+  bottom:-55px;
+
+  opacity:0.16;
+
+  background-image:url(
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 320'%3E%3Cpath fill='%23dff6ff' fill-opacity='1' d='M0,256L80,245.3C160,235,320,213,480,192C640,171,800,149,960,170.7C1120,192,1280,256,1440,266.7C1600,277,1760,235,1840,213.3L1920,192L1920,320L0,320Z'%3E%3C/path%3E%3C/svg%3E"
+  );
+
+  animation:
+    oceanMove 42s linear infinite;
+}
+
+@keyframes oceanMove{
+
+  0%{
+    transform:
+      translateX(0)
+      translateY(0);
+  }
+
+  50%{
+    transform:
+      translateX(-16%)
+      translateY(12px);
+  }
+
+  100%{
+    transform:
+      translateX(-33%)
+      translateY(0);
+  }
+
+}
+
+@keyframes oceanMoveReverse{
+
+  0%{
+    transform:
+      translateX(-33%)
+      translateY(0);
+  }
+
+  50%{
+    transform:
+      translateX(-16%)
+      translateY(-12px);
+  }
+
+  100%{
+    transform:
+      translateX(0)
+      translateY(0);
+  }
+
+}
+
+/* 🌟 메인 */
+
+.header,
+.card{
+  position:relative;
+  z-index:2;
 }
 
 .header{
   text-align:center;
-  padding:20px;
+  padding:50px 20px 25px;
 }
 
 .header h1{
+
   margin:0;
-  font-size:34px;
+
+  font-size:50px;
+
+  text-shadow:
+    0 0 18px rgba(255,255,255,0.45);
 }
 
 .sub{
-  margin-top:8px;
-  font-size:15px;
-  opacity:0.8;
+  margin-top:12px;
+  font-size:18px;
+  opacity:0.95;
 }
 
 .card{
-  width:80%;
-  margin:20px auto;
+  width:min(1200px,94%);
+  margin:auto;
+  padding-bottom:50px;
 }
+
+/* 🔎 컨트롤 */
 
 .controls{
-  text-align:center;
-  margin-bottom:20px;
+
+  display:flex;
+
+  align-items:center;
+
+  gap:12px;
+
+  flex-wrap:nowrap;
+
+  overflow-x:auto;
+
+  padding:18px;
+
+  border-radius:24px;
+
+  background:
+    rgba(255,255,255,0.09);
+
+  backdrop-filter:blur(18px);
+
+  border:
+    1px solid rgba(255,255,255,0.12);
+
+  box-shadow:
+    0 10px 35px rgba(0,0,0,0.3);
 }
 
-input,select{
-  padding:8px;
-  margin:5px;
+.controls::-webkit-scrollbar{
+  display:none;
+}
+
+input,
+select{
+
+  height:50px;
+
   border:none;
-  border-radius:8px;
+
+  border-radius:16px;
+
+  outline:none;
+
+  padding:0 16px;
+
+  background:
+    rgba(255,255,255,0.95);
+
+  font-size:15px;
+
+  flex:1;
+
+  min-width:180px;
 }
 
 button{
-  padding:7px 12px;
-  margin:5px;
+
+  height:50px;
+
   border:none;
-  border-radius:8px;
-  background:#00bcd4;
+
+  border-radius:16px;
+
+  padding:0 24px;
+
+  white-space:nowrap;
+
+  background:
+    linear-gradient(
+      to right,
+      #38bdf8,
+      #0ea5e9
+    );
+
   color:white;
+
+  font-size:15px;
+
+  font-weight:bold;
+
   cursor:pointer;
+
+  transition:0.25s;
 }
 
-.post{
-  background: rgba(255,255,255,0.12);
-  padding:15px;
-  border-radius:15px;
-  margin-bottom:15px;
+button:hover{
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.3);
 }
 
-.post p{
-  white-space:pre-wrap;
-  margin-top:10px;
+#posts{
+  margin-top:25px;
 }
+
+#pagination{
+  margin-top:25px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+@media(max-width:700px){
+
+  .header h1{
+    font-size:34px;
+  }
+
+  .controls{
+    flex-wrap:wrap;
+  }
+
+  input,
+  select,
+  button{
+    width:100%;
+    min-width:100%;
+  }
+
+}
+
 </style>
 </head>
 
 <body>
 
+<!-- 🌫 안개 -->
+
+<div class="fog"></div>
+
+<!-- 🌌 별 -->
+
+<div class="sky">
+
+  <div class="stars">
+
+    <!-- ⭐ 큰 별 -->
+
+    <span class="big" style="top:8%; left:6%;"></span>
+    <span class="big" style="top:12%; left:20%; animation-delay:1s;"></span>
+    <span class="big" style="top:16%; left:38%;"></span>
+    <span class="big" style="top:10%; left:58%; animation-delay:2s;"></span>
+    <span class="big" style="top:14%; left:75%;"></span>
+    <span class="big" style="top:22%; left:90%; animation-delay:1.5s;"></span>
+
+    <!-- ⭐ 작은 별 -->
+
+    <span class="small" style="top:5%; left:12%;"></span>
+    <span class="small" style="top:7%; left:30%;"></span>
+    <span class="small" style="top:9%; left:48%;"></span>
+    <span class="small" style="top:6%; left:66%;"></span>
+    <span class="small" style="top:11%; left:82%;"></span>
+
+    <span class="small" style="top:18%; left:10%;"></span>
+    <span class="small" style="top:22%; left:26%;"></span>
+    <span class="small" style="top:26%; left:42%;"></span>
+    <span class="small" style="top:20%; left:60%;"></span>
+    <span class="small" style="top:28%; left:76%;"></span>
+
+    <span class="small" style="top:34%; left:8%;"></span>
+    <span class="small" style="top:38%; left:22%;"></span>
+    <span class="small" style="top:32%; left:36%;"></span>
+    <span class="small" style="top:36%; left:52%;"></span>
+    <span class="small" style="top:40%; left:70%;"></span>
+
+    <span class="small" style="top:45%; left:84%;"></span>
+    <span class="small" style="top:48%; left:14%;"></span>
+    <span class="small" style="top:52%; left:30%;"></span>
+    <span class="small" style="top:46%; left:48%;"></span>
+    <span class="small" style="top:55%; left:64%;"></span>
+
+    <span class="small" style="top:58%; left:82%;"></span>
+    <span class="small" style="top:62%; left:18%;"></span>
+    <span class="small" style="top:66%; left:40%;"></span>
+    <span class="small" style="top:70%; left:58%;"></span>
+    <span class="small" style="top:74%; left:76%;"></span>
+
+  </div>
+
+</div>
+
+<!-- 🌊 바다 -->
+
+<div class="oceanGlow"></div>
+
+<div class="waves">
+
+  <div class="wave wave1"></div>
+
+  <div class="wave wave2"></div>
+
+  <div class="wave wave3"></div>
+
+</div>
+
+<!-- 🌟 제목 -->
+
 <div class="header">
 
-  <h1>🌟 나의 사랑하는 별에게 🌟</h1>
+  <h1>
+    🌟 나의 사랑하는 별에게 🌟
+  </h1>
 
   <div class="sub">
     우리의 빛나는 글들
@@ -82,18 +544,22 @@ button{
 
 </div>
 
+<!-- 📄 메인 -->
+
 <div class="card">
 
   <div class="controls">
 
     <input
+      type="text"
+      placeholder="제목 검색"
       id="searchTitle"
-      placeholder="글 제목"
     >
 
     <input
+      type="text"
+      placeholder="이름 검색"
       id="searchWriter"
-      placeholder="글 쓴 사람"
     >
 
     <select id="sort">
@@ -109,328 +575,18 @@ button{
     </select>
 
     <button onclick="
-      localStorage.removeItem('editId');
-      location.href='admin.html';
+      location.href='admin.html'
     ">
-      글 쓰러가기
+      글 쓰기
     </button>
 
   </div>
 
   <div id="posts"></div>
 
+  <div id="pagination"></div>
+
 </div>
-
-<script type="module">
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  doc,
-  deleteDoc,
-  updateDoc
-}
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-
-  apiKey:
-  "AIzaSyCh_KpWKjSO4vl-jKjhrJCbLZNIZmek4Qw",
-
-  authDomain:
-  "loveletter-for-you.firebaseapp.com",
-
-  projectId:
-  "loveletter-for-you",
-
-  storageBucket:
-  "loveletter-for-you.firebasestorage.app",
-
-  messagingSenderId:
-  "40216107468",
-
-  appId:
-  "1:40216107468:web:b635ba7797490396952569"
-
-};
-
-const app =
-  initializeApp(firebaseConfig);
-
-const db =
-  getFirestore(app);
-
-let posts = [];
-
-/* 🔥 실시간 데이터 */
-onSnapshot(
-  collection(db,"posts"),
-  (snap)=>{
-
-    posts = [];
-
-    snap.forEach((d)=>{
-
-      const data = d.data();
-
-      // 🔥 내용 없는 이상 데이터 제거
-      if(
-        !data.title &&
-        !data.content
-      ){
-        return;
-      }
-
-      posts.push({
-
-        id:d.id,
-        writer:data.writer || "",
-        title:data.title || "",
-        content:data.content || "",
-        date:data.date || "",
-        time:Number(data.time) || 0,
-        pinned:data.pinned || false
-
-      });
-
-    });
-
-    render();
-
-  }
-);
-
-/* 🔥 렌더 */
-function render(){
-
-  const box =
-    document.getElementById("posts");
-
-  // 무조건 초기화
-  box.innerHTML = "";
-
-  let list = [...posts];
-
-  const titleKeyword =
-    document
-    .getElementById("searchTitle")
-    .value
-    .trim()
-    .toLowerCase();
-
-  const writerKeyword =
-    document
-    .getElementById("searchWriter")
-    .value
-    .trim()
-    .toLowerCase();
-
-  const sort =
-    document
-    .getElementById("sort")
-    .value;
-
-  const user =
-    sessionStorage.getItem("user");
-
-  // 제목 검색
-  if(titleKeyword){
-
-    list = list.filter(p=>
-
-      p.title
-      .toLowerCase()
-      .includes(titleKeyword)
-
-    );
-  }
-
-  // 작성자 검색
-  if(writerKeyword){
-
-    list = list.filter(p=>
-
-      p.writer
-      .toLowerCase()
-      .includes(writerKeyword)
-
-    );
-  }
-
-  // 🔥 최신순 / 오래된순
-  list.sort((a,b)=>{
-
-    // 고정글 우선
-    if(a.pinned && !b.pinned)
-      return -1;
-
-    if(!a.pinned && b.pinned)
-      return 1;
-
-    // 최신순
-    if(sort === "new"){
-      return b.time - a.time;
-    }
-
-    // 오래된순
-    return a.time - b.time;
-
-  });
-
-  // 🔥 게시글 없으면 완전 종료
-  if(list.length === 0){
-    return;
-  }
-
-  /* 🔥 출력 */
-  list.forEach((p)=>{
-
-    const div =
-      document.createElement("div");
-
-    div.className = "post";
-
-    let html = "";
-
-    html += `
-      <h3>
-        ${p.pinned ? "📌 " : ""}
-        ${p.title}
-      </h3>
-    `;
-
-    html += `
-      <small>
-        ${p.writer}
-        ·
-        ${p.date}
-      </small>
-    `;
-
-    // 🔥 내용 있을 때만 추가
-    if(p.content){
-
-      html += `
-        <p>${p.content}</p>
-      `;
-    }
-
-    // 🔥 본인만 버튼
-    if(p.writer === user){
-
-      html += `
-
-        <button
-          onclick="edit('${p.id}')"
-        >
-          수정
-        </button>
-
-        <button
-          onclick="
-            del(
-              '${p.id}',
-              '${p.writer}'
-            )
-          "
-        >
-          삭제
-        </button>
-
-        <button
-          onclick="
-            pin(
-              '${p.id}',
-              ${p.pinned}
-            )
-          "
-        >
-          ${
-            p.pinned
-            ? "고정해제"
-            : "고정"
-          }
-        </button>
-
-      `;
-    }
-
-    div.innerHTML = html;
-
-    box.appendChild(div);
-
-  });
-
-}
-
-/* 🔥 삭제 */
-window.del = async (id,writer)=>{
-
-  if(
-    sessionStorage.getItem("user")
-    !== writer
-  ){
-    alert("본인만 가능");
-    return;
-  }
-
-  await deleteDoc(
-    doc(db,"posts",id)
-  );
-
-};
-
-/* 🔥 고정 */
-window.pin = async (id,pinned)=>{
-
-  await updateDoc(
-    doc(db,"posts",id),
-    {
-      pinned: !pinned
-    }
-  );
-
-};
-
-/* 🔥 수정 */
-window.edit = (id)=>{
-
-  localStorage.setItem(
-    "editId",
-    id
-  );
-
-  location.href =
-    "admin.html";
-};
-
-/* 🔥 검색 & 정렬 */
-document
-.getElementById("searchTitle")
-.addEventListener(
-  "input",
-  render
-);
-
-document
-.getElementById("searchWriter")
-.addEventListener(
-  "input",
-  render
-);
-
-document
-.getElementById("sort")
-.addEventListener(
-  "change",
-  render
-);
-
-</script>
 
 </body>
 </html>
