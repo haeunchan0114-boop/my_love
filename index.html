@@ -43,7 +43,6 @@ input,button{
 button{
   background:#00bcd4;
   color:white;
-  cursor:pointer;
 }
 </style>
 </head>
@@ -55,7 +54,7 @@ button{
 <div class="card">
   <input id="name" placeholder="이름">
   <input type="password" id="pw" placeholder="비밀번호">
-  <button onclick="login()">시작하기!</button>
+  <button onclick="login()">시작하기</button>
 </div>
 
 <script>
@@ -73,7 +72,7 @@ function login(){
     sessionStorage.setItem("user",name);
     location.href="home.html";
   } else {
-    alert("비밀번호 틀림");
+    alert("비밀번호가 틀렸어~ 다시 시도해줘!");
   }
 }
 </script>
