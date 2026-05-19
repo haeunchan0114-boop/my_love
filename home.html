@@ -105,12 +105,13 @@ function render(reset = true){
   let user = sessionStorage.getItem("user");
 
   const keyword = document.getElementById("search").value;
+  let sort = document.getElementById("sort").value || "new";
 
   if(reset){
     currentPage = 1;
   }
 
-  // 🔍 검색
+  // 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -118,12 +119,11 @@ function render(reset = true){
     );
   }
 
-  // 🔥 핵심: 항상 최신순 기준으로 먼저 정렬
+  // 🔥 분단위 시간 기준 정렬
   posts.sort((a,b)=>{
-    let ta = a.time || new Date(a.date).getTime();
-    let tb = b.time || new Date(b.date).getTime();
-
-    return tb - ta; // 👉 무조건 최신순
+    return sort === "new"
+      ? b.time - a.time
+      : a.time - b.time;
   });
 
   const box = document.getElementById("posts");
@@ -220,7 +220,6 @@ function edit(i){
   location.href="admin.html";
 }
 
-// 이벤트
 document.getElementById("search").oninput = () => render(true);
 document.getElementById("sort").onchange = () => render(true);
 
