@@ -79,9 +79,10 @@ if(sessionStorage.getItem("auth") !== "ok"){
 
   <div class="controls">
     <input id="search" placeholder="제목 / 작성자 검색">
-    
+
+    <!-- 🔥 기본값 최신순 -->
     <select id="sort">
-      <option value="new">최신순</option>
+      <option value="new" selected>최신순</option>
       <option value="old">오래된순</option>
     </select>
 
@@ -99,10 +100,19 @@ function getPosts(){
   return JSON.parse(localStorage.getItem("posts") || "[]");
 }
 
-// 🔥 핵심 render
+// 🔥 날짜 강제 숫자화 (핵심)
+function fixDate(posts){
+  return posts.map(p=>{
+    if(!p.time){
+      p.time = new Date(p.date).getTime();
+    }
+    return p;
+  });
+}
+
 function render(reset = true){
 
-  let posts = getPosts();
+  let posts = fixDate(getPosts());
   let user = sessionStorage.getItem("user") || "";
 
   const keyword = document.getElementById("search").value;
@@ -120,11 +130,11 @@ function render(reset = true){
     );
   }
 
-  // 🔥 정렬
+  // 🔥 정렬 (완전 안정화 핵심)
   posts.sort((a,b)=>{
     return sort === "new"
-      ? new Date(b.date) - new Date(a.date)
-      : new Date(a.date) - new Date(b.date);
+      ? b.time - a.time
+      : a.time - b.time;
   });
 
   const box = document.getElementById("posts");
@@ -140,8 +150,8 @@ function render(reset = true){
     let isOwner = (p.writer === user);
 
     let realIndex = getPosts().findIndex(x =>
-      x.title === p.title &&
       x.date === p.date &&
+      x.title === p.title &&
       x.writer === p.writer
     );
 
@@ -165,7 +175,6 @@ function render(reset = true){
   renderPage(posts.length);
 }
 
-// 🔥 페이지 버튼
 function renderPage(total){
   let pageCount = Math.ceil(total / perPage);
 
@@ -182,7 +191,7 @@ function renderPage(total){
 
     btn.onclick = ()=>{
       currentPage = i;
-      render(false); // 🔥 페이지 이동 유지 핵심
+      render(false);
     };
 
     div.appendChild(btn);
@@ -222,10 +231,6 @@ function edit(i){
 
   location.href="admin.html";
 }
-
-// 🔥 이벤트 (중요)
-document.getElementById("search").oninput = () => render(true);
-document.getElementById("sort").onchange = () => render(true);
 
 render();
 </script>
