@@ -9,7 +9,12 @@ body{
   margin:0;
   min-height:100vh;
   font-family:Arial;
-  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
+  /* 🔥 별이 빛나는 밤바다 컨셉 배경으로 수정 */
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 1px, transparent 1px) 0 0 / 120px 120px,
+    radial-gradient(circle at 75% 60%, rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px) 0 0 / 180px 180px,
+    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.08) 2px, transparent 2px) 0 0 / 250px 250px,
+    linear-gradient(to bottom, #030b1e 0%, #071731 40%, #0d324d 75%, #1c5270 100%);
   color:white;
 }
 
@@ -21,6 +26,8 @@ body{
 .header h1{
   margin:0;
   font-size:34px;
+  /* 글자에도 은은한 별빛 조명 효과 */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .sub{
@@ -44,6 +51,18 @@ input,select{
   margin:5px;
   border:none;
   border-radius:8px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+}
+
+/* 입력창 내부 placeholder 색상 조절 */
+input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+select option {
+  background: #071731;
+  color: white;
 }
 
 button{
@@ -54,13 +73,20 @@ button{
   background:#00bcd4;
   color:white;
   cursor:pointer;
+  transition: background 0.3s;
+}
+
+button:hover{
+  background: #0097a7;
 }
 
 .post{
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(4px); /* 뒷 배경이 살짝 흐려지는 고급스러운 효과 */
   padding:15px;
   border-radius:15px;
   margin-bottom:15px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .post p{
@@ -73,56 +99,30 @@ button{
 <body>
 
 <div class="header">
-
   <h1>🌟 나의 사랑하는 별에게 🌟</h1>
-
-  <div class="sub">
-    우리의 빛나는 글들
-  </div>
-
+  <div class="sub">우리의 빛나는 글들</div>
 </div>
 
 <div class="card">
-
   <div class="controls">
-
-    <input
-      id="searchTitle"
-      placeholder="글 제목"
-    >
-
-    <input
-      id="searchWriter"
-      placeholder="글 쓴 사람"
-    >
-
+    <input id="searchTitle" placeholder="글 제목">
+    <input id="searchWriter" placeholder="글 쓴 사람">
     <select id="sort">
-
-      <option value="new">
-        최신순
-      </option>
-
-      <option value="old">
-        오래된순
-      </option>
-
+      <option value="new">최신순</option>
+      <option value="old">오래된순</option>
     </select>
-
     <button onclick="
       localStorage.removeItem('editId');
       location.href='admin.html';
     ">
       글 쓰러가기
     </button>
-
   </div>
 
   <div id="posts"></div>
-
 </div>
 
 <script type="module">
-
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
@@ -137,56 +137,29 @@ import {
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-
-  apiKey:
-  "AIzaSyCh_KpWKjSO4vl-jKjhrJCbLZNIZmek4Qw",
-
-  authDomain:
-  "loveletter-for-you.firebaseapp.com",
-
-  projectId:
-  "loveletter-for-you",
-
-  storageBucket:
-  "loveletter-for-you.firebasestorage.app",
-
-  messagingSenderId:
-  "40216107468",
-
-  appId:
-  "1:40216107468:web:b635ba7797490396952569"
-
+  apiKey: "AIzaSyCh_KpWKjSO4vl-jKjhrJCbLZNIZmek4Qw",
+  authDomain: "loveletter-for-you.firebaseapp.com",
+  projectId: "loveletter-for-you",
+  storageBucket: "loveletter-for-you.firebasestorage.app",
+  messagingSenderId: "40216107468",
+  appId: "1:40216107468:web:b635ba7797490396952569"
 };
 
-const app =
-  initializeApp(firebaseConfig);
-
-const db =
-  getFirestore(app);
-
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 let posts = [];
 
 /* 🔥 실시간 데이터 */
 onSnapshot(
   collection(db,"posts"),
   (snap)=>{
-
     posts = [];
-
     snap.forEach((d)=>{
-
       const data = d.data();
-
-      // 🔥 내용 없는 이상 데이터 제거
-      if(
-        !data.title &&
-        !data.content
-      ){
+      if(!data.title && !data.content){
         return;
       }
-
       posts.push({
-
         id:d.id,
         writer:data.writer || "",
         title:data.title || "",
@@ -194,242 +167,89 @@ onSnapshot(
         date:data.date || "",
         time:Number(data.time) || 0,
         pinned:data.pinned || false
-
       });
-
     });
-
     render();
-
   }
 );
 
 /* 🔥 렌더 */
 function render(){
-
-  const box =
-    document.getElementById("posts");
-
-  // 무조건 초기화
+  const box = document.getElementById("posts");
   box.innerHTML = "";
-
   let list = [...posts];
 
-  const titleKeyword =
-    document
-    .getElementById("searchTitle")
-    .value
-    .trim()
-    .toLowerCase();
+  const titleKeyword = document.getElementById("searchTitle").value.trim().toLowerCase();
+  const writerKeyword = document.getElementById("searchWriter").value.trim().toLowerCase();
+  const sort = document.getElementById("sort").value;
+  const user = sessionStorage.getItem("user");
 
-  const writerKeyword =
-    document
-    .getElementById("searchWriter")
-    .value
-    .trim()
-    .toLowerCase();
-
-  const sort =
-    document
-    .getElementById("sort")
-    .value;
-
-  const user =
-    sessionStorage.getItem("user");
-
-  // 제목 검색
   if(titleKeyword){
-
-    list = list.filter(p=>
-
-      p.title
-      .toLowerCase()
-      .includes(titleKeyword)
-
-    );
+    list = list.filter(p=> p.title.toLowerCase().includes(titleKeyword) );
   }
 
-  // 작성자 검색
   if(writerKeyword){
-
-    list = list.filter(p=>
-
-      p.writer
-      .toLowerCase()
-      .includes(writerKeyword)
-
-    );
+    list = list.filter(p=> p.writer.toLowerCase().includes(writerKeyword) );
   }
 
-  // 🔥 최신순 / 오래된순
   list.sort((a,b)=>{
-
-    // 고정글 우선
-    if(a.pinned && !b.pinned)
-      return -1;
-
-    if(!a.pinned && b.pinned)
-      return 1;
-
-    // 최신순
-    if(sort === "new"){
-      return b.time - a.time;
-    }
-
-    // 오래된순
+    if(a.pinned && !b.pinned) return -1;
+    if(!a.pinned && b.pinned) return 1;
+    if(sort === "new"){ return b.time - a.time; }
     return a.time - b.time;
-
   });
 
-  // 🔥 게시글 없으면 완전 종료
-  if(list.length === 0){
-    return;
-  }
+  if(list.length === 0){ return; }
 
   /* 🔥 출력 */
   list.forEach((p)=>{
-
-    const div =
-      document.createElement("div");
-
+    const div = document.createElement("div");
     div.className = "post";
-
     let html = "";
 
-    html += `
-      <h3>
-        ${p.pinned ? "📌 " : ""}
-        ${p.title}
-      </h3>
-    `;
+    html += `<h3>${p.pinned ? "📌 " : ""}${p.title}</h3>`;
+    html += `<small>${p.writer} · ${p.date}</small>`;
 
-    html += `
-      <small>
-        ${p.writer}
-        ·
-        ${p.date}
-      </small>
-    `;
-
-    // 🔥 내용 있을 때만 추가
     if(p.content){
-
-      html += `
-        <p>${p.content}</p>
-      `;
+      html += `<p>${p.content}</p>`;
     }
 
-    // 🔥 본인만 버튼
     if(p.writer === user){
-
       html += `
-
-        <button
-          onclick="edit('${p.id}')"
-        >
-          수정
-        </button>
-
-        <button
-          onclick="
-            del(
-              '${p.id}',
-              '${p.writer}'
-            )
-          "
-        >
-          삭제
-        </button>
-
-        <button
-          onclick="
-            pin(
-              '${p.id}',
-              ${p.pinned}
-            )
-          "
-        >
-          ${
-            p.pinned
-            ? "고정해제"
-            : "고정"
-          }
-        </button>
-
+        <button onclick="edit('${p.id}')">수정</button>
+        <button onclick="del('${p.id}','${p.writer}')">삭제</button>
+        <button onclick="pin('${p.id}', ${p.pinned})">${p.pinned ? "고정해제" : "고정"}</button>
       `;
     }
-
     div.innerHTML = html;
-
     box.appendChild(div);
-
   });
-
 }
 
 /* 🔥 삭제 */
 window.del = async (id,writer)=>{
-
-  if(
-    sessionStorage.getItem("user")
-    !== writer
-  ){
+  if(sessionStorage.getItem("user") !== writer){
     alert("본인만 가능");
     return;
   }
-
-  await deleteDoc(
-    doc(db,"posts",id)
-  );
-
+  await deleteDoc(doc(db,"posts",id));
 };
 
 /* 🔥 고정 */
 window.pin = async (id,pinned)=>{
-
-  await updateDoc(
-    doc(db,"posts",id),
-    {
-      pinned: !pinned
-    }
-  );
-
+  await updateDoc(doc(db,"posts",id), { pinned: !pinned });
 };
 
 /* 🔥 수정 */
 window.edit = (id)=>{
-
-  localStorage.setItem(
-    "editId",
-    id
-  );
-
-  location.href =
-    "admin.html";
+  localStorage.setItem("editId", id);
+  location.href = "admin.html";
 };
 
-/* 🔥 검색 & 정렬 */
-document
-.getElementById("searchTitle")
-.addEventListener(
-  "input",
-  render
-);
-
-document
-.getElementById("searchWriter")
-.addEventListener(
-  "input",
-  render
-);
-
-document
-.getElementById("sort")
-.addEventListener(
-  "change",
-  render
-);
-
+/* 🔥 검색 & 정렬 이벤트 */
+document.getElementById("searchTitle").addEventListener("input", render);
+document.getElementById("searchWriter").addEventListener("input", render);
+document.getElementById("sort").addEventListener("change", render);
 </script>
 
 </body>
