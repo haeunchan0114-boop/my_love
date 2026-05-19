@@ -85,7 +85,7 @@ if(sessionStorage.getItem("auth") !== "ok"){
       <option value="old">오래된순</option>
     </select>
 
-    <button onclick="location.href='admin.html'">글 쓰기!!</button>
+    <button onclick="location.href='admin.html'">글 작성</button>
   </div>
 
   <div id="posts"></div>
@@ -105,15 +105,12 @@ function render(reset = true){
   let user = sessionStorage.getItem("user");
 
   const keyword = document.getElementById("search").value;
-  let sort = document.getElementById("sort").value || "new";
 
   if(reset){
     currentPage = 1;
-    sort = "new";
-    document.getElementById("sort").value = "new";
   }
 
-  // 검색
+  // 🔍 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -121,12 +118,12 @@ function render(reset = true){
     );
   }
 
-  // 정렬
+  // 🔥 핵심: 항상 최신순 기준으로 먼저 정렬
   posts.sort((a,b)=>{
     let ta = a.time || new Date(a.date).getTime();
     let tb = b.time || new Date(b.date).getTime();
 
-    return sort === "new" ? tb - ta : ta - tb;
+    return tb - ta; // 👉 무조건 최신순
   });
 
   const box = document.getElementById("posts");
@@ -223,9 +220,11 @@ function edit(i){
   location.href="admin.html";
 }
 
+// 이벤트
 document.getElementById("search").oninput = () => render(true);
 document.getElementById("sort").onchange = () => render(true);
 
+// 🔥 처음 무조건 최신순
 render(true);
 </script>
 
