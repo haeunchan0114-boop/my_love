@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>나의 사랑하는 별에게</title>
+<title>게시판</title>
 
 <style>
 body{
@@ -26,12 +26,23 @@ body{
   margin:20px auto;
 }
 
+.controls{
+  text-align:center;
+  margin-bottom:15px;
+}
+
+input,select{
+  padding:8px;
+  border-radius:8px;
+  border:none;
+  margin:5px;
+}
+
 .post{
   background: rgba(255,255,255,0.12);
   padding:15px;
   margin:15px 0;
   border-radius:15px;
-  box-shadow: 0 0 15px rgba(0,200,255,0.2);
 }
 
 button{
@@ -41,19 +52,11 @@ button{
   border-radius:8px;
   background:#00bcd4;
   color:white;
-  cursor:pointer;
-}
-button:hover{
-  background:#009bb0;
 }
 
 #pagination button{
   margin:3px;
   padding:6px 10px;
-  border:none;
-  border-radius:6px;
-  background:#00bcd4;
-  color:white;
 }
 </style>
 </head>
@@ -69,7 +72,18 @@ if(sessionStorage.getItem("auth") !== "ok"){
 <div class="header">나의 사랑하는 별에게</div>
 
 <div class="card">
-  <button onclick="location.href='admin.html'">글 작성</button>
+
+  <div class="controls">
+    <input id="search" placeholder="제목 / 작성자 검색" oninput="loadPosts()">
+
+    <select id="sort" onchange="loadPosts()">
+      <option value="new">최신순</option>
+      <option value="old">오래된순</option>
+    </select>
+
+    <button onclick="location.href='admin.html'">글 작성</button>
+  </div>
+
   <div id="posts"></div>
 </div>
 
@@ -77,7 +91,7 @@ if(sessionStorage.getItem("auth") !== "ok"){
 let currentPage = 1;
 const postsPerPage = 5;
 
-function fixOldPosts(){
+function fixDate(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
   posts = posts.map(p=>{
@@ -92,10 +106,29 @@ function fixOldPosts(){
 }
 
 function loadPosts(){
-  fixOldPosts();
+  fixDate();
 
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-  let user = sessionStorage.getItem("user");
+  let user = sessionStorage.getItem("user") || "";
+
+  const keyword = document.getElementById("search").value;
+  const sort = document.getElementById("sort").value;
+
+  // 🔍 검색
+  if(keyword){
+    posts = posts.filter(p =>
+      p.title.includes(keyword) ||
+      p.writer.includes(keyword)
+    );
+  }
+
+  // 🔽 정렬
+  posts.sort((a,b)=>{
+    let da = new Date(a.date);
+    let db = new Date(b.date);
+
+    return sort === "new" ? db - da : da - db;
+  });
 
   const box = document.getElementById("posts");
   box.innerHTML = "";
@@ -105,7 +138,7 @@ function loadPosts(){
 
   let pagePosts = posts.slice(start, end);
 
-  pagePosts.forEach((p, i)=>{
+  pagePosts.forEach((p,i)=>{
     const realIndex = start + i;
     let isOwner = (p.writer === user);
 
@@ -114,11 +147,7 @@ function loadPosts(){
 
     div.innerHTML = `
       <h3>${p.title}</h3>
-
-      <small style="opacity:0.7;">
-        ${p.writer} · ${p.date}
-      </small>
-
+      <small>${p.writer} · ${p.date}</small>
       <p>${p.content}</p>
 
       ${isOwner ? `
@@ -142,7 +171,6 @@ function renderPagination(total){
   const div = document.createElement("div");
   div.id = "pagination";
   div.style.textAlign = "center";
-  div.style.margin = "20px";
 
   for(let i=1;i<=pageCount;i++){
     const btn = document.createElement("button");
