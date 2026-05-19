@@ -13,7 +13,7 @@ body{
   align-items:center;
   font-family:Arial;
   
-  /* 🔥 메인·로그인 화면과 완벽히 일치하는 무수한 별빛 밤하늘 배경 */
+  /* 메인·로그인 화면과 완벽히 일치하는 무수한 별빛 밤하늘 배경 */
   background: 
     radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
     radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
@@ -32,7 +32,7 @@ body{
   position: relative;
 }
 
-/* 🔥 떨어지는 별똥별 효과 (동일하게 추가) */
+/* 떨어지는 별똥별 효과 */
 .shooting-stars {
   position: fixed;
   top: 0;
@@ -74,7 +74,6 @@ body{
 
 .card{
   width:360px;
-  /* 영롱한 투명 유리 상자 스타일 */
   background: rgba(255, 255, 255, 0.07);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -92,7 +91,6 @@ body{
   font-size: 26px;
   font-weight: bold;
   margin-bottom: 10px;
-  /* 글자 발광 효과 추가 */
   text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
 
@@ -286,7 +284,13 @@ document.getElementById("saveBtn").addEventListener("click", async ()=>{
       );
     }
 
-    alert("저장 완료!");
+    /* 🔥 [이스터에그 작동부] 내용에 '사랑해'가 포함되었을 때 */
+    if(content.includes("사랑해")) {
+      alert("내가 더 사랑해 💖");
+    } else {
+      alert("저장 완료!");
+    }
+    
     location.href = "home.html";
 
   }catch(err){
