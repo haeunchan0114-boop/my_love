@@ -26,6 +26,13 @@ body{
   gap:10px;
 }
 
+.title{
+  text-align:center;
+  font-size:26px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
 input,textarea{
   width:100%;
   padding:10px;
@@ -57,17 +64,30 @@ button{
 
 <div class="card">
 
-  <input id="title" placeholder="제목">
+  <div class="title">
+    🌟 글 쓰는 공간 🌟
+  </div>
 
-  <textarea id="content" placeholder="내용"></textarea>
+  <input
+    id="title"
+    placeholder="제목"
+  >
 
-  <button id="saveBtn">저장</button>
+  <textarea
+    id="content"
+    placeholder="내용"
+  ></textarea>
+
+  <button id="saveBtn">
+    저장
+  </button>
 
 </div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 import {
   getFirestore,
@@ -76,7 +96,8 @@ import {
   doc,
   updateDoc,
   getDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+}
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCh_KpWKjSO4vl-jKjhrJCbLZNIZmek4Qw",
@@ -88,11 +109,13 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
 
 console.log("🔥 Firebase 연결 완료");
 
-let editId = localStorage.getItem("editId");
+let editId =
+  localStorage.getItem("editId");
 
 /* 🔥 수정 글 불러오기 */
 window.addEventListener("load", async ()=>{
@@ -101,8 +124,11 @@ window.addEventListener("load", async ()=>{
 
     try{
 
-      const ref = doc(db,"posts",editId);
-      const snap = await getDoc(ref);
+      const ref =
+        doc(db,"posts",editId);
+
+      const snap =
+        await getDoc(ref);
 
       if(snap.exists()){
 
@@ -117,23 +143,30 @@ window.addEventListener("load", async ()=>{
 
     }catch(e){
 
-      console.log("불러오기 실패:", e);
+      console.log(
+        "불러오기 실패:",
+        e
+      );
 
     }
   }
 });
 
-/* 🔥 저장 버튼 */
+/* 🔥 저장 */
 document.getElementById("saveBtn")
 .addEventListener("click", async ()=>{
 
   try{
 
     const title =
-      document.getElementById("title").value.trim();
+      document.getElementById("title")
+      .value
+      .trim();
 
     const content =
-      document.getElementById("content").value.trim();
+      document.getElementById("content")
+      .value
+      .trim();
 
     const user =
       sessionStorage.getItem("user");
@@ -151,37 +184,48 @@ document.getElementById("saveBtn")
     const now = new Date();
 
     const dateStr =
+
       `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+
       `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    /* 🔥 수정 모드 */
+    /* 🔥 수정 */
     if(editId){
 
-      const ref = doc(db,"posts",editId);
+      const ref =
+        doc(db,"posts",editId);
 
-      const snap = await getDoc(ref);
+      const snap =
+        await getDoc(ref);
 
+      // 문서 존재 시 수정
       if(snap.exists()){
 
         await updateDoc(ref,{
+
           title,
           content
-        });
-
-      } else {
-
-        /* 🔥 문서 없으면 새 글 저장 */
-
-        await addDoc(collection(db,"posts"),{
-
-          writer:user,
-          title,
-          content,
-          date:dateStr,
-          time:Date.now(),
-          pinned:false
 
         });
+
+      }
+
+      // 문서 없으면 새 글 저장
+      else {
+
+        await addDoc(
+          collection(db,"posts"),
+          {
+
+            writer:user,
+            title,
+            content,
+            date:dateStr,
+            time:Date.now(),
+            pinned:false
+
+          }
+        );
       }
 
       localStorage.removeItem("editId");
@@ -191,25 +235,32 @@ document.getElementById("saveBtn")
     /* 🔥 새 글 */
     else {
 
-      await addDoc(collection(db,"posts"),{
+      await addDoc(
+        collection(db,"posts"),
+        {
 
-        writer:user,
-        title,
-        content,
-        date:dateStr,
-        time:Date.now(),
-        pinned:false
+          writer:user,
+          title,
+          content,
+          date:dateStr,
+          time:Date.now(),
+          pinned:false
 
-      });
+        }
+      );
     }
 
     alert("저장 완료!");
 
-    location.href = "home.html";
+    location.href =
+      "home.html";
 
   }catch(err){
 
-    console.error("🔥 저장 실패:", err);
+    console.error(
+      "🔥 저장 실패:",
+      err
+    );
 
     alert("저장 실패");
   }
