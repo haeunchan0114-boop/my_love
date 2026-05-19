@@ -12,7 +12,7 @@ body{
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
 }
@@ -38,8 +38,7 @@ input, textarea{
   padding:10px;
   border:none;
   border-radius:10px;
-  box-sizing:border-box;
-  font-family:Arial;
+  font-family:inherit;
 }
 
 textarea{
@@ -48,7 +47,6 @@ textarea{
 }
 
 button{
-  width:100%;
   padding:10px;
   border:none;
   border-radius:10px;
@@ -61,7 +59,6 @@ button{
 
 <body>
 
-<!-- ✅ 이모지 제거 -->
 <div class="title">글 쓰기</div>
 
 <div class="card">
@@ -95,6 +92,7 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
+/* 수정 로드 */
 window.addEventListener("load", async () => {
   if(editId){
     const snap = await getDoc(doc(db,"글",editId));
@@ -106,16 +104,15 @@ window.addEventListener("load", async () => {
   }
 });
 
-document.getElementById("saveBtn").addEventListener("click", savePost);
-
-async function savePost(){
+/* 저장 */
+document.getElementById("saveBtn").addEventListener("click", async () => {
 
   const title = document.getElementById("title").value.trim();
   const content = document.getElementById("content").value.trim();
   const user = sessionStorage.getItem("user");
 
   if(!title || !content){
-    alert("제목과 내용을 입력해주세요");
+    alert("제목/내용 입력");
     return;
   }
 
@@ -147,7 +144,8 @@ async function savePost(){
   }
 
   location.href="home.html";
-}
+});
+
 </script>
 
 </body>
