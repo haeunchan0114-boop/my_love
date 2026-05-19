@@ -11,8 +11,6 @@ body{
   margin:0;
   min-height:100vh;
   font-family:Arial;
-
-  /* 🔥 배경 확실하게 고정 */
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
 }
@@ -22,15 +20,22 @@ body{
   padding:20px;
 }
 
-.card{
+.section{
   width:80%;
-  margin:20px auto;
+  margin:0 auto 20px auto;
+}
+
+.section-title{
+  font-size:18px;
+  font-weight:bold;
+  margin:10px 0;
+  opacity:0.9;
 }
 
 .post{
   background: rgba(255,255,255,0.12);
   padding:15px;
-  margin:15px 0;
+  margin:10px 0;
   border-radius:15px;
 }
 
@@ -58,8 +63,16 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <h1>🌟 나의 사랑하는 별에게 🌟</h1>
 </div>
 
-<div class="card">
-  <div id="posts"></div>
+<!-- 📌 고정글 -->
+<div class="section">
+  <div class="section-title">📌 고정 글</div>
+  <div id="pinned"></div>
+</div>
+
+<!-- 🆕 일반글 -->
+<div class="section">
+  <div class="section-title">🆕 최신 글</div>
+  <div id="normal"></div>
 </div>
 
 <script type="module">
@@ -87,8 +100,7 @@ const db = getFirestore(app);
 
 let posts = [];
 
-onSnapshot(collection(db,"posts"), (snap)=>{
-
+onSnapshot(collection(db,"posts"), snap=>{
   posts = [];
 
   snap.forEach(d=>{
@@ -104,30 +116,52 @@ onSnapshot(collection(db,"posts"), (snap)=>{
 function render(){
 
   const user = sessionStorage.getItem("user");
-  const box = document.getElementById("posts");
-  box.innerHTML = "";
 
-  posts.forEach(p=>{
+  const pinnedBox = document.getElementById("pinned");
+  const normalBox = document.getElementById("normal");
 
-    const div = document.createElement("div");
-    div.className = "post";
+  pinnedBox.innerHTML = "";
+  normalBox.innerHTML = "";
 
-    div.innerHTML = `
-      <h3>${p.title}</h3>
-      <small>${p.writer} · ${p.date}</small>
-      <p>${p.content}</p>
+  // 📌 고정 / 일반 분리
+  const pinnedPosts = posts.filter(p => p.pinned);
+  const normalPosts = posts.filter(p => !p.pinned);
 
-      ${p.writer === user ? `
-        <button onclick="editPost('${p.id}')">수정</button>
-        <button onclick="deletePost('${p.id}','${p.writer}')">삭제</button>
-        <button onclick="togglePin('${p.id}',${p.pinned})">
-          ${p.pinned ? "고정 해제" : "고정"}
-        </button>
-      ` : ""}
-    `;
+  // 🆕 최신순 정렬 (일반글만)
+  normalPosts.sort((a,b)=> b.time - a.time);
 
-    box.appendChild(div);
+  // 📌 고정글 표시
+  pinnedPosts.forEach(p=>{
+    pinnedBox.appendChild(createPost(p, user));
   });
+
+  // 🆕 일반글 표시
+  normalPosts.forEach(p=>{
+    normalBox.appendChild(createPost(p, user));
+  });
+}
+
+/* 🔥 글 카드 생성 함수 */
+function createPost(p, user){
+
+  const div = document.createElement("div");
+  div.className = "post";
+
+  div.innerHTML = `
+    <h3>📌 ${p.pinned ? p.title : p.title}</h3>
+    <small>${p.writer} · ${p.date}</small>
+    <p>${p.content}</p>
+
+    ${p.writer === user ? `
+      <button onclick="editPost('${p.id}')">수정</button>
+      <button onclick="deletePost('${p.id}','${p.writer}')">삭제</button>
+      <button onclick="togglePin('${p.id}',${p.pinned})">
+        ${p.pinned ? "고정 해제" : "고정"}
+      </button>
+    ` : ""}
+  `;
+
+  return div;
 }
 
 /* 삭제 */
