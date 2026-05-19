@@ -80,13 +80,12 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <div class="controls">
     <input id="search" placeholder="제목 / 작성자 검색">
 
-    <!-- 🔥 기본값 최신순 -->
     <select id="sort">
       <option value="new" selected>최신순</option>
       <option value="old">오래된순</option>
     </select>
 
-    <button onclick="location.href='admin.html'">글 쓰기!</button>
+    <button onclick="location.href='admin.html'">글 작성</button>
   </div>
 
   <div id="posts"></div>
@@ -103,22 +102,18 @@ function getPosts(){
 function render(reset = true){
 
   let posts = getPosts();
-  let user = sessionStorage.getItem("user") || "";
+  let user = sessionStorage.getItem("user");
 
   const keyword = document.getElementById("search").value;
-
-  let sortEl = document.getElementById("sort");
-
-  // 🔥 핵심: 무조건 기본값 new
-  let sort = sortEl ? sortEl.value : "new";
+  let sort = document.getElementById("sort").value || "new";
 
   if(reset){
     currentPage = 1;
     sort = "new";
-    if(sortEl) sortEl.value = "new";
+    document.getElementById("sort").value = "new";
   }
 
-  // 🔍 검색
+  // 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -126,23 +121,19 @@ function render(reset = true){
     );
   }
 
-  // 🔥 정렬 (완전 안정)
+  // 정렬
   posts.sort((a,b)=>{
     let ta = a.time || new Date(a.date).getTime();
     let tb = b.time || new Date(b.date).getTime();
 
-    return sort === "new"
-      ? tb - ta
-      : ta - tb;
+    return sort === "new" ? tb - ta : ta - tb;
   });
 
   const box = document.getElementById("posts");
   box.innerHTML = "";
 
   let start = (currentPage - 1) * perPage;
-  let end = start + perPage;
-
-  let pagePosts = posts.slice(start, end);
+  let pagePosts = posts.slice(start, start + perPage);
 
   pagePosts.forEach((p)=>{
 
@@ -174,7 +165,7 @@ function render(reset = true){
   renderPage(posts.length);
 }
 
-// 🔥 페이지
+// 페이지
 function renderPage(total){
   let pageCount = Math.ceil(total / perPage);
 
@@ -200,7 +191,7 @@ function renderPage(total){
   document.body.appendChild(div);
 }
 
-// 🔥 삭제
+// 삭제
 function del(i){
   let posts = getPosts();
   let user = sessionStorage.getItem("user");
@@ -215,7 +206,7 @@ function del(i){
   render(false);
 }
 
-// 🔥 수정
+// 수정
 function edit(i){
   let posts = getPosts();
   let user = sessionStorage.getItem("user");
@@ -232,11 +223,9 @@ function edit(i){
   location.href="admin.html";
 }
 
-// 🔥 이벤트
 document.getElementById("search").oninput = () => render(true);
 document.getElementById("sort").onchange = () => render(true);
 
-// 🔥 첫 시작 무조건 최신순
 render(true);
 </script>
 
