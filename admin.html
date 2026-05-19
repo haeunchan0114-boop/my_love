@@ -5,6 +5,11 @@
 <title>글 쓰기</title>
 
 <style>
+/* 🔥 핵심: 전체 박스 계산 통일 */
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   height:100vh;
@@ -16,7 +21,7 @@ body{
   color:white;
 }
 
-/* 🔥 카드 */
+/* 카드 */
 .card{
   width:380px;
   background: rgba(255,255,255,0.12);
@@ -28,12 +33,12 @@ body{
   gap:12px;
 }
 
-/* 🔥 공통 크기 통일 */
+/* 🔥 완전 동일 정렬 */
 input, textarea, button{
   width:100%;
-  box-sizing:border-box;
-  border-radius:10px;
   border:none;
+  border-radius:10px;
+  font-family:inherit;
   font-size:14px;
 }
 
@@ -100,7 +105,7 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 수정 데이터 로딩 */
+/* 🔥 수정 데이터 로딩 */
 window.addEventListener("load", async () => {
 
   if(editId){
@@ -117,7 +122,7 @@ window.addEventListener("load", async () => {
   document.getElementById("saveBtn").addEventListener("click", savePost);
 });
 
-/* 저장 */
+/* 🔥 저장 */
 async function savePost(){
 
   const title = document.getElementById("title").value;
@@ -125,7 +130,7 @@ async function savePost(){
   const user = sessionStorage.getItem("user");
 
   if(!title || !content){
-    alert("내용 입력해");
+    alert("제목/내용 입력");
     return;
   }
 
@@ -136,9 +141,16 @@ async function savePost(){
     `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
   if(editId){
-    await updateDoc(doc(db,"posts",editId),{ title, content });
+
+    await updateDoc(doc(db,"posts",editId),{
+      title,
+      content
+    });
+
     localStorage.removeItem("editId");
+
   } else {
+
     await addDoc(collection(db,"posts"),{
       writer:user,
       title,
