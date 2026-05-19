@@ -10,7 +10,6 @@ body{
   font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
-
   min-height:100vh;
   background-attachment: fixed;
 }
@@ -59,6 +58,7 @@ if(sessionStorage.getItem("auth") !== "ok"){
 <div class="card">
   <h2>글 작성</h2>
 
+  <input id="writer" placeholder="이름">
   <input id="title" placeholder="제목">
   <textarea id="content" rows="8" placeholder="내용"></textarea>
 
@@ -76,13 +76,14 @@ if(editIndex !== null){
 function save(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  let today = new Date();
-  let dateStr = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+  let d = new Date();
+  let dateStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
   if(editIndex !== null){
     posts[editIndex] = {
       title: title.value,
       content: content.value,
+      writer: writer.value || "익명",
       date: dateStr
     };
     localStorage.removeItem("editIndex");
@@ -90,6 +91,7 @@ function save(){
     posts.push({
       title: title.value,
       content: content.value,
+      writer: writer.value || "익명",
       date: dateStr
     });
   }
