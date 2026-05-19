@@ -50,13 +50,6 @@ button{
 if(sessionStorage.getItem("auth") !== "ok"){
   location.href="index.html";
 }
-
-// 🔥 폰 안정화
-let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-if(!Array.isArray(posts)){
-  posts = [];
-  localStorage.setItem("posts", JSON.stringify(posts));
-}
 </script>
 
 <div class="card">
@@ -69,6 +62,18 @@ if(!Array.isArray(posts)){
 </div>
 
 <script>
+// 🔥 안전 로딩
+let posts = [];
+try{
+  posts = JSON.parse(localStorage.getItem("posts")) || [];
+}catch(e){
+  posts = [];
+}
+
+if(!Array.isArray(posts)){
+  posts = [];
+}
+
 let editIndex = localStorage.getItem("editIndex");
 
 if(editIndex !== null){
@@ -78,9 +83,16 @@ if(editIndex !== null){
 
 function save(){
 
-  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-  let user = sessionStorage.getItem("user");
+  let posts = [];
+  try{
+    posts = JSON.parse(localStorage.getItem("posts")) || [];
+  }catch(e){
+    posts = [];
+  }
 
+  if(!Array.isArray(posts)) posts = [];
+
+  let user = sessionStorage.getItem("user");
   let now = new Date();
 
   let dateStr =
