@@ -139,6 +139,47 @@ button:hover{
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6);
 }
+
+/* 💖 브라우저 차단 안 먹히는 커스텀 이스터에그 모달 스타일 */
+.custom-modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: rgba(13, 35, 67, 0.95);
+  border: 2px solid #00bcd4;
+  padding: 30px;
+  border-radius: 16px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 0 25px rgba(0, 188, 212, 0.5);
+  animation: popIn 0.3s ease-out;
+}
+.modal-text {
+  font-size: 17px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  white-space: pre-wrap;
+}
+.modal-btn {
+  background: #00bcd4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 </style>
 </head>
 
@@ -151,29 +192,20 @@ button:hover{
 </div>
 
 <div class="card">
+  <div class="title">🌟 글 쓰는 공간 🌟</div>
+  <input id="title" placeholder="제목">
+  <textarea id="content" placeholder="내용"></textarea>
+  <button id="saveBtn">저장하기!</button>
+</div>
 
-  <div class="title">
-    🌟 글 쓰는 공간 🌟
+<div id="easterModal" class="custom-modal">
+  <div class="modal-content">
+    <div id="modalText" class="modal-text"></div>
+    <button id="modalCloseBtn" class="modal-btn">확인</button>
   </div>
-
-  <input
-    id="title"
-    placeholder="제목"
-  >
-
-  <textarea
-    id="content"
-    placeholder="내용"
-  ></textarea>
-
-  <button id="saveBtn">
-    저장하기!
-  </button>
-
 </div>
 
 <script type="module">
-
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
@@ -199,8 +231,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-console.log("🔥 Firebase 연결 완료");
-
 let editId = localStorage.getItem("editId");
 
 /* 🔥 수정 글 불러오기 */
@@ -223,10 +253,11 @@ window.addEventListener("load", async ()=>{
 
 /* 🔥 저장 */
 document.getElementById("saveBtn").addEventListener("click", async ()=>{
-  try{
+  try {
     const title = document.getElementById("title").value.trim();
     const content = document.getElementById("content").value.trim();
-    const user = sessionStorage.getItem("user");
+    const rawUser = sessionStorage.getItem("user");
+    const user = rawUser ? rawUser.trim() : "";
 
     if(!user){
       alert("로그인 필요");
@@ -242,80 +273,69 @@ document.getElementById("saveBtn").addEventListener("click", async ()=>{
     const dateStr = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
                     `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    /* 🔥 수정 */
+    /* 🔥 DB 저장 로직 */
     if(editId){
       const ref = doc(db,"posts",editId);
       const snap = await getDoc(ref);
-
       if(snap.exists()){
-        await updateDoc(ref,{
-          title,
-          content
-        });
+        await updateDoc(ref,{ title, content });
       } else {
-        await addDoc(
-          collection(db,"posts"),
-          {
-            writer:user,
-            title,
-            content,
-            date:dateStr,
-            time:Date.now(),
-            pinned:false
-          }
-        );
+        await addDoc(collection(db,"posts"), { writer:user, title, content, date:dateStr, time:Date.now(), pinned:false });
       }
       localStorage.removeItem("editId");
-    }
-    /* 🔥 새 글 */
-    else {
-      await addDoc(
-        collection(db,"posts"),
-        {
-          writer:user,
-          title,
-          content,
-          date:dateStr,
-          time:Date.now(),
-          pinned:false
-        }
-      );
+    } else {
+      await addDoc(collection(db,"posts"), { writer:user, title, content, date:dateStr, time:Date.now(), pinned:false });
     }
 
-    /* 🔥 [이스터에그 멀티 팝업 처리부] */
-    let hasEasterEgg = false;
+    /* 🔥 [커스텀 멀티 팝업 큐 시스템] */
+    let queue = [];
 
-    // 1. 글쓴이가 '아시'일 때 반응하는 이스터에그
-    if(user === "아시") {
-      alert("오늘도 예쁜 글 남겨줘서 고마워! 사랑해~");
-      hasEasterEgg = true;
+    // 1. 글쓴이가 '아시'인 경우
+    if(user === "아시" || user.toLowerCase() === "asi") {
+      queue.push("오늘도 예쁜 글 남겨줘서 고마워! 사랑해~");
     }
-
-    // 2. '귀여운 하은' 조건 검사
+    // 2. 귀여운 하은 키워드 포함
     if(title.includes("귀여운 하은") || content.includes("귀여운 하은")) {
-      alert("아니야 부정할게~! 난 안귀여워");
-      hasEasterEgg = true;
+      queue.push("아니야 부정할게~! 난 안귀여워");
     }
-    
-    // 3. '사랑해' 조건 검사
+    // 3. 사랑해 키워드 포함
     if(content.includes("사랑해")) {
-      alert("내가 더 사랑해 💖");
-      hasEasterEgg = true;
+      queue.push("내가 더 사랑해 💖");
+    }
+    // 이스터에그가 하나도 없으면 기본 알림 추가
+    if(queue.length === 0) {
+      queue.push("저장 완료!");
     }
 
-    // 4. 어떤 이스터에그도 발동하지 않았을 때만 기본 알림 출력
-    if(!hasEasterEgg) {
-      alert("저장 완료!");
+    // 팝업을 순서대로 보여주는 내부 함수
+    const modal = document.getElementById("easterModal");
+    const modalText = document.getElementById("modalText");
+    const modalBtn = document.getElementById("modalCloseBtn");
+    let currentIdx = 0;
+
+    function showNextPopup() {
+      if(currentIdx < queue.length) {
+        modalText.innerText = queue[currentIdx];
+        modal.style.display = "flex";
+      } else {
+        modal.style.display = "none";
+        location.href = "home.html"; // 모든 팝업이 끝나면 이동
+      }
     }
-    
-    location.href = "home.html";
+
+    modalBtn.onclick = function() {
+      currentIdx++;
+      showNextPopup();
+    };
+
+    // 첫 번째 팝업 시작
+    showNextPopup();
 
   }catch(err){
     console.error("🔥 저장 실패:", err);
     alert("저장 실패");
   }
 });
-
 </script>
 
 </body>
