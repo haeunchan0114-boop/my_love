@@ -17,23 +17,23 @@ body{
   color:white;
 }
 
-/* 🔥 로그인 카드랑 완전 동일 */
-.card{
-  background: rgba(255,255,255,0.12);
-  padding:30px;
-  border-radius:15px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-
-  width:240px;   /* 🔥 로그인과 동일 */
-  box-sizing:border-box;
-}
-
 .title{
   font-size:28px;
   font-weight:bold;
   margin-bottom:20px;
+}
+
+/* 🔥 로그인보다 살짝 크게 */
+.card{
+  background: rgba(255,255,255,0.12);
+  padding:35px;
+  border-radius:15px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  width:300px;   /* 🔥 조금 크게 */
+  box-sizing:border-box;
 }
 
 input, textarea{
@@ -45,20 +45,21 @@ input, textarea{
   font-family:inherit;
 }
 
-/* 🔥 글쓰기만 살짝 높게 */
 textarea{
-  height:160px;
+  height:180px;
   resize:none;
 }
 
+/* 🔥 버튼 확실하게 클릭되게 */
 button{
   width:100%;
-  padding:10px;
+  padding:12px;
   border:none;
   border-radius:10px;
   background:#00bcd4;
   color:white;
   cursor:pointer;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -74,6 +75,7 @@ button{
 </div>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore,
@@ -98,58 +100,75 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 수정 불러오기 */
+/* 🔥 수정 데이터 불러오기 */
 window.addEventListener("load", async () => {
-  if(editId){
-    const snap = await getDoc(doc(db,"글",editId));
-    if(snap.exists()){
-      const d = snap.data();
-      document.getElementById("title").value = d.title;
-      document.getElementById("content").value = d.content;
+  try{
+    if(editId){
+      const snap = await getDoc(doc(db,"글",editId));
+      if(snap.exists()){
+        const d = snap.data();
+        document.getElementById("title").value = d.title || "";
+        document.getElementById("content").value = d.content || "";
+      }
     }
+  } catch(e){
+    console.log(e);
   }
 });
 
-/* 저장 */
+/* 🔥 저장 버튼 (무조건 안전하게 동작) */
 document.getElementById("saveBtn").addEventListener("click", async () => {
 
-  const title = document.getElementById("title").value.trim();
-  const content = document.getElementById("content").value.trim();
-  const user = sessionStorage.getItem("user");
+  try{
 
-  if(!title || !content){
-    alert("제목/내용 입력");
-    return;
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+    const user = sessionStorage.getItem("user");
+
+    if(!title || !content){
+      alert("제목과 내용을 입력해주세요");
+      return;
+    }
+
+    if(!user){
+      alert("로그인 정보 없음");
+      return;
+    }
+
+    const now = new Date();
+
+    const dateStr =
+      `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+      `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    if(editId){
+
+      await updateDoc(doc(db,"글",editId),{
+        title,
+        content
+      });
+
+      localStorage.removeItem("editId");
+
+    } else {
+
+      await addDoc(collection(db,"글"),{
+        writer:user,
+        title,
+        content,
+        date:dateStr,
+        time:Date.now(),
+        pinned:false
+      });
+    }
+
+    location.href="home.html";
+
+  } catch(err){
+    console.error("저장 오류:", err);
+    alert("저장 실패 (콘솔 확인)");
   }
 
-  const now = new Date();
-
-  const dateStr =
-    `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
-    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-  if(editId){
-
-    await updateDoc(doc(db,"글",editId),{
-      title,
-      content
-    });
-
-    localStorage.removeItem("editId");
-
-  } else {
-
-    await addDoc(collection(db,"글"),{
-      writer:user,
-      title,
-      content,
-      date:dateStr,
-      time:Date.now(),
-      pinned:false
-    });
-  }
-
-  location.href="home.html";
 });
 
 </script>
