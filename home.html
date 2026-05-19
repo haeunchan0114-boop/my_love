@@ -65,6 +65,7 @@ button{
 
 .post p{
   white-space:pre-wrap;
+  margin-top:10px;
 }
 </style>
 </head>
@@ -116,14 +117,7 @@ button{
 
   </div>
 
-  <div
-    id="posts"
-    style="
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    "
-  ></div>
+  <div id="posts"></div>
 
 </div>
 
@@ -172,19 +166,34 @@ const db =
 
 let posts = [];
 
-/* 🔥 실시간 글 불러오기 */
+/* 🔥 실시간 데이터 */
 onSnapshot(
   collection(db,"posts"),
-  snap=>{
+  (snap)=>{
 
     posts = [];
 
-    snap.forEach(d=>{
+    snap.forEach((d)=>{
+
+      const data = d.data();
+
+      // 🔥 내용 없는 이상 데이터 제거
+      if(
+        !data.title &&
+        !data.content
+      ){
+        return;
+      }
 
       posts.push({
 
         id:d.id,
-        ...d.data()
+        writer:data.writer || "",
+        title:data.title || "",
+        content:data.content || "",
+        date:data.date || "",
+        time:Number(data.time) || 0,
+        pinned:data.pinned || false
 
       });
 
@@ -195,13 +204,13 @@ onSnapshot(
   }
 );
 
-/* 🔥 화면 출력 */
+/* 🔥 렌더 */
 function render(){
 
   const box =
     document.getElementById("posts");
 
-  // 완전 초기화
+  // 무조건 초기화
   box.innerHTML = "";
 
   let list = [...posts];
@@ -210,13 +219,15 @@ function render(){
     document
     .getElementById("searchTitle")
     .value
-    .trim();
+    .trim()
+    .toLowerCase();
 
   const writerKeyword =
     document
     .getElementById("searchWriter")
     .value
-    .trim();
+    .trim()
+    .toLowerCase();
 
   const sort =
     document
@@ -231,8 +242,9 @@ function render(){
 
     list = list.filter(p=>
 
-      p.title &&
-      p.title.includes(titleKeyword)
+      p.title
+      .toLowerCase()
+      .includes(titleKeyword)
 
     );
   }
@@ -242,13 +254,14 @@ function render(){
 
     list = list.filter(p=>
 
-      p.writer &&
-      p.writer.includes(writerKeyword)
+      p.writer
+      .toLowerCase()
+      .includes(writerKeyword)
 
     );
   }
 
-  // 정렬
+  // 🔥 최신순 / 오래된순
   list.sort((a,b)=>{
 
     // 고정글 우선
@@ -258,86 +271,95 @@ function render(){
     if(!a.pinned && b.pinned)
       return 1;
 
-    // 최신/오래된순
-    return sort==="new"
-      ? b.time - a.time
-      : a.time - b.time;
+    // 최신순
+    if(sort === "new"){
+      return b.time - a.time;
+    }
+
+    // 오래된순
+    return a.time - b.time;
 
   });
 
-  // 글 없으면 종료
+  // 🔥 게시글 없으면 완전 종료
   if(list.length === 0){
     return;
   }
 
-  // 게시글 출력
-  list.forEach(p=>{
+  /* 🔥 출력 */
+  list.forEach((p)=>{
 
     const div =
       document.createElement("div");
 
     div.className = "post";
 
-    div.innerHTML = `
+    let html = "";
 
+    html += `
       <h3>
         ${p.pinned ? "📌 " : ""}
-        ${p.title || ""}
+        ${p.title}
       </h3>
-
-      <small>
-        ${p.writer || ""}
-        ·
-        ${p.date || ""}
-      </small>
-
-      ${
-        p.content
-        ? `<p>${p.content}</p>`
-        : ""
-      }
-
-      ${
-        p.writer === user
-        ? `
-
-          <button
-            onclick="edit('${p.id}')"
-          >
-            수정
-          </button>
-
-          <button
-            onclick="
-              del(
-                '${p.id}',
-                '${p.writer}'
-              )
-            "
-          >
-            삭제
-          </button>
-
-          <button
-            onclick="
-              pin(
-                '${p.id}',
-                ${p.pinned}
-              )
-            "
-          >
-            ${
-              p.pinned
-              ? "고정해제"
-              : "고정"
-            }
-          </button>
-
-        `
-        : ""
-      }
-
     `;
+
+    html += `
+      <small>
+        ${p.writer}
+        ·
+        ${p.date}
+      </small>
+    `;
+
+    // 🔥 내용 있을 때만 추가
+    if(p.content){
+
+      html += `
+        <p>${p.content}</p>
+      `;
+    }
+
+    // 🔥 본인만 버튼
+    if(p.writer === user){
+
+      html += `
+
+        <button
+          onclick="edit('${p.id}')"
+        >
+          수정
+        </button>
+
+        <button
+          onclick="
+            del(
+              '${p.id}',
+              '${p.writer}'
+            )
+          "
+        >
+          삭제
+        </button>
+
+        <button
+          onclick="
+            pin(
+              '${p.id}',
+              ${p.pinned}
+            )
+          "
+        >
+          ${
+            p.pinned
+            ? "고정해제"
+            : "고정"
+          }
+        </button>
+
+      `;
+    }
+
+    div.innerHTML = html;
 
     box.appendChild(div);
 
@@ -386,18 +408,27 @@ window.edit = (id)=>{
     "admin.html";
 };
 
-/* 🔥 검색/정렬 실시간 */
+/* 🔥 검색 & 정렬 */
 document
 .getElementById("searchTitle")
-.oninput = render;
+.addEventListener(
+  "input",
+  render
+);
 
 document
 .getElementById("searchWriter")
-.oninput = render;
+.addEventListener(
+  "input",
+  render
+);
 
 document
 .getElementById("sort")
-.onchange = render;
+.addEventListener(
+  "change",
+  render
+);
 
 </script>
 
