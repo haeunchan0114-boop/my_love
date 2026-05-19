@@ -10,8 +10,6 @@ body{
   font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
-  min-height:100vh;
-  background-attachment: fixed;
 }
 
 .card{
@@ -67,26 +65,18 @@ if(editIndex !== null){
 function save(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
+  let writer = document.getElementById("writer").value;
+  let title = document.getElementById("title").value;
+  let content = document.getElementById("content").value;
+
   let d = new Date();
   let dateStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
-  let writer = document.getElementById("writer").value;
-
   if(editIndex !== null){
-    posts[editIndex] = {
-      writer: writer || "익명",
-      title: title.value,
-      content: content.value,
-      date: dateStr
-    };
+    posts[editIndex] = { writer, title, content, date: dateStr };
     localStorage.removeItem("editIndex");
   } else {
-    posts.push({
-      writer: writer || "익명",
-      title: title.value,
-      content: content.value,
-      date: dateStr
-    });
+    posts.push({ writer, title, content, date: dateStr });
   }
 
   localStorage.setItem("posts", JSON.stringify(posts));
