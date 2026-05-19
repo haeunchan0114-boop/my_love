@@ -78,9 +78,9 @@ if(sessionStorage.getItem("auth") !== "ok"){
 <div class="card">
 
   <div class="controls">
-    <input id="search" placeholder="제목 / 작성자 검색" oninput="render()">
-
-    <select id="sort" onchange="render()">
+    <input id="search" placeholder="제목 / 작성자 검색">
+    
+    <select id="sort">
       <option value="new">최신순</option>
       <option value="old">오래된순</option>
     </select>
@@ -93,18 +93,14 @@ if(sessionStorage.getItem("auth") !== "ok"){
 
 <script>
 let currentPage = 1;
-const perPage = 3; // 🔥 5개 → 3개로 변경
+const perPage = 3;
 
 function getPosts(){
   return JSON.parse(localStorage.getItem("posts") || "[]");
 }
 
-// 🔥 고유 ID 생성 (버그 해결 핵심)
-function savePosts(posts){
-  localStorage.setItem("posts", JSON.stringify(posts));
-}
-
-function render(){
+// 🔥 핵심 render
+function render(reset = true){
 
   let posts = getPosts();
   let user = sessionStorage.getItem("user") || "";
@@ -112,7 +108,9 @@ function render(){
   const keyword = document.getElementById("search").value;
   const sort = document.getElementById("sort").value;
 
-  currentPage = 1;
+  if(reset){
+    currentPage = 1;
+  }
 
   // 🔍 검색
   if(keyword){
@@ -122,14 +120,11 @@ function render(){
     );
   }
 
-  // 🔥 정렬 (완전 정상)
+  // 🔥 정렬
   posts.sort((a,b)=>{
-    let da = new Date(a.date);
-    let db = new Date(b.date);
-
     return sort === "new"
-      ? db - da
-      : da - db;
+      ? new Date(b.date) - new Date(a.date)
+      : new Date(a.date) - new Date(b.date);
   });
 
   const box = document.getElementById("posts");
@@ -144,7 +139,6 @@ function render(){
 
     let isOwner = (p.writer === user);
 
-    // 🔥 안전 index (title+date 기반)
     let realIndex = getPosts().findIndex(x =>
       x.title === p.title &&
       x.date === p.date &&
@@ -171,6 +165,7 @@ function render(){
   renderPage(posts.length);
 }
 
+// 🔥 페이지 버튼
 function renderPage(total){
   let pageCount = Math.ceil(total / perPage);
 
@@ -187,7 +182,7 @@ function renderPage(total){
 
     btn.onclick = ()=>{
       currentPage = i;
-      render();
+      render(false); // 🔥 페이지 이동 유지 핵심
     };
 
     div.appendChild(btn);
@@ -207,8 +202,8 @@ function del(i){
   }
 
   posts.splice(i,1);
-  savePosts(posts);
-  render();
+  localStorage.setItem("posts", JSON.stringify(posts));
+  render(false);
 }
 
 // 🔥 수정
@@ -227,6 +222,10 @@ function edit(i){
 
   location.href="admin.html";
 }
+
+// 🔥 이벤트 (중요)
+document.getElementById("search").oninput = () => render(true);
+document.getElementById("sort").onchange = () => render(true);
 
 render();
 </script>
