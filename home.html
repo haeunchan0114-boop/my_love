@@ -9,89 +9,145 @@ body{
   margin:0;
   min-height:100vh;
   font-family:Arial;
-  /* 🔥 별이 빛나는 밤바다 컨셉 배경으로 수정 */
+  
+  /* 🔥 별이 쏟아지는 깊은 밤바다 컨셉 */
   background: 
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 1px, transparent 1px) 0 0 / 120px 120px,
-    radial-gradient(circle at 75% 60%, rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px) 0 0 / 180px 180px,
-    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.08) 2px, transparent 2px) 0 0 / 250px 250px,
-    linear-gradient(to bottom, #030b1e 0%, #071731 40%, #0d324d 75%, #1c5270 100%);
+    /* 은하수처럼 작은 별들 */
+    radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
+    radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
+    radial-gradient(circle at 70% 25%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 90px 90px,
+    radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 110px 110px,
+    
+    /* 중간 크기 별들 */
+    radial-gradient(circle at 25% 65%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1.5px) 0 0 / 150px 150px,
+    radial-gradient(circle at 55% 80%, rgba(255, 255, 255, 0.25) 1.5px, transparent 1.5px) 0 0 / 130px 130px,
+    radial-gradient(circle at 85% 45%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1.5px) 0 0 / 160px 160px,
+    
+    /* 유독 빛나는 큰 별들 */
+    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.4) 2px, transparent 2px) 0 0 / 220px 220px,
+    radial-gradient(circle at 15% 45%, rgba(255, 255, 255, 0.35) 2px, transparent 2px) 0 0 / 260px 260px,
+    radial-gradient(circle at 75% 60%, rgba(255, 255, 255, 0.4) 2.5px, transparent 2.5px) 0 0 / 300px 300px,
+    
+    /* 깊은 심해에서 해변으로 이어지는 밤바다 그라데이션 */
+    linear-gradient(to bottom, #020813 0%, #051429 35%, #0b2b4e 65%, #144775 85%, #1c6294 100%);
+    
   color:white;
+  background-attachment: fixed; /* 스크롤해도 배경은 고정되어 별바다가 유지됨 */
 }
 
 .header{
   text-align:center;
-  padding:20px;
+  padding:30px 20px;
 }
 
 .header h1{
   margin:0;
-  font-size:34px;
-  /* 글자에도 은은한 별빛 조명 효과 */
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  font-size:36px;
+  font-weight: bold;
+  /* 글자가 바다 위에 뜬 별처럼 빛나는 효과 */
+  text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
 
 .sub{
-  margin-top:8px;
-  font-size:15px;
-  opacity:0.8;
+  margin-top:10px;
+  font-size:16px;
+  opacity:0.85;
+  letter-spacing: 2px;
 }
 
 .card{
-  width:80%;
+  width:85%;
+  max-width: 800px; /* 너무 퍼지지 않게 밸런스 조절 */
   margin:20px auto;
 }
 
 .controls{
   text-align:center;
-  margin-bottom:20px;
+  margin-bottom:25px;
 }
 
-input,select{
-  padding:8px;
+input, select{
+  padding:10px 12px;
   margin:5px;
-  border:none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius:8px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   color: white;
+  outline: none;
+  transition: all 0.3s;
 }
 
-/* 입력창 내부 placeholder 색상 조절 */
+input:focus, select:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #00bcd4;
+}
+
 input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 select option {
-  background: #071731;
+  background: #051429;
   color: white;
 }
 
 button{
-  padding:7px 12px;
+  padding:9px 15px;
   margin:5px;
   border:none;
   border-radius:8px;
-  background:#00bcd4;
+  background: linear-gradient(135deg, #00bcd4, #0097a7);
   color:white;
+  font-weight: bold;
   cursor:pointer;
-  transition: background 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4);
+  transition: all 0.3s;
 }
 
 button:hover{
-  background: #0097a7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6);
 }
 
 .post{
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(4px); /* 뒷 배경이 살짝 흐려지는 고급스러운 효과 */
-  padding:15px;
-  border-radius:15px;
-  margin-bottom:15px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* 바다 위에 투명한 유리판이 떠 있는 듯한 글래모피즘 효과 */
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.post h3 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+}
+
+.post small {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .post p{
   white-space:pre-wrap;
-  margin-top:10px;
+  margin-top:15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* 포스트 내부 버튼 스타일 미세 조정 */
+.post button {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+  font-weight: normal;
+  font-size: 13px;
+  padding: 5px 10px;
+}
+.post button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: none;
 }
 </style>
 </head>
