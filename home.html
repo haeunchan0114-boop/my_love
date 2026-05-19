@@ -43,6 +43,11 @@ input,select{
   border-radius:15px;
 }
 
+/* 🔥 핵심: 줄바꿈 유지 */
+.post p{
+  white-space: pre-wrap;
+}
+
 button{
   margin-right:5px;
   padding:6px 10px;
@@ -50,7 +55,6 @@ button{
   border-radius:8px;
   background:#00bcd4;
   color:white;
-  cursor:pointer;
 }
 
 #pagination button{
@@ -112,9 +116,8 @@ function loadPosts(){
   const keyword = document.getElementById("search").value;
   const sort = document.getElementById("sort").value;
 
-  currentPage = 1; // 🔥 정렬/검색 시 페이지 초기화
+  currentPage = 1;
 
-  // 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -122,7 +125,6 @@ function loadPosts(){
     );
   }
 
-  // 정렬
   posts.sort((a,b)=>{
     let da = new Date(a.date);
     let db = new Date(b.date);
@@ -137,7 +139,7 @@ function loadPosts(){
 
   let pagePosts = posts.slice(start, end);
 
-  pagePosts.forEach((p, i)=>{
+  pagePosts.forEach((p,i)=>{
     let realIndex = start + i;
     let isOwner = (p.writer === user);
 
@@ -147,6 +149,7 @@ function loadPosts(){
     div.innerHTML = `
       <h3>${p.title}</h3>
       <small>${p.writer} · ${p.date}</small>
+
       <p>${p.content}</p>
 
       ${isOwner ? `
