@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 보는 곳!</title>
+<title>글 보는 공간!</title>
 
 <style>
 body{
@@ -56,31 +56,24 @@ button{
 <body>
 
 <div class="header">
-
   <h1>🌟 나의 사랑하는 별에게 🌟</h1>
-
-  <div style="
-    font-size:16px;
-    opacity:0.8;
-    margin-top:-10px;
-  ">
+  <div style="font-size:14px;opacity:0.7;margin-top:-5px;">
     우리의 빛나는 글들
   </div>
-
 </div>
 
 <div class="card">
 
   <div class="controls">
-    <input id="searchTitle" placeholder="제목">
-    <input id="searchWriter" placeholder="작성자">
+    <input id="searchTitle" placeholder="제목 검색">
+    <input id="searchWriter" placeholder="작성자 검색">
 
     <select id="sort">
       <option value="new">최신순</option>
       <option value="old">오래된순</option>
     </select>
 
-    <button onclick="location.href='admin.html'">글 쓰러가기!</button>
+    <button onclick="location.href='admin.html'">글 쓰기</button>
   </div>
 
   <div id="posts"></div>
@@ -125,15 +118,15 @@ function render(){
   const box = document.getElementById("posts");
   box.innerHTML = "";
 
+  let list = [...posts];
+
   const t = document.getElementById("searchTitle").value;
   const w = document.getElementById("searchWriter").value;
   const sort = document.getElementById("sort").value;
   const user = sessionStorage.getItem("user");
 
-  let list = [...posts];
-
-  if(t) list = list.filter(p => p.title.includes(t));
-  if(w) list = list.filter(p => p.writer.includes(w));
+  if(t) list = list.filter(p => p.title && p.title.includes(t));
+  if(w) list = list.filter(p => p.writer && p.writer.includes(w));
 
   list.sort((a,b)=>{
     if(a.pinned && !b.pinned) return -1;
@@ -141,15 +134,20 @@ function render(){
     return sort==="new" ? b.time - a.time : a.time - b.time;
   });
 
+  // 🔥 글 없으면 아무것도 출력 안함
+  if(list.length === 0){
+    return;
+  }
+
   list.forEach(p=>{
 
     const div = document.createElement("div");
     div.className="post";
 
     div.innerHTML = `
-      <h3>${p.pinned ? "📌 " : ""}${p.title}</h3>
-      <small>${p.writer} · ${p.date}</small>
-      <p>${p.content}</p>
+      <h3>${p.pinned ? "📌 " : ""}${p.title || ""}</h3>
+      <small>${p.writer || ""} · ${p.date || ""}</small>
+      <p>${p.content || ""}</p>
 
       ${p.writer === user ? `
         <button onclick="edit('${p.id}')">수정</button>
@@ -164,22 +162,29 @@ function render(){
   });
 }
 
+// 삭제
 window.del = async (id,writer)=>{
-  if(sessionStorage.getItem("user")!==writer) return alert("본인만 가능");
+  if(sessionStorage.getItem("user") !== writer){
+    alert("본인만 가능");
+    return;
+  }
   await deleteDoc(doc(db,"posts",id));
 };
 
+// 고정
 window.pin = async (id,pinned)=>{
   await updateDoc(doc(db,"posts",id),{
     pinned: !pinned
   });
 };
 
+// 수정
 window.edit = (id)=>{
   localStorage.setItem("editId",id);
   location.href="admin.html";
 };
 
+// 실시간 검색
 document.getElementById("searchTitle").oninput = render;
 document.getElementById("searchWriter").oninput = render;
 document.getElementById("sort").onchange = render;
