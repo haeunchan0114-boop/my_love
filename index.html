@@ -7,24 +7,14 @@
 <style>
 body{
   margin:0;
-  min-height:100vh;
+  height:100vh;
   display:flex;
-  flex-direction:column;
   justify-content:center;
   align-items:center;
+  flex-direction:column;
   font-family:Arial;
-  color:white;
-
-  /* 🔥 배경 안정화 */
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
-  background-repeat:no-repeat;
-  background-attachment:fixed;
-}
-
-.title{
-  font-size:28px;
-  font-weight:bold;
-  margin-bottom:20px;
+  color:white;
 }
 
 .card{
@@ -33,7 +23,6 @@ body{
   border-radius:15px;
   text-align:center;
 }
-
 input,button{
   width:200px;
   padding:10px;
@@ -41,32 +30,36 @@ input,button{
   border:none;
   border-radius:10px;
 }
-
 button{
   background:#00bcd4;
   color:white;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="title">나의 빛나는 별에게</div>
+<div style="font-size:28px;font-weight:bold;margin-bottom:20px;">
+나의 빛나는 별에게
+</div>
 
 <div class="card">
-  <h2>로그인</h2>
+  <input id="name" placeholder="이름">
   <input type="password" id="pw" placeholder="비밀번호">
-  <br>
-  <button onclick="login()">시작하기!!</button>
+  <button onclick="login()">입장</button>
 </div>
 
 <script>
 function login(){
+  const name = document.getElementById("name").value;
+
   if(document.getElementById("pw").value === "0416"){
     sessionStorage.setItem("auth","ok");
+    sessionStorage.setItem("user",name); // 🔥 핵심
     location.href="home.html";
   } else {
-    alert("비밀번호가 틀렸어! 다시 시도해줘~!");
+    alert("비밀번호 틀림");
   }
 }
 </script>
