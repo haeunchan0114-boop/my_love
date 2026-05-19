@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 쓰는 곳!</title>
+<title>글 쓰기</title>
 
 <style>
 body{
@@ -11,45 +11,62 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
+  flex-direction:column;
   font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
 }
 
-.card{
-  width:320px;
-  background: rgba(255,255,255,0.12);
-  padding:25px;
-  border-radius:15px;
+/* 🔥 로그인 화면이랑 동일 구조 */
+.title{
+  font-size:28px;
+  font-weight:bold;
+  margin-bottom:20px;
 }
 
-input, textarea, button{
+.card{
+  width:260px;  /* 로그인과 동일 */
+  background: rgba(255,255,255,0.12);
+  padding:30px;
+  border-radius:15px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* 👉 글쓰기만 크게 */
+textarea{
+  height:180px;
+}
+
+input, textarea{
   width:100%;
+  padding:10px;
   border:none;
   border-radius:10px;
+  box-sizing:border-box;
 }
 
-input{ padding:10px; }
-textarea{ padding:10px; height:140px; resize:none; }
-
 button{
+  width:100%;
   padding:10px;
+  border:none;
+  border-radius:10px;
   background:#00bcd4;
   color:white;
-  margin-top:10px;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="card">
-  <h2>글 쓰기</h2>
+<div class="title">✍ 글 쓰기</div>
 
+<div class="card">
   <input id="title" placeholder="제목">
   <textarea id="content" placeholder="내용"></textarea>
-
-  <button onclick="savePost()">저장</button>
+  <button id="saveBtn">저장</button>
 </div>
 
 <script type="module">
@@ -77,8 +94,9 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 수정 불러오기 */
+/* 🔥 수정 불러오기 */
 window.addEventListener("load", async () => {
+
   if(editId){
     const snap = await getDoc(doc(db,"글",editId));
     if(snap.exists()){
@@ -89,41 +107,61 @@ window.addEventListener("load", async () => {
   }
 });
 
-/* 저장 */
-window.savePost = async function(){
+/* 🔥 저장 버튼 (이 방식이 제일 안정적) */
+document.getElementById("saveBtn").addEventListener("click", savePost);
 
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
-  const user = sessionStorage.getItem("user");
+async function savePost(){
 
-  const now = new Date();
-  const date =
-    `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
-    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  try{
 
-  if(editId){
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+    const user = sessionStorage.getItem("user");
 
-    await updateDoc(doc(db,"글",editId),{
-      title,
-      content
-    });
+    if(!title || !content){
+      alert("제목/내용 입력");
+      return;
+    }
 
-    localStorage.removeItem("editId");
+    if(!user){
+      alert("로그인 정보 없음");
+      return;
+    }
 
-  } else {
+    const now = new Date();
 
-    await addDoc(collection(db,"글"),{
-      writer:user,
-      title,
-      content,
-      date,
-      time:Date.now(),
-      pinned:false
-    });
+    const dateStr =
+      `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+      `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    if(editId){
+
+      await updateDoc(doc(db,"글",editId),{
+        title,
+        content
+      });
+
+      localStorage.removeItem("editId");
+
+    } else {
+
+      await addDoc(collection(db,"글"),{
+        writer:user,
+        title,
+        content,
+        date:dateStr,
+        time:Date.now(),
+        pinned:false
+      });
+    }
+
+    window.location.href="home.html";
+
+  } catch(err){
+    console.error(err);
+    alert("저장 실패 (콘솔 확인)");
   }
-
-  location.href="home.html";
-};
+}
 </script>
 
 </body>
