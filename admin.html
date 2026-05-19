@@ -2,11 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 쓰기</title>
+<title>글 쓰는 곳!</title>
 
 <style>
-*{ box-sizing:border-box; }
-
 body{
   margin:0;
   height:100vh;
@@ -23,16 +21,12 @@ body{
   background: rgba(255,255,255,0.12);
   padding:25px;
   border-radius:15px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
 }
 
 input, textarea, button{
   width:100%;
   border:none;
   border-radius:10px;
-  font-family:inherit;
 }
 
 input{ padding:10px; }
@@ -42,11 +36,8 @@ button{
   padding:10px;
   background:#00bcd4;
   color:white;
-  font-weight:bold;
-  cursor:pointer;
+  margin-top:10px;
 }
-
-h2{ margin:0; text-align:center; }
 </style>
 </head>
 
@@ -58,7 +49,7 @@ h2{ margin:0; text-align:center; }
   <input id="title" placeholder="제목">
   <textarea id="content" placeholder="내용"></textarea>
 
-  <button id="saveBtn">저장</button>
+  <button onclick="savePost()">저장</button>
 </div>
 
 <script type="module">
@@ -68,8 +59,8 @@ import {
   collection,
   addDoc,
   doc,
-  getDoc,
-  updateDoc
+  updateDoc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -88,70 +79,51 @@ let editId = localStorage.getItem("editId");
 
 /* 수정 불러오기 */
 window.addEventListener("load", async () => {
-
   if(editId){
-    const snap = await getDoc(doc(db,"posts",editId));
-
+    const snap = await getDoc(doc(db,"글",editId));
     if(snap.exists()){
       const d = snap.data();
-      document.getElementById("title").value = d.title || "";
-      document.getElementById("content").value = d.content || "";
+      document.getElementById("title").value = d.title;
+      document.getElementById("content").value = d.content;
     }
   }
-
-  document.getElementById("saveBtn").addEventListener("click", savePost);
 });
 
 /* 저장 */
-async function savePost(){
+window.savePost = async function(){
 
-  try{
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+  const user = sessionStorage.getItem("user");
 
-    const title = document.getElementById("title").value;
-    const content = document.getElementById("content").value;
-    const user = sessionStorage.getItem("user");
+  const now = new Date();
+  const date =
+    `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    if(!title || !content){
-      alert("제목/내용 입력");
-      return;
-    }
+  if(editId){
 
-    const now = new Date();
+    await updateDoc(doc(db,"글",editId),{
+      title,
+      content
+    });
 
-    const dateStr =
-      `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
-      `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    localStorage.removeItem("editId");
 
-    if(editId){
+  } else {
 
-      await updateDoc(doc(db,"posts",editId),{
-        title,
-        content
-      });
-
-      localStorage.removeItem("editId");
-
-    } else {
-
-      await addDoc(collection(db,"posts"),{
-        writer:user,
-        title,
-        content,
-        date:dateStr,
-        time:now.getTime(),
-        pinned:false
-      });
-    }
-
-    // 🔥 무조건 이동
-    window.location.replace("home.html");
-
-  } catch(err){
-    console.log(err);
-    alert("저장 실패");
+    await addDoc(collection(db,"글"),{
+      writer:user,
+      title,
+      content,
+      date,
+      time:Date.now(),
+      pinned:false
+    });
   }
-}
 
+  location.href="home.html";
+};
 </script>
 
 </body>
