@@ -18,47 +18,15 @@ body{
   padding:20px;
 }
 
-.card{
-  width:80%;
-  margin:20px auto;
-}
-
-.controls{
-  text-align:center;
-  margin-bottom:15px;
-}
-
-input,select{
-  padding:8px;
-  margin:5px;
-  border:none;
-  border-radius:8px;
-}
-
 .post{
   background: rgba(255,255,255,0.12);
   padding:15px;
-  margin:15px 0;
+  margin:15px auto;
+  width:80%;
   border-radius:15px;
 }
-
-.post p{
-  white-space:pre-wrap;
-}
-
-button{
-  margin-right:5px;
-  padding:6px 10px;
-  border:none;
-  border-radius:8px;
-  background:#00bcd4;
-  color:white;
-}
-
-#pagination button{
-  margin:3px;
-}
 </style>
+
 </head>
 
 <body>
@@ -70,204 +38,56 @@ if(sessionStorage.getItem("auth") !== "ok"){
 </script>
 
 <div class="header">
-  <div style="font-size:34px;font-weight:bold;">
-    🌟 나의 사랑하는 별에게 🌟
-  </div>
-  <div style="font-size:16px;opacity:0.8;">
-    우리의 빛나는 글들
-  </div>
+  <h1>🌟 나의 사랑하는 별에게 🌟</h1>
 </div>
 
-<div class="card">
+<div id="posts"></div>
 
-  <div class="controls">
-    <input id="search" placeholder="제목 / 작성자">
-    <select id="sort">
-      <option value="new">최신순</option>
-      <option value="old">오래된순</option>
-    </select>
-    <button onclick="location.href='admin.html'">글 쓰러가기!</button>
-  </div>
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  <div id="posts"></div>
-</div>
+const firebaseConfig = {
+  apiKey: "너 API키",
+  authDomain: "너 authDomain",
+  projectId: "너 projectId",
+  storageBucket: "너 storageBucket",
+  messagingSenderId: "너 senderId",
+  appId: "너 appId"
+};
 
-<script>
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// 🔥 완전 안전 로딩
-function safeGetPosts(){
-  let posts = [];
+const q = query(collection(db, "posts"), orderBy("date","desc"));
 
-  try{
-    posts = JSON.parse(localStorage.getItem("posts")) || [];
-  }catch(e){
-    posts = [];
-  }
-
-  if(!Array.isArray(posts)){
-    posts = [];
-  }
-
-  return posts.map(p=>{
-    try{
-      if(!p.time){
-        let d = new Date(p.date);
-        if(isNaN(d.getTime())) d = new Date();
-
-        p.time = d.getTime();
-
-        p.date =
-          `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ` +
-          `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-      }
-
-      if(typeof p.pinned !== "boolean"){
-        p.pinned = false;
-      }
-
-      return p;
-    }catch(e){
-      return null;
-    }
-  }).filter(Boolean);
-}
-
-let currentPage = 1;
-const perPage = 3;
-
-function render(reset=true){
-
-  let posts = safeGetPosts();
-  let user = sessionStorage.getItem("user");
-
-  let keyword = document.getElementById("search").value;
-  let sort = document.getElementById("sort").value;
-
-  if(reset) currentPage = 1;
-
-  if(keyword){
-    posts = posts.filter(p =>
-      p.title.includes(keyword) ||
-      p.writer.includes(keyword)
-    );
-  }
-
-  posts.sort((a,b)=>{
-
-    if(a.pinned && !b.pinned) return -1;
-    if(!a.pinned && b.pinned) return 1;
-
-    return sort==="new"
-      ? b.time - a.time
-      : a.time - b.time;
-  });
+onSnapshot(q, (snapshot) => {
 
   const box = document.getElementById("posts");
-  box.innerHTML="";
+  box.innerHTML = "";
 
-  let start = (currentPage-1)*perPage;
-  let page = posts.slice(start,start+perPage);
-
-  page.forEach(p=>{
-
-    let isOwner = (p.writer===user);
-
-    let realIndex = safeGetPosts().findIndex(x =>
-      x.title===p.title && x.time===p.time
-    );
+  snapshot.forEach(doc => {
+    const p = doc.data();
 
     const div = document.createElement("div");
-    div.className="post";
+    div.className = "post";
 
-    div.innerHTML=`
-      <h3>${p.pinned?"📌 ":""}${p.title}</h3>
+    div.innerHTML = `
+      <h3>${p.title}</h3>
       <small>${p.writer} · ${p.date}</small>
       <p>${p.content}</p>
-
-      ${isOwner?`
-        <button onclick="edit(${realIndex})">수정</button>
-        <button onclick="del(${realIndex})">삭제</button>
-        <button onclick="togglePin(${realIndex})">
-          ${p.pinned?"고정 해제":"고정"}
-        </button>
-      `:""}
     `;
 
     box.appendChild(div);
   });
-
-  renderPage(posts.length);
-}
-
-function renderPage(total){
-
-  let pages = Math.ceil(total/perPage);
-
-  let old = document.getElementById("pagination");
-  if(old) old.remove();
-
-  const div = document.createElement("div");
-  div.id="pagination";
-  div.style.textAlign="center";
-
-  for(let i=1;i<=pages;i++){
-    let btn=document.createElement("button");
-    btn.innerText=i;
-    btn.onclick=()=>{currentPage=i;render(false);};
-    div.appendChild(btn);
-  }
-
-  document.body.appendChild(div);
-}
-
-function togglePin(i){
-  let posts = safeGetPosts();
-  let user = sessionStorage.getItem("user");
-
-  if(posts[i].writer!==user){
-    alert("본인만 가능");
-    return;
-  }
-
-  posts[i].pinned=!posts[i].pinned;
-  localStorage.setItem("posts",JSON.stringify(posts));
-  render(false);
-}
-
-function del(i){
-  let posts = safeGetPosts();
-  let user = sessionStorage.getItem("user");
-
-  if(posts[i].writer!==user){
-    alert("본인만 가능");
-    return;
-  }
-
-  posts.splice(i,1);
-  localStorage.setItem("posts",JSON.stringify(posts));
-  render(false);
-}
-
-function edit(i){
-  let posts = safeGetPosts();
-  let user = sessionStorage.getItem("user");
-
-  if(posts[i].writer!==user){
-    alert("본인만 가능");
-    return;
-  }
-
-  localStorage.setItem("editIndex",i);
-  localStorage.setItem("editTitle",posts[i].title);
-  localStorage.setItem("editContent",posts[i].content);
-
-  location.href="admin.html";
-}
-
-document.getElementById("search").oninput=()=>render(true);
-document.getElementById("sort").onchange=()=>render(true);
-
-render(true);
+});
 </script>
 
 </body>
