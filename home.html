@@ -10,7 +10,7 @@ body{
   min-height:100vh;
   font-family:Arial;
   
-  /* 🔥 별이 쏟아지는 밤하늘 배경 */
+  /* 🔥 물결을 없애고, 무수한 별빛들이 가득한 밤하늘 배경만 깔끔하게 유지 */
   background: 
     radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
     radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
@@ -22,15 +22,14 @@ body{
     radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.4) 2px, transparent 2px) 0 0 / 220px 220px,
     radial-gradient(circle at 15% 45%, rgba(255, 255, 255, 0.35) 2px, transparent 2px) 0 0 / 260px 260px,
     radial-gradient(circle at 75% 60%, rgba(255, 255, 255, 0.4) 2.5px, transparent 2.5px) 0 0 / 300px 300px,
-    linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 65%, #103b66 100%);
+    linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 75%, #103b66 100%);
     
   color:white;
-  background-attachment: fixed;
+  background-attachment: fixed; /* 스크롤해도 별들이 고정되어 아름답게 유지됨 */
   overflow-x: hidden;
-  position: relative;
 }
 
-/* 🔥 떨어지는 별똥별 효과 */
+/* 🔥 떨어지는 별똥별 효과 (유지) */
 .shooting-stars {
   position: fixed;
   top: 0;
@@ -70,55 +69,14 @@ body{
   100% { transform: rotate(-45deg) translateX(-1000px); opacity: 0; }
 }
 
-/* 🔥 강하고 역동적인 바다 물결 컨테이너 */
-.ocean { 
-  height: 180px; /* 전체적인 바다 높이 상향 */
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #103b66;
-  box-shadow: 0 -20px 50px rgba(11, 43, 78, 0.8);
-  z-index: -1;
-}
-.wave {
-  /* SVG 파도 곡선의 굴곡을 더 가파르고 깊게 수정 */
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,50 C150,120 350,-10 500,50 C650,120 850,-10 1000,50 C1150,120 1300,50 1300,50 L1300,120 L0,120 Z" style="fill:%23103b66; opacity:0.35;"/></svg>') repeat-x;
-  position: absolute;
-  top: -85px; /* 파도가 높이 치솟도록 위치 조절 */
-  width: 6400px;
-  height: 90px; /* 개별 파도 높이 확대 */
-  animation: waveMoving 10s linear infinite, waveRolling 3s ease-in-out infinite alternate;
-}
-.wave:nth-of-type(2) {
-  top: -70px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,50 C150,110 350,0 500,50 C650,110 850,0 1000,50 C1150,110 1300,50 1300,50 L1300,120 L0,120 Z" style="fill:%23144775; opacity:0.5;"/></svg>') repeat-x;
-  animation: waveMoving 7s linear -1.5s infinite, waveRolling 2.5s ease-in-out infinite alternate;
-}
-.wave:nth-of-type(3) {
-  top: -50px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,50 C150,100 350,10 500,50 C650,100 850,10 1000,50 C1150,100 1300,50 1300,50 L1300,120 L0,120 Z" style="fill:%230b2b4e; opacity:1;"/></svg>') repeat-x;
-  animation: waveMoving 5s linear -0.5s infinite, waveRolling 2s ease-in-out infinite alternate;
-}
-
-@keyframes waveMoving {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-1600px); } /* 좌우로 빠르게 치는 파도 */
-}
-@keyframes waveRolling {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-28px); } /* 위아래 일렁임 폭을 2배 이상 키워 강한 물결 연출 */
-}
-
 /* 기본 UI 구성 요소 */
-.header{ text-align:center; padding:30px 20px; }
+.header{ text-align:center; padding:40px 20px 20px 20px; }
 .header h1{
   margin:0; font-size:36px; font-weight: bold;
   text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
 .sub{ margin-top:10px; font-size:16px; opacity:0.85; letter-spacing: 2px; }
-.card{ width:85%; max-width: 800px; margin:20px auto; padding-bottom: 220px; } /* 파도가 높아진 만큼 여백 추가 확보 */
+.card{ width:85%; max-width: 800px; margin:20px auto; padding-bottom: 60px; }
 .controls{ text-align:center; margin-bottom:25px; }
 
 input, select{
@@ -136,10 +94,11 @@ button{
 }
 button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6); }
 
+/* 글 상자가 밤하늘 위에 뜬 것처럼 영롱하게 보이게 하는 글래모피즘 효과 */
 .post{
   background: rgba(255, 255, 255, 0.07); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .post h3 { margin: 0 0 8px 0; font-size: 20px; }
 .post small { color: rgba(255, 255, 255, 0.6); }
@@ -147,10 +106,10 @@ button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 2
 .post button { background: rgba(255, 255, 255, 0.15); box-shadow: none; font-weight: normal; font-size: 13px; padding: 5px 10px; }
 .post button:hover { background: rgba(255, 255, 255, 0.25); box-shadow: none; }
 
-/* 페이지네이션 디자인 */
+/* 페이지네이션 디자인 (유지) */
 .pagination {
   text-align: center;
-  margin-top: 25px;
+  margin-top: 30px;
   display: flex;
   justify-content: center;
   gap: 5px;
@@ -179,12 +138,6 @@ button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 2
   <div class="star"></div>
   <div class="star"></div>
   <div class="star"></div>
-</div>
-
-<div class="ocean">
-  <div class="wave"></div>
-  <div class="wave"></div>
-  <div class="wave"></div>
 </div>
 
 <div class="header">
