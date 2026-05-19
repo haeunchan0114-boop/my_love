@@ -2,14 +2,17 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 보기</title>
+<title>글 보는 곳</title>
 
 <style>
 *{ box-sizing:border-box; }
 
 body{
   margin:0;
+  min-height:100vh;
   font-family:Arial;
+
+  /* 🔥 배경 확실하게 고정 */
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
 }
@@ -84,13 +87,15 @@ const db = getFirestore(app);
 
 let posts = [];
 
-onSnapshot(collection(db,"posts"), snap=>{
+onSnapshot(collection(db,"posts"), (snap)=>{
+
   posts = [];
 
   snap.forEach(d=>{
-    let data = d.data();
-    data.id = d.id;
-    posts.push(data);
+    posts.push({
+      id: d.id,
+      ...d.data()
+    });
   });
 
   render();
@@ -104,20 +109,18 @@ function render(){
 
   posts.forEach(p=>{
 
-    const isOwner = p.writer === user;
-
     const div = document.createElement("div");
-    div.className="post";
+    div.className = "post";
 
     div.innerHTML = `
       <h3>${p.title}</h3>
       <small>${p.writer} · ${p.date}</small>
       <p>${p.content}</p>
 
-      ${isOwner ? `
+      ${p.writer === user ? `
         <button onclick="editPost('${p.id}')">수정</button>
         <button onclick="deletePost('${p.id}','${p.writer}')">삭제</button>
-        <button onclick="togglePin('${p.id}','${p.writer}',${p.pinned})">
+        <button onclick="togglePin('${p.id}',${p.pinned})">
           ${p.pinned ? "고정 해제" : "고정"}
         </button>
       ` : ""}
@@ -137,11 +140,7 @@ window.deletePost = async function(id,writer){
 };
 
 /* 고정 */
-window.togglePin = async function(id,writer,pinned){
-  if(sessionStorage.getItem("user") !== writer){
-    alert("본인만 가능");
-    return;
-  }
+window.togglePin = async function(id,pinned){
   await updateDoc(doc(db,"posts",id),{
     pinned: !pinned
   });
