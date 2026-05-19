@@ -80,13 +80,13 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <div class="controls">
     <input id="search" placeholder="제목 / 작성자 검색">
 
-    <!-- 🔥 기본 최신순 -->
+    <!-- 🔥 기본값 최신순 -->
     <select id="sort">
       <option value="new" selected>최신순</option>
       <option value="old">오래된순</option>
     </select>
 
-    <button onclick="location.href='admin.html'">글 작성</button>
+    <button onclick="location.href='admin.html'">글 쓰기!</button>
   </div>
 
   <div id="posts"></div>
@@ -107,12 +107,15 @@ function render(reset = true){
 
   const keyword = document.getElementById("search").value;
 
-  // 🔥 기본값 항상 최신순 유지
-  let sort = document.getElementById("sort").value || "new";
-  document.getElementById("sort").value = sort;
+  let sortEl = document.getElementById("sort");
+
+  // 🔥 핵심: 무조건 기본값 new
+  let sort = sortEl ? sortEl.value : "new";
 
   if(reset){
     currentPage = 1;
+    sort = "new";
+    if(sortEl) sortEl.value = "new";
   }
 
   // 🔍 검색
@@ -125,9 +128,12 @@ function render(reset = true){
 
   // 🔥 정렬 (완전 안정)
   posts.sort((a,b)=>{
+    let ta = a.time || new Date(a.date).getTime();
+    let tb = b.time || new Date(b.date).getTime();
+
     return sort === "new"
-      ? b.time - a.time
-      : a.time - b.time;
+      ? tb - ta
+      : ta - tb;
   });
 
   const box = document.getElementById("posts");
@@ -168,7 +174,7 @@ function render(reset = true){
   renderPage(posts.length);
 }
 
-// 🔥 페이지 버튼
+// 🔥 페이지
 function renderPage(total){
   let pageCount = Math.ceil(total / perPage);
 
@@ -226,12 +232,12 @@ function edit(i){
   location.href="admin.html";
 }
 
-// 🔥 이벤트 (핵심)
+// 🔥 이벤트
 document.getElementById("search").oninput = () => render(true);
 document.getElementById("sort").onchange = () => render(true);
 
-// 🔥 처음 실행 = 무조건 최신순
-render();
+// 🔥 첫 시작 무조건 최신순
+render(true);
 </script>
 
 </body>
