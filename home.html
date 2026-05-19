@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 목록</title>
+<title>글 보는 곳</title>
 
 <style>
 body{
@@ -19,17 +19,19 @@ body{
 }
 
 .header h1{
-  margin-bottom:5px;
+  margin:0;
+  font-size:34px;
 }
 
 .sub{
-  font-size:14px;
-  opacity:0.7;
+  margin-top:8px;
+  font-size:15px;
+  opacity:0.8;
 }
 
 .card{
   width:80%;
-  margin:auto;
+  margin:20px auto;
 }
 
 .controls{
@@ -45,8 +47,8 @@ input,select{
 }
 
 button{
-  margin:3px;
-  padding:6px 10px;
+  padding:7px 12px;
+  margin:5px;
   border:none;
   border-radius:8px;
   background:#00bcd4;
@@ -57,8 +59,12 @@ button{
 .post{
   background: rgba(255,255,255,0.12);
   padding:15px;
-  margin:10px 0;
   border-radius:15px;
+  margin-bottom:15px;
+}
+
+.post p{
+  white-space:pre-wrap;
 }
 </style>
 </head>
@@ -90,8 +96,15 @@ button{
     >
 
     <select id="sort">
-      <option value="new">최신순</option>
-      <option value="old">오래된순</option>
+
+      <option value="new">
+        최신순
+      </option>
+
+      <option value="old">
+        오래된순
+      </option>
+
     </select>
 
     <button onclick="
@@ -103,7 +116,14 @@ button{
 
   </div>
 
-  <div id="posts"></div>
+  <div
+    id="posts"
+    style="
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    "
+  ></div>
 
 </div>
 
@@ -123,94 +143,134 @@ import {
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCh_KpWKjSO4vl-jKjhrJCbLZNIZmek4Qw",
-  authDomain: "loveletter-for-you.firebaseapp.com",
-  projectId: "loveletter-for-you",
-  storageBucket: "loveletter-for-you.firebasestorage.app",
-  messagingSenderId: "40216107468",
-  appId: "1:40216107468:web:b635ba7797490396952569"
+
+  apiKey:
+  "AIzaSyCh_KpWKjSO4vl-jKjhrJCbLZNIZmek4Qw",
+
+  authDomain:
+  "loveletter-for-you.firebaseapp.com",
+
+  projectId:
+  "loveletter-for-you",
+
+  storageBucket:
+  "loveletter-for-you.firebasestorage.app",
+
+  messagingSenderId:
+  "40216107468",
+
+  appId:
+  "1:40216107468:web:b635ba7797490396952569"
+
 };
 
-const app = initializeApp(firebaseConfig);
+const app =
+  initializeApp(firebaseConfig);
 
-const db = getFirestore(app);
+const db =
+  getFirestore(app);
 
 let posts = [];
 
-onSnapshot(collection(db,"posts"), snap=>{
+/* 🔥 실시간 글 불러오기 */
+onSnapshot(
+  collection(db,"posts"),
+  snap=>{
 
-  posts = [];
+    posts = [];
 
-  snap.forEach(d=>{
+    snap.forEach(d=>{
 
-    posts.push({
-      id:d.id,
-      ...d.data()
+      posts.push({
+
+        id:d.id,
+        ...d.data()
+
+      });
+
     });
 
-  });
+    render();
 
-  render();
+  }
+);
 
-});
-
+/* 🔥 화면 출력 */
 function render(){
 
   const box =
     document.getElementById("posts");
 
+  // 완전 초기화
   box.innerHTML = "";
 
   let list = [...posts];
 
-  const t =
-    document.getElementById("searchTitle").value;
+  const titleKeyword =
+    document
+    .getElementById("searchTitle")
+    .value
+    .trim();
 
-  const w =
-    document.getElementById("searchWriter").value;
+  const writerKeyword =
+    document
+    .getElementById("searchWriter")
+    .value
+    .trim();
 
   const sort =
-    document.getElementById("sort").value;
+    document
+    .getElementById("sort")
+    .value;
 
   const user =
     sessionStorage.getItem("user");
 
-  if(t){
+  // 제목 검색
+  if(titleKeyword){
 
-    list = list.filter(p =>
+    list = list.filter(p=>
+
       p.title &&
-      p.title.includes(t)
+      p.title.includes(titleKeyword)
+
     );
   }
 
-  if(w){
+  // 작성자 검색
+  if(writerKeyword){
 
-    list = list.filter(p =>
+    list = list.filter(p=>
+
       p.writer &&
-      p.writer.includes(w)
+      p.writer.includes(writerKeyword)
+
     );
   }
 
+  // 정렬
   list.sort((a,b)=>{
 
-    if(a.pinned && !b.pinned) return -1;
+    // 고정글 우선
+    if(a.pinned && !b.pinned)
+      return -1;
 
-    if(!a.pinned && b.pinned) return 1;
+    if(!a.pinned && b.pinned)
+      return 1;
 
+    // 최신/오래된순
     return sort==="new"
       ? b.time - a.time
       : a.time - b.time;
 
   });
 
-  // 🔥 글 없으면 게시글 공간 자체 안띄움
+  // 글 없으면 종료
   if(list.length === 0){
-
-    box.innerHTML = "";
-
     return;
   }
 
+  // 게시글 출력
   list.forEach(p=>{
 
     const div =
@@ -231,39 +291,61 @@ function render(){
         ${p.date || ""}
       </small>
 
-      ${p.content
+      ${
+        p.content
         ? `<p>${p.content}</p>`
         : ""
       }
 
-      ${p.writer === user ? `
+      ${
+        p.writer === user
+        ? `
 
-        <button onclick="edit('${p.id}')">
-          수정
-        </button>
+          <button
+            onclick="edit('${p.id}')"
+          >
+            수정
+          </button>
 
-        <button onclick="
-          del('${p.id}','${p.writer}')
-        ">
-          삭제
-        </button>
+          <button
+            onclick="
+              del(
+                '${p.id}',
+                '${p.writer}'
+              )
+            "
+          >
+            삭제
+          </button>
 
-        <button onclick="
-          pin('${p.id}',${p.pinned})
-        ">
-          ${p.pinned ? "고정해제" : "고정"}
-        </button>
+          <button
+            onclick="
+              pin(
+                '${p.id}',
+                ${p.pinned}
+              )
+            "
+          >
+            ${
+              p.pinned
+              ? "고정해제"
+              : "고정"
+            }
+          </button>
 
-      ` : ""}
+        `
+        : ""
+      }
 
     `;
 
     box.appendChild(div);
 
   });
+
 }
 
-// 삭제
+/* 🔥 삭제 */
 window.del = async (id,writer)=>{
 
   if(
@@ -274,33 +356,47 @@ window.del = async (id,writer)=>{
     return;
   }
 
-  await deleteDoc(doc(db,"posts",id));
+  await deleteDoc(
+    doc(db,"posts",id)
+  );
+
 };
 
-// 고정
+/* 🔥 고정 */
 window.pin = async (id,pinned)=>{
 
-  await updateDoc(doc(db,"posts",id),{
-    pinned: !pinned
-  });
+  await updateDoc(
+    doc(db,"posts",id),
+    {
+      pinned: !pinned
+    }
+  );
 
 };
 
-// 수정
+/* 🔥 수정 */
 window.edit = (id)=>{
 
-  localStorage.setItem("editId",id);
+  localStorage.setItem(
+    "editId",
+    id
+  );
 
-  location.href="admin.html";
+  location.href =
+    "admin.html";
 };
 
-document.getElementById("searchTitle")
+/* 🔥 검색/정렬 실시간 */
+document
+.getElementById("searchTitle")
 .oninput = render;
 
-document.getElementById("searchWriter")
+document
+.getElementById("searchWriter")
 .oninput = render;
 
-document.getElementById("sort")
+document
+.getElementById("sort")
 .onchange = render;
 
 </script>
