@@ -9,10 +9,7 @@ body{
   margin:0;
   min-height:100vh;
   font-family:Arial;
-
-  /* 🔥 배경 깨짐 방지 핵심 */
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
-  background-repeat:no-repeat;
   background-attachment:fixed;
   color:white;
 }
@@ -48,7 +45,6 @@ input,select{
   border-radius:15px;
 }
 
-/* 줄바꿈 유지 */
 .post p{
   white-space:pre-wrap;
 }
@@ -81,9 +77,9 @@ if(sessionStorage.getItem("auth") !== "ok"){
 <div class="card">
 
   <div class="controls">
-    <input id="search" placeholder="제목 / 작성자 검색" oninput="loadPosts()">
+    <input id="search" placeholder="제목 / 작성자 검색" oninput="render()">
 
-    <select id="sort" onchange="loadPosts()">
+    <select id="sort" onchange="render()">
       <option value="new">최신순</option>
       <option value="old">오래된순</option>
     </select>
@@ -96,11 +92,15 @@ if(sessionStorage.getItem("auth") !== "ok"){
 
 <script>
 let currentPage = 1;
-const postsPerPage = 5;
+const perPage = 5;
 
-function loadPosts(){
+function getPosts(){
+  return JSON.parse(localStorage.getItem("posts") || "[]");
+}
 
-  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+function render(){
+
+  let posts = getPosts();
   let user = sessionStorage.getItem("user") || "";
 
   const keyword = document.getElementById("search").value;
@@ -108,7 +108,7 @@ function loadPosts(){
 
   currentPage = 1;
 
-  // 검색
+  // 🔍 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -116,29 +116,31 @@ function loadPosts(){
     );
   }
 
-  // 🔥 날짜 정렬 (핵심 수정)
-  posts.sort((a,b)=>{
+  // 🔥 정렬 (핵심 수정 완료)
+  posts = posts.sort((a,b)=>{
     let da = new Date(a.date);
     let db = new Date(b.date);
 
-    if(sort === "new"){
-      return db - da;   // 최신순
-    } else {
-      return da - db;   // 오래된순
-    }
+    return sort === "new" ? db - da : da - db;
   });
 
   const box = document.getElementById("posts");
   box.innerHTML = "";
 
-  let start = (currentPage - 1) * postsPerPage;
-  let end = start + postsPerPage;
+  let start = (currentPage - 1) * perPage;
+  let end = start + perPage;
 
   let pagePosts = posts.slice(start, end);
 
-  pagePosts.forEach((p,i)=>{
-    let realIndex = start + i;
+  pagePosts.forEach((p, i)=>{
     let isOwner = (p.writer === user);
+
+    // 🔥 핵심: 실제 index를 찾는다 (정렬 때문에 필수)
+    let realIndex = getPosts().findIndex(x =>
+      x.title === p.title &&
+      x.date === p.date &&
+      x.writer === p.writer
+    );
 
     const div = document.createElement("div");
     div.className = "post";
@@ -146,7 +148,6 @@ function loadPosts(){
     div.innerHTML = `
       <h3>${p.title}</h3>
       <small>${p.writer} · ${p.date}</small>
-
       <p>${p.content}</p>
 
       ${isOwner ? `
@@ -158,11 +159,11 @@ function loadPosts(){
     box.appendChild(div);
   });
 
-  renderPagination(posts.length);
+  renderPage(posts.length);
 }
 
-function renderPagination(total){
-  let pageCount = Math.ceil(total / postsPerPage);
+function renderPage(total){
+  let pageCount = Math.ceil(total / perPage);
 
   let old = document.getElementById("pagination");
   if(old) old.remove();
@@ -177,7 +178,7 @@ function renderPagination(total){
 
     btn.onclick = ()=>{
       currentPage = i;
-      loadPosts();
+      render();
     };
 
     div.appendChild(btn);
@@ -187,7 +188,7 @@ function renderPagination(total){
 }
 
 function del(i){
-  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  let posts = getPosts();
   let user = sessionStorage.getItem("user");
 
   if(posts[i].writer !== user){
@@ -197,11 +198,11 @@ function del(i){
 
   posts.splice(i,1);
   localStorage.setItem("posts", JSON.stringify(posts));
-  loadPosts();
+  render();
 }
 
 function edit(i){
-  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  let posts = getPosts();
   let user = sessionStorage.getItem("user");
 
   if(posts[i].writer !== user){
@@ -216,7 +217,7 @@ function edit(i){
   location.href="admin.html";
 }
 
-loadPosts();
+render();
 </script>
 
 </body>
