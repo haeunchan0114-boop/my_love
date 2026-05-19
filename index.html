@@ -33,18 +33,22 @@ body{
   gap:10px;
 }
 
-input{
-  width:220px;
+/* 🔥 핵심: 전부 같은 길이 */
+input, button{
+  width:240px;
   padding:10px;
   border:none;
   border-radius:10px;
+  box-sizing:border-box;
 }
 
+/* input 따로 스타일 */
+input{
+  outline:none;
+}
+
+/* 버튼 */
 button{
-  width:220px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
   background:#00bcd4;
   color:white;
   cursor:pointer;
