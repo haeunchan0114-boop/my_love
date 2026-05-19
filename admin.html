@@ -7,7 +7,7 @@
 <style>
 body{
   margin:0;
-  font-family: Arial;
+  font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
 }
@@ -16,23 +16,22 @@ body{
   width:400px;
   margin:80px auto;
   background: rgba(255,255,255,0.12);
-  border-radius:15px;
   padding:25px;
+  border-radius:15px;
   box-shadow: 0 0 20px rgba(0,200,255,0.2);
 }
 
-input, textarea{
+input,textarea{
   width:100%;
   padding:10px;
   margin-top:10px;
   border:none;
   border-radius:10px;
-  outline:none;
 }
 
 button{
-  margin-top:15px;
   width:100%;
+  margin-top:15px;
   padding:10px;
   border:none;
   border-radius:10px;
@@ -40,9 +39,8 @@ button{
   color:white;
   cursor:pointer;
 }
-
 button:hover{
-  background:#00a3b8;
+  background:#009bb0;
 }
 </style>
 </head>
@@ -77,21 +75,19 @@ function save(){
 
   if(editIndex !== null){
     posts[editIndex] = {
-      title: document.getElementById("title").value,
-      content: document.getElementById("content").value
+      title: title.value,
+      content: content.value
     };
-
     localStorage.removeItem("editIndex");
   } else {
     posts.push({
-      title: document.getElementById("title").value,
-      content: document.getElementById("content").value
+      title: title.value,
+      content: content.value
     });
   }
 
   localStorage.setItem("posts", JSON.stringify(posts));
-
-  location.href = "home.html";
+  location.href="home.html";
 }
 </script>
 
