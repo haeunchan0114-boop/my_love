@@ -10,7 +10,6 @@ body{
   font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
-
   min-height:100vh;
   background-attachment: fixed;
 }
@@ -78,16 +77,15 @@ if(sessionStorage.getItem("auth") !== "ok"){
 let currentPage = 1;
 const postsPerPage = 5;
 
-/* 🔥 핵심: 기존 글 날짜 자동 추가 */
 function fixOldPosts(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
   let changed = false;
 
-  posts = posts.map(p => {
+  posts = posts.map(p=>{
     if(!p.date){
-      let today = new Date();
-      p.date = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+      let d = new Date();
+      p.date = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
       changed = true;
     }
     return p;
@@ -99,11 +97,12 @@ function fixOldPosts(){
 }
 
 function loadPosts(){
-  fixOldPosts(); // 👈 먼저 날짜 보정
+  fixOldPosts();
 
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-  const box = document.getElementById("posts");
+  let user = sessionStorage.getItem("user") || "";
 
+  const box = document.getElementById("posts");
   box.innerHTML = "";
 
   let start = (currentPage - 1) * postsPerPage;
@@ -113,18 +112,24 @@ function loadPosts(){
 
   pagePosts.forEach((p, i)=>{
     const realIndex = start + i;
+    let isOwner = (p.writer === user);
 
     const div = document.createElement("div");
     div.className = "post";
 
     div.innerHTML = `
       <h3>${p.title}</h3>
+
       <small style="opacity:0.7;">
-        ${p.date || ""}
+        ${p.writer || "익명"} · ${p.date || ""}
       </small>
+
       <p>${p.content}</p>
-      <button onclick="edit(${realIndex})">수정</button>
-      <button onclick="del(${realIndex})">삭제</button>
+
+      ${isOwner ? `
+        <button onclick="edit(${realIndex})">수정</button>
+        <button onclick="del(${realIndex})">삭제</button>
+      ` : ""}
     `;
 
     box.appendChild(div);
@@ -148,7 +153,7 @@ function renderPagination(total){
     const btn = document.createElement("button");
     btn.innerText = i;
 
-    btn.onclick = () => {
+    btn.onclick = ()=>{
       currentPage = i;
       loadPosts();
     };
@@ -161,6 +166,13 @@ function renderPagination(total){
 
 function del(i){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  let user = sessionStorage.getItem("user");
+
+  if(posts[i].writer !== user){
+    alert("본인 글만 삭제 가능");
+    return;
+  }
+
   posts.splice(i,1);
   localStorage.setItem("posts", JSON.stringify(posts));
   loadPosts();
@@ -168,6 +180,12 @@ function del(i){
 
 function edit(i){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  let user = sessionStorage.getItem("user");
+
+  if(posts[i].writer !== user){
+    alert("본인 글만 수정 가능");
+    return;
+  }
 
   localStorage.setItem("editIndex", i);
   localStorage.setItem("editTitle", posts[i].title);
