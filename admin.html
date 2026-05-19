@@ -58,6 +58,10 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <input id="title" placeholder="제목">
   <textarea id="content" rows="8" placeholder="내용"></textarea>
 
+  <label>
+    <input type="checkbox" id="pin"> 글 고정
+  </label>
+
   <button onclick="save()">저장</button>
 </div>
 
@@ -73,7 +77,6 @@ function save(){
 
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
   let user = sessionStorage.getItem("user");
-
   let now = new Date();
 
   let dateStr =
@@ -85,14 +88,13 @@ function save(){
     title: document.getElementById("title").value,
     content: document.getElementById("content").value,
     date: dateStr,
-    time: now.getTime()
+    time: now.getTime(),
+    pinned: document.getElementById("pin").checked
   };
 
   if(editIndex !== null){
     posts[editIndex] = post;
     localStorage.removeItem("editIndex");
-    localStorage.removeItem("editTitle");
-    localStorage.removeItem("editContent");
   } else {
     posts.push(post);
   }
