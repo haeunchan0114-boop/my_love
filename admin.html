@@ -282,10 +282,23 @@ document.getElementById("saveBtn").addEventListener("click", async ()=>{
       );
     }
 
-    /* 🔥 [이스터에그 수정 완료] 내용에 '사랑해' 단어가 포함되어 있으면 팝업창 변경 */
+    /* 🔥 [이스터에그 멀티 팝업 처리부] */
+    let hasEasterEgg = false;
+
+    // 1. '귀여운 하은' 조건 검사
+    if(title.includes("귀여운 하은") || content.includes("귀여운 하은")) {
+      alert("아니야 부정할게~! 난 안귀여워");
+      hasEasterEgg = true;
+    }
+    
+    // 2. '사랑해' 조건 검사
     if(content.includes("사랑해")) {
       alert("내가 더 사랑해 💖");
-    } else {
+      hasEasterEgg = true;
+    }
+
+    // 3. 둘 다 해당 안 될 때만 기본 알림 출력
+    if(!hasEasterEgg) {
       alert("저장 완료!");
     }
     
