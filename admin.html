@@ -285,19 +285,25 @@ document.getElementById("saveBtn").addEventListener("click", async ()=>{
     /* 🔥 [이스터에그 멀티 팝업 처리부] */
     let hasEasterEgg = false;
 
-    // 1. '귀여운 하은' 조건 검사
+    // 1. 글쓴이가 '아시'일 때 반응하는 이스터에그
+    if(user === "아시") {
+      alert("오늘도 예쁜 글 남겨줘서 고마워! 사랑해~");
+      hasEasterEgg = true;
+    }
+
+    // 2. '귀여운 하은' 조건 검사
     if(title.includes("귀여운 하은") || content.includes("귀여운 하은")) {
       alert("아니야 부정할게~! 난 안귀여워");
       hasEasterEgg = true;
     }
     
-    // 2. '사랑해' 조건 검사
+    // 3. '사랑해' 조건 검사
     if(content.includes("사랑해")) {
       alert("내가 더 사랑해 💖");
       hasEasterEgg = true;
     }
 
-    // 3. 둘 다 해당 안 될 때만 기본 알림 출력
+    // 4. 어떤 이스터에그도 발동하지 않았을 때만 기본 알림 출력
     if(!hasEasterEgg) {
       alert("저장 완료!");
     }
