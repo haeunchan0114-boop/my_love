@@ -5,9 +5,7 @@
 <title>글 쓰기</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{ box-sizing:border-box; }
 
 body{
   margin:0;
@@ -20,19 +18,16 @@ body{
   color:white;
 }
 
-/* 🔥 로그인창처럼 딱 고정 폭 */
 .card{
-  width:320px;   /* ← 로그인창 느낌 */
+  width:320px;
   background: rgba(255,255,255,0.12);
   padding:25px;
   border-radius:15px;
-
   display:flex;
   flex-direction:column;
   gap:10px;
 }
 
-/* 🔥 완전 동일 폭 기준 */
 input, textarea, button{
   width:100%;
   border:none;
@@ -40,36 +35,18 @@ input, textarea, button{
   font-family:inherit;
 }
 
-/* 제목 */
-input{
-  padding:10px;
-}
+input{ padding:10px; }
+textarea{ padding:10px; height:140px; resize:none; }
 
-/* 본문 */
-textarea{
-  padding:10px;
-  height:140px;
-  resize:none;
-}
-
-/* 버튼 */
 button{
   padding:10px;
   background:#00bcd4;
   color:white;
-  cursor:pointer;
   font-weight:bold;
+  cursor:pointer;
 }
 
-button:hover{
-  background:#009bb0;
-}
-
-/* 타이틀 */
-h2{
-  margin:0;
-  text-align:center;
-}
+h2{ margin:0; text-align:center; }
 </style>
 </head>
 
@@ -109,61 +86,70 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
+/* 수정 불러오기 */
 window.addEventListener("load", async () => {
 
   if(editId){
-    const ref = doc(db,"posts",editId);
-    const snap = await getDoc(ref);
+    const snap = await getDoc(doc(db,"posts",editId));
 
     if(snap.exists()){
-      const data = snap.data();
-      document.getElementById("title").value = data.title || "";
-      document.getElementById("content").value = data.content || "";
+      const d = snap.data();
+      document.getElementById("title").value = d.title || "";
+      document.getElementById("content").value = d.content || "";
     }
   }
 
   document.getElementById("saveBtn").addEventListener("click", savePost);
 });
 
+/* 저장 */
 async function savePost(){
 
-  const title = document.getElementById("title").value;
-  const content = document.getElementById("content").value;
-  const user = sessionStorage.getItem("user");
+  try{
 
-  if(!title || !content){
-    alert("내용 입력");
-    return;
+    const title = document.getElementById("title").value;
+    const content = document.getElementById("content").value;
+    const user = sessionStorage.getItem("user");
+
+    if(!title || !content){
+      alert("제목/내용 입력");
+      return;
+    }
+
+    const now = new Date();
+
+    const dateStr =
+      `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+      `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    if(editId){
+
+      await updateDoc(doc(db,"posts",editId),{
+        title,
+        content
+      });
+
+      localStorage.removeItem("editId");
+
+    } else {
+
+      await addDoc(collection(db,"posts"),{
+        writer:user,
+        title,
+        content,
+        date:dateStr,
+        time:now.getTime(),
+        pinned:false
+      });
+    }
+
+    // 🔥 무조건 이동
+    window.location.replace("home.html");
+
+  } catch(err){
+    console.log(err);
+    alert("저장 실패");
   }
-
-  const now = new Date();
-
-  const dateStr =
-    `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
-    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-  if(editId){
-
-    await updateDoc(doc(db,"posts",editId),{
-      title,
-      content
-    });
-
-    localStorage.removeItem("editId");
-
-  } else {
-
-    await addDoc(collection(db,"posts"),{
-      writer:user,
-      title,
-      content,
-      date:dateStr,
-      time:now.getTime(),
-      pinned:false
-    });
-  }
-
-  location.href="home.html";
 }
 
 </script>
