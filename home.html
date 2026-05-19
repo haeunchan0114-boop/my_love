@@ -80,13 +80,13 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <div class="controls">
     <input id="search" placeholder="제목 / 작성자 검색">
 
-    <!-- 🔥 기본값 최신순 -->
+    <!-- 🔥 기본 최신순 -->
     <select id="sort">
       <option value="new" selected>최신순</option>
       <option value="old">오래된순</option>
     </select>
 
-    <button onclick="location.href='admin.html'">글 쓰기!!</button>
+    <button onclick="location.href='admin.html'">글 작성</button>
   </div>
 
   <div id="posts"></div>
@@ -100,23 +100,16 @@ function getPosts(){
   return JSON.parse(localStorage.getItem("posts") || "[]");
 }
 
-// 🔥 날짜 강제 숫자화 (핵심)
-function fixDate(posts){
-  return posts.map(p=>{
-    if(!p.time){
-      p.time = new Date(p.date).getTime();
-    }
-    return p;
-  });
-}
-
 function render(reset = true){
 
-  let posts = fixDate(getPosts());
+  let posts = getPosts();
   let user = sessionStorage.getItem("user") || "";
 
   const keyword = document.getElementById("search").value;
-  const sort = document.getElementById("sort").value;
+
+  // 🔥 기본값 항상 최신순 유지
+  let sort = document.getElementById("sort").value || "new";
+  document.getElementById("sort").value = sort;
 
   if(reset){
     currentPage = 1;
@@ -130,7 +123,7 @@ function render(reset = true){
     );
   }
 
-  // 🔥 정렬 (완전 안정화 핵심)
+  // 🔥 정렬 (완전 안정)
   posts.sort((a,b)=>{
     return sort === "new"
       ? b.time - a.time
@@ -150,8 +143,8 @@ function render(reset = true){
     let isOwner = (p.writer === user);
 
     let realIndex = getPosts().findIndex(x =>
-      x.date === p.date &&
       x.title === p.title &&
+      x.date === p.date &&
       x.writer === p.writer
     );
 
@@ -175,6 +168,7 @@ function render(reset = true){
   renderPage(posts.length);
 }
 
+// 🔥 페이지 버튼
 function renderPage(total){
   let pageCount = Math.ceil(total / perPage);
 
@@ -232,6 +226,11 @@ function edit(i){
   location.href="admin.html";
 }
 
+// 🔥 이벤트 (핵심)
+document.getElementById("search").oninput = () => render(true);
+document.getElementById("sort").onchange = () => render(true);
+
+// 🔥 처음 실행 = 무조건 최신순
 render();
 </script>
 
