@@ -12,55 +12,147 @@ body{
   justify-content:center;
   align-items:center;
   font-family:Arial;
-  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
+  
+  /* 🔥 메인·로그인 화면과 완벽히 일치하는 무수한 별빛 밤하늘 배경 */
+  background: 
+    radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
+    radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
+    radial-gradient(circle at 70% 25%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 90px 90px,
+    radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 110px 110px,
+    radial-gradient(circle at 25% 65%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1.5px) 0 0 / 150px 150px,
+    radial-gradient(circle at 55% 80%, rgba(255, 255, 255, 0.25) 1.5px, transparent 1.5px) 0 0 / 130px 130px,
+    radial-gradient(circle at 85% 45%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1.5px) 0 0 / 160px 160px,
+    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.4) 2px, transparent 2px) 0 0 / 220px 220px,
+    radial-gradient(circle at 15% 45%, rgba(255, 255, 255, 0.35) 2px, transparent 2px) 0 0 / 260px 260px,
+    radial-gradient(circle at 75% 60%, rgba(255, 255, 255, 0.4) 2.5px, transparent 2.5px) 0 0 / 300px 300px,
+    linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 75%, #103b66 100%);
+    
   color:white;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 🔥 떨어지는 별똥별 효과 (동일하게 추가) */
+.shooting-stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+.star {
+  position: absolute;
+  top: -50px;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.1), 0 0 0 8px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,1);
+  animation: animateStar 4s linear infinite;
+  opacity: 0;
+}
+.star::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;
+  height: 1px;
+  background: linear-gradient(90deg, #fff, transparent);
+}
+.star:nth-child(1) { left: 20%; animation-delay: 0s; animation-duration: 3s; }
+.star:nth-child(2) { left: 50%; animation-delay: 1.5s; animation-duration: 4.5s; }
+.star:nth-child(3) { left: 80%; animation-delay: 3s; animation-duration: 3.5s; }
+
+@keyframes animateStar {
+  0% { transform: rotate(-45deg) translateX(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: rotate(-45deg) translateX(-1000px); opacity: 0; }
 }
 
 .card{
-  width:340px;
-  background: rgba(255,255,255,0.12);
-  padding:30px;
-  border-radius:15px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  width:360px;
+  /* 영롱한 투명 유리 상자 스타일 */
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 30px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .title{
-  text-align:center;
-  font-size:26px;
-  font-weight:bold;
-  margin-bottom:10px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  /* 글자 발광 효과 추가 */
+  text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
 
-input,textarea{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  box-sizing:border-box;
-  font-size:15px;
+input, textarea{
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  outline: none;
+  transition: all 0.3s;
+}
+
+input:focus, textarea:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #00bcd4;
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 textarea{
-  height:180px;
-  resize:none;
+  height: 200px;
+  resize: none;
+  line-height: 1.5;
 }
 
 button{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#00bcd4;
-  color:white;
-  cursor:pointer;
-  font-size:15px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00bcd4, #0097a7);
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4);
+  transition: all 0.3s;
+  margin-top: 5px;
+}
+
+button:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6);
 }
 </style>
 </head>
 
 <body>
+
+<div class="shooting-stars">
+  <div class="star"></div>
+  <div class="star"></div>
+  <div class="star"></div>
+</div>
 
 <div class="card">
 
@@ -109,67 +201,36 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
 
 console.log("🔥 Firebase 연결 완료");
 
-let editId =
-  localStorage.getItem("editId");
+let editId = localStorage.getItem("editId");
 
 /* 🔥 수정 글 불러오기 */
 window.addEventListener("load", async ()=>{
-
   if(editId){
-
     try{
-
-      const ref =
-        doc(db,"posts",editId);
-
-      const snap =
-        await getDoc(ref);
+      const ref = doc(db,"posts",editId);
+      const snap = await getDoc(ref);
 
       if(snap.exists()){
-
         const data = snap.data();
-
-        document.getElementById("title").value =
-          data.title || "";
-
-        document.getElementById("content").value =
-          data.content || "";
+        document.getElementById("title").value = data.title || "";
+        document.getElementById("content").value = data.content || "";
       }
-
     }catch(e){
-
-      console.log(
-        "불러오기 실패:",
-        e
-      );
-
+      console.log("불러오기 실패:", e);
     }
   }
 });
 
 /* 🔥 저장 */
-document.getElementById("saveBtn")
-.addEventListener("click", async ()=>{
-
+document.getElementById("saveBtn").addEventListener("click", async ()=>{
   try{
-
-    const title =
-      document.getElementById("title")
-      .value
-      .trim();
-
-    const content =
-      document.getElementById("content")
-      .value
-      .trim();
-
-    const user =
-      sessionStorage.getItem("user");
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+    const user = sessionStorage.getItem("user");
 
     if(!user){
       alert("로그인 필요");
@@ -182,89 +243,56 @@ document.getElementById("saveBtn")
     }
 
     const now = new Date();
-
-    const dateStr =
-
-      `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
-
-      `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const dateStr = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+                    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
     /* 🔥 수정 */
     if(editId){
+      const ref = doc(db,"posts",editId);
+      const snap = await getDoc(ref);
 
-      const ref =
-        doc(db,"posts",editId);
-
-      const snap =
-        await getDoc(ref);
-
-      // 문서 존재 시 수정
       if(snap.exists()){
-
         await updateDoc(ref,{
-
           title,
           content
-
         });
-
-      }
-
-      // 문서 없으면 새 글 저장
-      else {
-
+      } else {
         await addDoc(
           collection(db,"posts"),
           {
-
             writer:user,
             title,
             content,
             date:dateStr,
             time:Date.now(),
             pinned:false
-
           }
         );
       }
-
       localStorage.removeItem("editId");
-
     }
-
     /* 🔥 새 글 */
     else {
-
       await addDoc(
         collection(db,"posts"),
         {
-
           writer:user,
           title,
           content,
           date:dateStr,
           time:Date.now(),
           pinned:false
-
         }
       );
     }
 
     alert("저장 완료!");
-
-    location.href =
-      "home.html";
+    location.href = "home.html";
 
   }catch(err){
-
-    console.error(
-      "🔥 저장 실패:",
-      err
-    );
-
+    console.error("🔥 저장 실패:", err);
     alert("저장 실패");
   }
-
 });
 
 </script>
