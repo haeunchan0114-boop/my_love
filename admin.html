@@ -2,12 +2,12 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 쓰는 곳!</title>
+<title>글 쓰기</title>
 
 <style>
 body{
   margin:0;
-  min-height:100vh;
+  height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -16,48 +16,55 @@ body{
   color:white;
 }
 
+/* 🔥 완전 중앙 카드 */
 .card{
-  width:400px;
+  width:380px;
   background: rgba(255,255,255,0.12);
   padding:25px;
   border-radius:15px;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
+/* 입력 */
 input,textarea{
   width:100%;
   padding:10px;
-  margin-top:10px;
   border:none;
   border-radius:10px;
+  outline:none;
+  font-size:14px;
 }
 
+/* 버튼 */
 button{
   width:100%;
-  margin-top:15px;
   padding:10px;
   border:none;
   border-radius:10px;
   background:#00bcd4;
   color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  background:#009bb0;
 }
 </style>
 </head>
 
 <body>
 
-<script>
-if(sessionStorage.getItem("auth") !== "ok"){
-  location.href="index.html";
-}
-</script>
-
 <div class="card">
-  <h2>글 쓰기</h2>
+  <h2 style="text-align:center;">글 쓰기</h2>
 
   <input id="title" placeholder="제목">
   <textarea id="content" rows="8" placeholder="내용"></textarea>
 
-  <button id="saveBtn">저장하기!</button>
+  <button id="saveBtn">저장</button>
 </div>
 
 <script type="module">
@@ -85,32 +92,32 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 🔥 수정 글 불러오기 (무조건 실행) */
-window.addEventListener("load", async () => {
+/* 🔥 안전 로딩 */
+document.addEventListener("DOMContentLoaded", async () => {
 
   if(editId){
-
-    const ref = doc(db, "posts", editId);
+    const ref = doc(db,"posts",editId);
     const snap = await getDoc(ref);
 
     if(snap.exists()){
       const data = snap.data();
-
       document.getElementById("title").value = data.title || "";
       document.getElementById("content").value = data.content || "";
     }
   }
+
+  document.getElementById("saveBtn").addEventListener("click", savePost);
 });
 
 /* 🔥 저장 */
 async function savePost(){
 
-  const user = sessionStorage.getItem("user");
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
+  const user = sessionStorage.getItem("user");
 
   if(!title || !content){
-    alert("내용을 입력해줘!");
+    alert("내용 입력해");
     return;
   }
 
@@ -122,9 +129,7 @@ async function savePost(){
 
   if(editId){
 
-    const ref = doc(db, "posts", editId);
-
-    await updateDoc(ref, {
+    await updateDoc(doc(db,"posts",editId),{
       title,
       content
     });
@@ -133,21 +138,18 @@ async function savePost(){
 
   } else {
 
-    await addDoc(collection(db, "posts"), {
-      writer: user,
+    await addDoc(collection(db,"posts"),{
+      writer:user,
       title,
       content,
-      date: dateStr,
-      time: now.getTime(),
-      pinned: false
+      date:dateStr,
+      time:now.getTime(),
+      pinned:false
     });
   }
 
-  location.href = "home.html";
+  location.href="home.html";
 }
-
-/* 🔥 핵심: 버튼 연결 */
-document.getElementById("saveBtn").addEventListener("click", savePost);
 
 </script>
 
