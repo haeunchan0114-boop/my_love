@@ -9,36 +9,30 @@ body{
   margin:0;
   min-height:100vh;
   font-family:Arial;
-
-  /* 🔥 배경 깨짐 방지 */
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
-  background-repeat:no-repeat;
   background-attachment:fixed;
+  color:white;
 
   display:flex;
   justify-content:center;
   align-items:center;
-  color:white;
 }
 
-/* 🔥 카드 중앙 안정화 */
 .card{
   width:400px;
   background: rgba(255,255,255,0.12);
   padding:25px;
   border-radius:15px;
-  box-shadow: 0 0 20px rgba(0,200,255,0.2);
+  box-shadow:0 0 20px rgba(0,200,255,0.2);
 }
 
-/* 🔥 중요: 박스 깨짐 방지 */
 input,textarea{
   width:100%;
   padding:10px;
   margin-top:10px;
   border:none;
   border-radius:10px;
-
-  box-sizing:border-box; /* 🔥 핵심 */
+  box-sizing:border-box;
 }
 
 textarea{
@@ -79,26 +73,40 @@ if(sessionStorage.getItem("auth") !== "ok"){
 <script>
 let editIndex = localStorage.getItem("editIndex");
 
+// 🔥 기존 글 수정 시 값 불러오기
 if(editIndex !== null){
   document.getElementById("title").value = localStorage.getItem("editTitle");
   document.getElementById("content").value = localStorage.getItem("editContent");
 }
 
 function save(){
+
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
   let writer = document.getElementById("writer").value || "익명";
   let title = document.getElementById("title").value;
   let content = document.getElementById("content").value;
 
-  let d = new Date();
-  let dateStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  let now = new Date();
 
+  let newPost = {
+    writer,
+    title,
+    content,
+    date: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`,
+    time: now.getTime() // 🔥 정렬 핵심 값
+  };
+
+  // 🔥 수정 모드
   if(editIndex !== null){
-    posts[editIndex] = { writer, title, content, date: dateStr };
+    posts[editIndex] = newPost;
     localStorage.removeItem("editIndex");
-  } else {
-    posts.push({ writer, title, content, date: dateStr });
+    localStorage.removeItem("editTitle");
+    localStorage.removeItem("editContent");
+  }
+  // 🔥 새 글
+  else{
+    posts.push(newPost);
   }
 
   localStorage.setItem("posts", JSON.stringify(posts));
