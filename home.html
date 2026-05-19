@@ -10,8 +10,6 @@ body{
   font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
-  min-height:100vh;
-  background-attachment: fixed;
 }
 
 .header{
@@ -33,9 +31,9 @@ body{
 
 input,select{
   padding:8px;
-  border-radius:8px;
-  border:none;
   margin:5px;
+  border:none;
+  border-radius:8px;
 }
 
 .post{
@@ -52,11 +50,11 @@ button{
   border-radius:8px;
   background:#00bcd4;
   color:white;
+  cursor:pointer;
 }
 
 #pagination button{
   margin:3px;
-  padding:6px 10px;
 }
 </style>
 </head>
@@ -108,13 +106,15 @@ function fixDate(){
 function loadPosts(){
   fixDate();
 
-  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]").slice();
   let user = sessionStorage.getItem("user") || "";
 
   const keyword = document.getElementById("search").value;
   const sort = document.getElementById("sort").value;
 
-  // 🔍 검색
+  currentPage = 1; // 🔥 정렬/검색 시 페이지 초기화
+
+  // 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -122,11 +122,10 @@ function loadPosts(){
     );
   }
 
-  // 🔽 정렬
+  // 정렬
   posts.sort((a,b)=>{
     let da = new Date(a.date);
     let db = new Date(b.date);
-
     return sort === "new" ? db - da : da - db;
   });
 
@@ -138,8 +137,8 @@ function loadPosts(){
 
   let pagePosts = posts.slice(start, end);
 
-  pagePosts.forEach((p,i)=>{
-    const realIndex = start + i;
+  pagePosts.forEach((p, i)=>{
+    let realIndex = start + i;
     let isOwner = (p.writer === user);
 
     const div = document.createElement("div");
