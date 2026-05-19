@@ -2,47 +2,36 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>바다 글 목록</title>
+<title>나의 사랑하는 별에게</title>
 
 <style>
 body{
   margin:0;
-  font-family: Arial;
+  font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
 }
 
-/* 상단 */
 .header{
   text-align:center;
   padding:20px;
-  font-size:24px;
+  font-size:26px;
   font-weight:bold;
 }
 
-/* 카드 */
 .card{
   width:80%;
   margin:20px auto;
 }
 
-/* 글 박스 */
 .post{
   background: rgba(255,255,255,0.12);
-  border:1px solid rgba(255,255,255,0.2);
   padding:15px;
   margin:15px 0;
   border-radius:15px;
   box-shadow: 0 0 15px rgba(0,200,255,0.2);
-  transition:0.3s;
 }
 
-.post:hover{
-  transform: translateY(-3px);
-  box-shadow: 0 0 25px rgba(0,200,255,0.4);
-}
-
-/* 버튼 */
 button{
   margin-right:5px;
   padding:6px 10px;
@@ -52,9 +41,8 @@ button{
   color:white;
   cursor:pointer;
 }
-
 button:hover{
-  background:#00a3b8;
+  background:#009bb0;
 }
 </style>
 </head>
@@ -76,41 +64,41 @@ if(sessionStorage.getItem("auth") !== "ok"){
 
 <script>
 function loadPosts(){
-  const posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
   const box = document.getElementById("posts");
+
   box.innerHTML = "";
 
-  posts.forEach((p, index) => {
+  posts.forEach((p, i)=>{
     const div = document.createElement("div");
     div.className = "post";
 
     div.innerHTML = `
       <h3>${p.title}</h3>
       <p>${p.content}</p>
-
-      <button onclick="editPost(${index})">수정</button>
-      <button onclick="deletePost(${index})">삭제</button>
+      <button onclick="edit(${i})">수정</button>
+      <button onclick="del(${i})">삭제</button>
     `;
 
     box.appendChild(div);
   });
 }
 
-function deletePost(index){
+function del(i){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-  posts.splice(index, 1);
+  posts.splice(i,1);
   localStorage.setItem("posts", JSON.stringify(posts));
   loadPosts();
 }
 
-function editPost(index){
+function edit(i){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  localStorage.setItem("editIndex", index);
-  localStorage.setItem("editTitle", posts[index].title);
-  localStorage.setItem("editContent", posts[index].content);
+  localStorage.setItem("editIndex", i);
+  localStorage.setItem("editTitle", posts[i].title);
+  localStorage.setItem("editContent", posts[i].content);
 
-  location.href = "admin.html";
+  location.href="admin.html";
 }
 
 loadPosts();
