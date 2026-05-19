@@ -16,7 +16,6 @@ body{
   color:white;
 }
 
-/* 🔥 완전 중앙 카드 */
 .card{
   width:380px;
   background: rgba(255,255,255,0.12);
@@ -28,17 +27,14 @@ body{
   gap:10px;
 }
 
-/* 입력 */
 input,textarea{
   width:100%;
   padding:10px;
   border:none;
   border-radius:10px;
   outline:none;
-  font-size:14px;
 }
 
-/* 버튼 */
 button{
   width:100%;
   padding:10px;
@@ -92,11 +88,11 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 🔥 안전 로딩 */
-document.addEventListener("DOMContentLoaded", async () => {
+/* 🔥 수정 글 불러오기 (무조건 안정 방식) */
+window.addEventListener("load", async () => {
 
   if(editId){
-    const ref = doc(db,"posts",editId);
+    const ref = doc(db, "posts", editId);
     const snap = await getDoc(ref);
 
     if(snap.exists()){
@@ -105,19 +101,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("content").value = data.content || "";
     }
   }
-
-  document.getElementById("saveBtn").addEventListener("click", savePost);
 });
 
 /* 🔥 저장 */
 async function savePost(){
 
+  const user = sessionStorage.getItem("user");
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
-  const user = sessionStorage.getItem("user");
 
   if(!title || !content){
-    alert("내용 입력해");
+    alert("제목/내용 입력");
     return;
   }
 
@@ -150,6 +144,9 @@ async function savePost(){
 
   location.href="home.html";
 }
+
+/* 🔥 버튼 연결 (이게 핵심) */
+document.getElementById("saveBtn").addEventListener("click", savePost);
 
 </script>
 
