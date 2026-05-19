@@ -17,20 +17,23 @@ body{
   color:white;
 }
 
-.title{
-  font-size:28px;
-  font-weight:bold;
-  margin-bottom:20px;
-}
-
+/* 🔥 로그인 카드랑 완전 동일 */
 .card{
-  width:280px;
   background: rgba(255,255,255,0.12);
   padding:30px;
   border-radius:15px;
   display:flex;
   flex-direction:column;
   gap:10px;
+
+  width:240px;   /* 🔥 로그인과 동일 */
+  box-sizing:border-box;
+}
+
+.title{
+  font-size:28px;
+  font-weight:bold;
+  margin-bottom:20px;
 }
 
 input, textarea{
@@ -38,15 +41,18 @@ input, textarea{
   padding:10px;
   border:none;
   border-radius:10px;
+  box-sizing:border-box;
   font-family:inherit;
 }
 
+/* 🔥 글쓰기만 살짝 높게 */
 textarea{
-  height:180px;
+  height:160px;
   resize:none;
 }
 
 button{
+  width:100%;
   padding:10px;
   border:none;
   border-radius:10px;
@@ -92,7 +98,7 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 수정 로드 */
+/* 수정 불러오기 */
 window.addEventListener("load", async () => {
   if(editId){
     const snap = await getDoc(doc(db,"글",editId));
