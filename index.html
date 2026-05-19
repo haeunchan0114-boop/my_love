@@ -9,6 +9,7 @@ body{
   margin:0;
   height:100vh;
   display:flex;
+  flex-direction:column;
   justify-content:center;
   align-items:center;
   font-family:Arial;
@@ -16,6 +17,13 @@ body{
   color:white;
   min-height:100vh;
   background-attachment: fixed;
+}
+
+/* 🔥 제목 */
+.title{
+  font-size:28px;
+  font-weight:bold;
+  margin-bottom:20px;
 }
 
 .card{
@@ -48,6 +56,9 @@ button:hover{
 
 <body>
 
+<!-- 🔥 추가된 제목 -->
+<div class="title">나의 빛나는 별에게</div>
+
 <div class="card">
   <h2>로그인</h2>
   <input type="password" id="pw" placeholder="비밀번호">
@@ -57,14 +68,11 @@ button:hover{
 
 <script>
 function login(){
-  let user = prompt("이름 입력");
-
   if(document.getElementById("pw").value === "0416"){
     sessionStorage.setItem("auth","ok");
-    sessionStorage.setItem("user", user || "익명");
     location.href="home.html";
   } else {
-    alert("비밀번호가 틀렸어!");
+    alert("비밀번호 틀림");
   }
 }
 </script>
