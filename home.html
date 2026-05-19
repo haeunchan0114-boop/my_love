@@ -25,6 +25,7 @@ body{
   margin:20px auto;
 }
 
+/* 🔥 소제목 + 컨트롤 유지 */
 .controls{
   text-align:center;
   margin-bottom:15px;
@@ -37,6 +38,7 @@ input,select{
   border-radius:8px;
 }
 
+/* 🔥 글 카드 */
 .post{
   background: rgba(255,255,255,0.12);
   padding:15px;
@@ -68,7 +70,7 @@ if(sessionStorage.getItem("auth") !== "ok"){
 }
 </script>
 
-<!-- 🔥 기존 헤더 유지 -->
+<!-- 🔥 제목 -->
 <div class="header">
   <div style="font-size:34px;font-weight:bold;">
     🌟 나의 사랑하는 별에게 🌟
@@ -80,9 +82,11 @@ if(sessionStorage.getItem("auth") !== "ok"){
 
 <div class="card">
 
-  <!-- 🔥 기존 컨트롤 유지 (삭제 안함) -->
+  <!-- 🔥 소제목 바로 아래 UI (요구대로 유지) -->
   <div class="controls">
-    <input id="search" placeholder="제목 / 작성자">
+
+    <input id="searchTitle" placeholder="제목 검색">
+    <input id="searchWriter" placeholder="작성자 검색">
 
     <select id="sort">
       <option value="new">최신순</option>
@@ -90,6 +94,7 @@ if(sessionStorage.getItem("auth") !== "ok"){
     </select>
 
     <button onclick="location.href='admin.html'">글 쓰러가기!</button>
+
   </div>
 
   <div id="posts"></div>
@@ -120,6 +125,7 @@ const db = getFirestore(app);
 
 let posts = [];
 
+/* 🔥 실시간 */
 onSnapshot(collection(db,"posts"), snap=>{
   posts = [];
 
@@ -133,27 +139,31 @@ onSnapshot(collection(db,"posts"), snap=>{
   render();
 });
 
+/* 🔥 렌더 */
 function render(){
 
-  const user = sessionStorage.getItem("user");
   const box = document.getElementById("posts");
   box.innerHTML = "";
 
-  let keyword = document.getElementById("search").value;
-  let sort = document.getElementById("sort").value;
+  const user = sessionStorage.getItem("user");
 
-  let filtered = [...posts];
+  const titleQ = document.getElementById("searchTitle").value;
+  const writerQ = document.getElementById("searchWriter").value;
+  const sort = document.getElementById("sort").value;
 
-  // 🔍 검색
-  if(keyword){
-    filtered = filtered.filter(p =>
-      p.title.includes(keyword) ||
-      p.writer.includes(keyword)
-    );
+  let list = [...posts];
+
+  /* 🔍 필터 */
+  if(titleQ){
+    list = list.filter(p => p.title.includes(titleQ));
   }
 
-  // 📌 고정 먼저 + 나머지 정렬
-  filtered.sort((a,b)=>{
+  if(writerQ){
+    list = list.filter(p => p.writer.includes(writerQ));
+  }
+
+  /* 📌 고정 + 정렬 */
+  list.sort((a,b)=>{
 
     if(a.pinned && !b.pinned) return -1;
     if(!a.pinned && b.pinned) return 1;
@@ -163,7 +173,7 @@ function render(){
       : a.time - b.time;
   });
 
-  filtered.forEach(p=>{
+  list.forEach(p=>{
 
     const div = document.createElement("div");
     div.className="post";
@@ -208,7 +218,9 @@ window.editPost = function(id){
   location.href="admin.html";
 };
 
-document.getElementById("search").oninput = render;
+/* 🔥 실시간 입력 반영 */
+document.getElementById("searchTitle").oninput = render;
+document.getElementById("searchWriter").oninput = render;
 document.getElementById("sort").onchange = render;
 
 </script>
