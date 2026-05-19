@@ -78,7 +78,29 @@ if(sessionStorage.getItem("auth") !== "ok"){
 let currentPage = 1;
 const postsPerPage = 5;
 
+/* 🔥 핵심: 기존 글 날짜 자동 추가 */
+function fixOldPosts(){
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+
+  let changed = false;
+
+  posts = posts.map(p => {
+    if(!p.date){
+      let today = new Date();
+      p.date = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+      changed = true;
+    }
+    return p;
+  });
+
+  if(changed){
+    localStorage.setItem("posts", JSON.stringify(posts));
+  }
+}
+
 function loadPosts(){
+  fixOldPosts(); // 👈 먼저 날짜 보정
+
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
   const box = document.getElementById("posts");
 
@@ -97,7 +119,9 @@ function loadPosts(){
 
     div.innerHTML = `
       <h3>${p.title}</h3>
-      <small style="opacity:0.7;">${p.date || ""}</small>
+      <small style="opacity:0.7;">
+        ${p.date || ""}
+      </small>
       <p>${p.content}</p>
       <button onclick="edit(${realIndex})">수정</button>
       <button onclick="del(${realIndex})">삭제</button>
