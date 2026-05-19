@@ -22,7 +22,7 @@ body{
     radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.4) 2px, transparent 2px) 0 0 / 220px 220px,
     radial-gradient(circle at 15% 45%, rgba(255, 255, 255, 0.35) 2px, transparent 2px) 0 0 / 260px 260px,
     radial-gradient(circle at 75% 60%, rgba(255, 255, 255, 0.4) 2.5px, transparent 2.5px) 0 0 / 300px 300px,
-    linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 70%, #103b66 100%);
+    linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 65%, #103b66 100%);
     
   color:white;
   background-attachment: fixed;
@@ -70,44 +70,45 @@ body{
   100% { transform: rotate(-45deg) translateX(-1000px); opacity: 0; }
 }
 
-/* 🔥 리얼한 바다 물결 컨테이너 */
+/* 🔥 강하고 역동적인 바다 물결 컨테이너 */
 .ocean { 
-  height: 150px;
+  height: 180px; /* 전체적인 바다 높이 상향 */
   width: 100%;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: #144775;
-  box-shadow: 0 -15px 40px rgba(16, 59, 102, 0.6);
+  background: #103b66;
+  box-shadow: 0 -20px 50px rgba(11, 43, 78, 0.8);
   z-index: -1;
 }
 .wave {
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,110 350,10 500,60 C650,110 850,10 1000,60 C1150,110 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%23144775; opacity:0.4;"/></svg>') repeat-x;
+  /* SVG 파도 곡선의 굴곡을 더 가파르고 깊게 수정 */
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,50 C150,120 350,-10 500,50 C650,120 850,-10 1000,50 C1150,120 1300,50 1300,50 L1300,120 L0,120 Z" style="fill:%23103b66; opacity:0.35;"/></svg>') repeat-x;
   position: absolute;
-  top: -55px;
+  top: -85px; /* 파도가 높이 치솟도록 위치 조절 */
   width: 6400px;
-  height: 60px;
-  animation: waveMoving 14s ease-in-out infinite, waveRolling 4s ease-in-out infinite alternate;
+  height: 90px; /* 개별 파도 높이 확대 */
+  animation: waveMoving 10s linear infinite, waveRolling 3s ease-in-out infinite alternate;
 }
 .wave:nth-of-type(2) {
-  top: -45px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,100 350,20 500,60 C650,100 850,20 1000,60 C1150,100 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%231c6294; opacity:0.5;"/></svg>') repeat-x;
-  animation: waveMoving 10s ease-in-out -2s infinite, waveRolling 5s ease-in-out infinite alternate;
+  top: -70px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,50 C150,110 350,0 500,50 C650,110 850,0 1000,50 C1150,110 1300,50 1300,50 L1300,120 L0,120 Z" style="fill:%23144775; opacity:0.5;"/></svg>') repeat-x;
+  animation: waveMoving 7s linear -1.5s infinite, waveRolling 2.5s ease-in-out infinite alternate;
 }
 .wave:nth-of-type(3) {
-  top: -35px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,90 350,30 500,60 C650,90 850,30 1000,60 C1150,90 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%23144775; opacity:1;"/></svg>') repeat-x;
-  animation: waveMoving 7s ease-in-out -1s infinite, waveRolling 3.5s ease-in-out infinite alternate;
+  top: -50px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,50 C150,100 350,10 500,50 C650,100 850,10 1000,50 C1150,100 1300,50 1300,50 L1300,120 L0,120 Z" style="fill:%230b2b4e; opacity:1;"/></svg>') repeat-x;
+  animation: waveMoving 5s linear -0.5s infinite, waveRolling 2s ease-in-out infinite alternate;
 }
 
 @keyframes waveMoving {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-1600px); }
+  100% { transform: translateX(-1600px); } /* 좌우로 빠르게 치는 파도 */
 }
 @keyframes waveRolling {
   0% { transform: translateY(0); }
-  100% { transform: translateY(-12px); } /* 상하 일렁임 효과로 진짜 바다처럼 수정 */
+  100% { transform: translateY(-28px); } /* 위아래 일렁임 폭을 2배 이상 키워 강한 물결 연출 */
 }
 
 /* 기본 UI 구성 요소 */
@@ -117,7 +118,7 @@ body{
   text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
 .sub{ margin-top:10px; font-size:16px; opacity:0.85; letter-spacing: 2px; }
-.card{ width:85%; max-width: 800px; margin:20px auto; padding-bottom: 180px; }
+.card{ width:85%; max-width: 800px; margin:20px auto; padding-bottom: 220px; } /* 파도가 높아진 만큼 여백 추가 확보 */
 .controls{ text-align:center; margin-bottom:25px; }
 
 input, select{
@@ -146,7 +147,7 @@ button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 2
 .post button { background: rgba(255, 255, 255, 0.15); box-shadow: none; font-weight: normal; font-size: 13px; padding: 5px 10px; }
 .post button:hover { background: rgba(255, 255, 255, 0.25); box-shadow: none; }
 
-/* 🔥 페이지네이션 디자인 */
+/* 페이지네이션 디자인 */
 .pagination {
   text-align: center;
   margin-top: 25px;
@@ -239,11 +240,11 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let posts = [];
 
-/* 🔥 페이징 변수 선언 */
+/* 페이징 변수 선언 */
 let currentPage = 1;
 const postsPerPage = 5;
 
-/* 🔥 실시간 데이터 */
+/* 실시간 데이터 */
 onSnapshot(
   collection(db,"posts"),
   (snap)=>{
@@ -267,7 +268,7 @@ onSnapshot(
   }
 );
 
-/* 🔥 렌더 함수 */
+/* 렌더 함수 */
 function render(){
   const box = document.getElementById("posts");
   const pageBox = document.getElementById("pagination");
@@ -298,7 +299,7 @@ function render(){
 
   if(list.length === 0){ return; }
 
-  /* 🔥 [핵심] 5개 단위 데이터 쪼개기(페이징 계산) */
+  /* 5개 단위 데이터 쪼개기(페이징 계산) */
   const totalPages = Math.ceil(list.length / postsPerPage);
   if(currentPage > totalPages) currentPage = totalPages || 1;
 
@@ -306,7 +307,7 @@ function render(){
   const endIndex = startIndex + postsPerPage;
   const paginatedList = list.slice(startIndex, endIndex);
 
-  /* 🔥 화면에 출력 (잘라진 5개 데이터만) */
+  /* 화면에 출력 (잘라진 5개 데이터만) */
   paginatedList.forEach((p)=>{
     const div = document.createElement("div");
     div.className = "post";
@@ -330,16 +331,14 @@ function render(){
     box.appendChild(div);
   });
 
-  /* 🔥 페이지네이션 버튼 생성기 */
+  /* 페이지네이션 버튼 생성기 */
   if (totalPages > 1) {
-    // [이전] 버튼
     const prevBtn = document.createElement("button");
     prevBtn.innerText = "이전";
     prevBtn.disabled = currentPage === 1;
     prevBtn.onclick = () => { currentPage--; render(); };
     pageBox.appendChild(prevBtn);
 
-    // 숫자 번호 버튼들
     for (let i = 1; i <= totalPages; i++) {
       const pageBtn = document.createElement("button");
       pageBtn.innerText = i;
@@ -348,7 +347,6 @@ function render(){
       pageBox.appendChild(pageBtn);
     }
 
-    // [다음] 버튼
     const nextBtn = document.createElement("button");
     nextBtn.innerText = "다음";
     nextBtn.disabled = currentPage === totalPages;
@@ -357,7 +355,7 @@ function render(){
   }
 }
 
-/* 🔥 삭제 */
+/* 삭제 */
 window.del = async (id,writer)=>{
   if(sessionStorage.getItem("user") !== writer){
     alert("본인만 가능");
@@ -366,24 +364,23 @@ window.del = async (id,writer)=>{
   await deleteDoc(doc(db,"posts",id));
 };
 
-/* 🔥 고정 */
+/* 고정 */
 window.pin = async (id,pinned)=>{
   await updateDoc(doc(db,"posts",id), { pinned: !pinned });
 };
 
-/* 🔥 수정 */
+/* 수정 */
 window.edit = (id)=>{
   localStorage.setItem("editId", id);
   location.href = "admin.html";
 };
 
-/* 🔥 검색필터 가동 시 1페이지로 리셋하면서 가동 */
 const triggerSearch = () => {
   currentPage = 1;
   render();
 };
 
-/* 🔥 검색 & 정렬 이벤트 */
+/* 검색 & 정렬 이벤트 */
 document.getElementById("searchTitle").addEventListener("input", triggerSearch);
 document.getElementById("searchWriter").addEventListener("input", triggerSearch);
 document.getElementById("sort").addEventListener("change", triggerSearch);
