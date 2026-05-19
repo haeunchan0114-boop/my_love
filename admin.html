@@ -17,10 +17,10 @@ body{
 }
 
 .card{
+  width:320px;
   background: rgba(255,255,255,0.12);
-  padding:30px;
+  padding:25px;
   border-radius:15px;
-  width:300px;
   display:flex;
   flex-direction:column;
   gap:10px;
@@ -35,7 +35,7 @@ input,textarea{
 }
 
 textarea{
-  height:160px;
+  height:150px;
   resize:none;
 }
 
@@ -82,13 +82,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+console.log("🔥 Firebase 연결 완료:", db);
+
 let editId = localStorage.getItem("editId");
 
-/* 🔥 수정 글 불러오기 */
+/* 🔥 수정 데이터 불러오기 */
 window.addEventListener("load", async ()=>{
 
   if(editId){
-
     try{
       const snap = await getDoc(doc(db,"posts",editId));
 
@@ -98,13 +99,13 @@ window.addEventListener("load", async ()=>{
         document.getElementById("content").value = data.content || "";
       }
 
-    } catch(e){
+    }catch(e){
       console.log("불러오기 실패:", e);
     }
   }
 });
 
-/* 🔥 저장 버튼 */
+/* 🔥 저장 */
 document.getElementById("saveBtn").addEventListener("click", async ()=>{
 
   try{
@@ -113,14 +114,15 @@ document.getElementById("saveBtn").addEventListener("click", async ()=>{
     const content = document.getElementById("content").value.trim();
     const user = sessionStorage.getItem("user");
 
-    // 🚨 필수 체크
+    console.log("저장 데이터:", {title, content, user});
+
     if(!user){
       alert("로그인 필요");
       return;
     }
 
     if(!title || !content){
-      alert("제목과 내용을 입력하세요");
+      alert("제목/내용 입력");
       return;
     }
 
@@ -130,7 +132,7 @@ document.getElementById("saveBtn").addEventListener("click", async ()=>{
       `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
       `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    // 🔥 수정 모드
+    // 🔥 수정
     if(editId){
 
       await updateDoc(doc(db,"posts",editId),{
@@ -154,11 +156,12 @@ document.getElementById("saveBtn").addEventListener("click", async ()=>{
       });
     }
 
+    alert("저장 완료!");
     location.href="home.html";
 
-  } catch(err){
-    console.error("🔥 저장 실패:", err);
-    alert("저장 실패 (콘솔 확인)");
+  }catch(err){
+    console.error("🔥 저장 실패 원인:", err);
+    alert("저장 실패 (F12 콘솔 확인)");
   }
 
 });
