@@ -10,7 +10,7 @@ body{
   min-height:100vh;
   font-family:Arial;
   
-  /* 🔥 별이 쏟아지는 밤하늘 배경 (물결과 분리하기 위해 고정) */
+  /* 🔥 별이 쏟아지는 밤하늘 배경 */
   background: 
     radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
     radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
@@ -26,171 +26,159 @@ body{
     
   color:white;
   background-attachment: fixed;
-  overflow-x: hidden; /* 물결이 좌우로 움직일 때 스크롤바 생김 방지 */
+  overflow-x: hidden;
   position: relative;
 }
 
-/* 🔥 하단 일렁이는 바다 물결 컨테이너 */
+/* 🔥 떨어지는 별똥별 효과 */
+.shooting-stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+.star {
+  position: absolute;
+  top: -50px;
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.1), 0 0 0 8px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,1);
+  animation: animateStar 4s linear infinite;
+  opacity: 0;
+}
+.star::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 150px;
+  height: 1px;
+  background: linear-gradient(90deg, #fff, transparent);
+}
+.star:nth-child(1) { left: 30%; animation-delay: 0s; animation-duration: 3s; }
+.star:nth-child(2) { left: 60%; animation-delay: 1.5s; animation-duration: 4.5s; }
+.star:nth-child(3) { left: 80%; animation-delay: 3s; animation-duration: 3.5s; }
+
+@keyframes animateStar {
+  0% { transform: rotate(-45deg) translateX(0); opacity: 1; }
+  70% { opacity: 1; }
+  100% { transform: rotate(-45deg) translateX(-1000px); opacity: 0; }
+}
+
+/* 🔥 리얼한 바다 물결 컨테이너 */
 .ocean { 
-  height: 140px; /* 물결 높이 */
+  height: 150px;
   width: 100%;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   background: #144775;
-  box-shadow: 0 -10px 30px rgba(16, 59, 102, 0.5);
-  z-index: -1; /* 글을 가리지 않도록 뒤로 보냄 */
+  box-shadow: 0 -15px 40px rgba(16, 59, 102, 0.6);
+  z-index: -1;
 }
-
-/* 개별 물결 곡선 스타일링 */
 .wave {
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,100 350,20 500,60 C650,100 850,20 1000,60 C1150,100 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%23144775; opacity:0.5;"/></svg>') repeat-x;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,110 350,10 500,60 C650,110 850,10 1000,60 C1150,110 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%23144775; opacity:0.4;"/></svg>') repeat-x;
   position: absolute;
-  top: -60px;
+  top: -55px;
   width: 6400px;
   height: 60px;
-  animation: wave 12s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;
-  transform: translate3d(0, 0, 0);
+  animation: waveMoving 14s ease-in-out infinite, waveRolling 4s ease-in-out infinite alternate;
 }
-
-/* 두 번째 물결 (엇갈리게 움직여서 입체감 생성) */
 .wave:nth-of-type(2) {
-  top: -50px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,90 350,30 500,60 C650,90 850,30 1000,60 C1150,90 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%231c6294; opacity:0.4;"/></svg>') repeat-x;
-  animation: wave 9s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -2s infinite;
-  opacity: 1;
+  top: -45px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,100 350,20 500,60 C650,100 850,20 1000,60 C1150,100 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%231c6294; opacity:0.5;"/></svg>') repeat-x;
+  animation: waveMoving 10s ease-in-out -2s infinite, waveRolling 5s ease-in-out infinite alternate;
 }
-
-/* 세 번째 앞쪽 물결 */
 .wave:nth-of-type(3) {
-  top: -40px;
-  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,80 350,40 500,60 C650,80 850,40 1000,60 C1150,80 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%23144775; opacity:1;"/></svg>') repeat-x;
-  animation: wave 6s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -1s infinite;
+  top: -35px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,90 350,30 500,60 C650,90 850,30 1000,60 C1150,90 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%23144775; opacity:1;"/></svg>') repeat-x;
+  animation: waveMoving 7s ease-in-out -1s infinite, waveRolling 3.5s ease-in-out infinite alternate;
 }
 
-/* 물결이 흘러가는 애니메이션 */
-@keyframes wave {
+@keyframes waveMoving {
   0% { transform: translateX(0); }
   100% { transform: translateX(-1600px); }
 }
-
-.header{
-  text-align:center;
-  padding:30px 20px;
+@keyframes waveRolling {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-12px); } /* 상하 일렁임 효과로 진짜 바다처럼 수정 */
 }
 
+/* 기본 UI 구성 요소 */
+.header{ text-align:center; padding:30px 20px; }
 .header h1{
-  margin:0;
-  font-size:36px;
-  font-weight: bold;
+  margin:0; font-size:36px; font-weight: bold;
   text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
-
-.sub{
-  margin-top:10px;
-  font-size:16px;
-  opacity:0.85;
-  letter-spacing: 2px;
-}
-
-.card{
-  width:85%;
-  max-width: 800px;
-  margin:20px auto;
-  padding-bottom: 160px; /* 물결에 글이 파묻히지 않도록 아래쪽 여백 확보 */
-}
-
-.controls{
-  text-align:center;
-  margin-bottom:25px;
-}
+.sub{ margin-top:10px; font-size:16px; opacity:0.85; letter-spacing: 2px; }
+.card{ width:85%; max-width: 800px; margin:20px auto; padding-bottom: 180px; }
+.controls{ text-align:center; margin-bottom:25px; }
 
 input, select{
-  padding:10px 12px;
-  margin:5px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius:8px;
-  background: rgba(255, 255, 255, 0.12);
-  color: white;
-  outline: none;
-  transition: all 0.3s;
+  padding:10px 12px; margin:5px; border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius:8px; background: rgba(255, 255, 255, 0.12); color: white; outline: none; transition: all 0.3s;
 }
-
-input:focus, select:focus {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: #00bcd4;
-}
-
-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-select option {
-  background: #051429;
-  color: white;
-}
+input:focus, select:focus { background: rgba(255, 255, 255, 0.2); border-color: #00bcd4; }
+input::placeholder { color: rgba(255, 255, 255, 0.5); }
+select option { background: #051429; color: white; }
 
 button{
-  padding:9px 15px;
-  margin:5px;
-  border:none;
-  border-radius:8px;
-  background: linear-gradient(135deg, #00bcd4, #0097a7);
-  color:white;
-  font-weight: bold;
-  cursor:pointer;
-  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4);
-  transition: all 0.3s;
+  padding:9px 15px; margin:5px; border:none; border-radius:8px;
+  background: linear-gradient(135deg, #00bcd4, #0097a7); color:white; font-weight: bold;
+  cursor:pointer; box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4); transition: all 0.3s;
 }
-
-button:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6);
-}
+button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6); }
 
 .post{
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.07); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
+.post h3 { margin: 0 0 8px 0; font-size: 20px; }
+.post small { color: rgba(255, 255, 255, 0.6); }
+.post p{ white-space:pre-wrap; margin-top:15px; line-height: 1.6; color: rgba(255, 255, 255, 0.95); }
+.post button { background: rgba(255, 255, 255, 0.15); box-shadow: none; font-weight: normal; font-size: 13px; padding: 5px 10px; }
+.post button:hover { background: rgba(255, 255, 255, 0.25); box-shadow: none; }
 
-.post h3 {
-  margin: 0 0 8px 0;
-  font-size: 20px;
+/* 🔥 페이지네이션 디자인 */
+.pagination {
+  text-align: center;
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  gap: 5px;
 }
-
-.post small {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.post p{
-  white-space:pre-wrap;
-  margin-top:15px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.post button {
-  background: rgba(255, 255, 255, 0.15);
+.pagination button {
+  background: rgba(255, 255, 255, 0.1);
   box-shadow: none;
   font-weight: normal;
-  font-size: 13px;
-  padding: 5px 10px;
+  padding: 6px 12px;
 }
-.post button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: none;
+.pagination button.active {
+  background: #00bcd4;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+}
+.pagination button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 </style>
 </head>
 
 <body>
+
+<div class="shooting-stars">
+  <div class="star"></div>
+  <div class="star"></div>
+  <div class="star"></div>
+</div>
 
 <div class="ocean">
   <div class="wave"></div>
@@ -220,6 +208,8 @@ button:hover{
   </div>
 
   <div id="posts"></div>
+  
+  <div id="pagination" class="pagination"></div>
 </div>
 
 <script type="module">
@@ -249,6 +239,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 let posts = [];
 
+/* 🔥 페이징 변수 선언 */
+let currentPage = 1;
+const postsPerPage = 5;
+
 /* 🔥 실시간 데이터 */
 onSnapshot(
   collection(db,"posts"),
@@ -273,10 +267,13 @@ onSnapshot(
   }
 );
 
-/* 🔥 렌더 */
+/* 🔥 렌더 함수 */
 function render(){
   const box = document.getElementById("posts");
+  const pageBox = document.getElementById("pagination");
   box.innerHTML = "";
+  pageBox.innerHTML = "";
+  
   let list = [...posts];
 
   const titleKeyword = document.getElementById("searchTitle").value.trim().toLowerCase();
@@ -301,8 +298,16 @@ function render(){
 
   if(list.length === 0){ return; }
 
-  /* 🔥 출력 */
-  list.forEach((p)=>{
+  /* 🔥 [핵심] 5개 단위 데이터 쪼개기(페이징 계산) */
+  const totalPages = Math.ceil(list.length / postsPerPage);
+  if(currentPage > totalPages) currentPage = totalPages || 1;
+
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const paginatedList = list.slice(startIndex, endIndex);
+
+  /* 🔥 화면에 출력 (잘라진 5개 데이터만) */
+  paginatedList.forEach((p)=>{
     const div = document.createElement("div");
     div.className = "post";
     let html = "";
@@ -324,6 +329,32 @@ function render(){
     div.innerHTML = html;
     box.appendChild(div);
   });
+
+  /* 🔥 페이지네이션 버튼 생성기 */
+  if (totalPages > 1) {
+    // [이전] 버튼
+    const prevBtn = document.createElement("button");
+    prevBtn.innerText = "이전";
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => { currentPage--; render(); };
+    pageBox.appendChild(prevBtn);
+
+    // 숫자 번호 버튼들
+    for (let i = 1; i <= totalPages; i++) {
+      const pageBtn = document.createElement("button");
+      pageBtn.innerText = i;
+      if (i === currentPage) pageBtn.className = "active";
+      pageBtn.onclick = () => { currentPage = i; render(); };
+      pageBox.appendChild(pageBtn);
+    }
+
+    // [다음] 버튼
+    const nextBtn = document.createElement("button");
+    nextBtn.innerText = "다음";
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => { currentPage++; render(); };
+    pageBox.appendChild(nextBtn);
+  }
 }
 
 /* 🔥 삭제 */
@@ -346,10 +377,16 @@ window.edit = (id)=>{
   location.href = "admin.html";
 };
 
+/* 🔥 검색필터 가동 시 1페이지로 리셋하면서 가동 */
+const triggerSearch = () => {
+  currentPage = 1;
+  render();
+};
+
 /* 🔥 검색 & 정렬 이벤트 */
-document.getElementById("searchTitle").addEventListener("input", render);
-document.getElementById("searchWriter").addEventListener("input", render);
-document.getElementById("sort").addEventListener("change", render);
+document.getElementById("searchTitle").addEventListener("input", triggerSearch);
+document.getElementById("searchWriter").addEventListener("input", triggerSearch);
+document.getElementById("sort").addEventListener("change", triggerSearch);
 </script>
 
 </body>
