@@ -80,20 +80,15 @@ const postsPerPage = 5;
 function fixOldPosts(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  let changed = false;
-
   posts = posts.map(p=>{
     if(!p.date){
       let d = new Date();
       p.date = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-      changed = true;
     }
     return p;
   });
 
-  if(changed){
-    localStorage.setItem("posts", JSON.stringify(posts));
-  }
+  localStorage.setItem("posts", JSON.stringify(posts));
 }
 
 function loadPosts(){
