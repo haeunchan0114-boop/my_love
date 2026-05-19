@@ -10,7 +10,6 @@ body{
   min-height:100vh;
   font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
-  background-attachment:fixed;
   color:white;
 }
 
@@ -80,7 +79,6 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <div class="controls">
     <input id="search" placeholder="제목 / 작성자 검색">
 
-    <!-- 🔥 기본은 최신순 -->
     <select id="sort">
       <option value="new" selected>최신순</option>
       <option value="old">오래된순</option>
@@ -97,11 +95,9 @@ let currentPage = 1;
 const perPage = 3;
 
 function getPosts(){
-  return JSON.parse(localStorage.getItem("posts") || "[]");
-}
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-// 🔥 time 보정 (이거 중요)
-function normalize(posts){
+  // 🔥 time 보정 (핵심)
   return posts.map(p=>{
     if(!p.time){
       p.time = new Date(p.date).getTime();
@@ -112,7 +108,7 @@ function normalize(posts){
 
 function render(reset = true){
 
-  let posts = normalize(getPosts());
+  let posts = getPosts();
   let user = sessionStorage.getItem("user");
 
   const keyword = document.getElementById("search").value;
@@ -120,11 +116,8 @@ function render(reset = true){
 
   if(reset){
     currentPage = 1;
-    sort = "new";
-    document.getElementById("sort").value = "new";
   }
 
-  // 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -132,11 +125,11 @@ function render(reset = true){
     );
   }
 
-  // 🔥 핵심 정렬 (완전 정상)
+  // 🔥 최신 / 오래된 정렬
   posts.sort((a,b)=>{
     return sort === "new"
-      ? b.time - a.time   // 최신순
-      : a.time - b.time;  // 오래된순
+      ? b.time - a.time
+      : a.time - b.time;
   });
 
   const box = document.getElementById("posts");
@@ -145,14 +138,13 @@ function render(reset = true){
   let start = (currentPage - 1) * perPage;
   let pagePosts = posts.slice(start, start + perPage);
 
-  pagePosts.forEach((p)=>{
+  pagePosts.forEach(p=>{
 
     let isOwner = (p.writer === user);
 
     let realIndex = getPosts().findIndex(x =>
       x.title === p.title &&
-      x.date === p.date &&
-      x.writer === p.writer
+      x.time === p.time
     );
 
     const div = document.createElement("div");
@@ -233,11 +225,11 @@ function edit(i){
   location.href="admin.html";
 }
 
-// 이벤트
 document.getElementById("search").oninput = () => render(true);
 document.getElementById("sort").onchange = () => render(true);
 
-// 🔥 처음 실행 = 최신순
+// 🔥 기본 = 최신순
+document.getElementById("sort").value = "new";
 render(true);
 </script>
 
