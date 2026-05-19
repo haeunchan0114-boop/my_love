@@ -2,17 +2,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 보는 곳</title>
+<title>글 목록</title>
 
 <style>
 body{
   margin:0;
   min-height:100vh;
-
-  /* 🔥 핵심: 배경 확실히 고정 */
-  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0) !important;
-
-  font-family:Arial;
+  font-family:Arial, sans-serif;
+  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
 }
 
@@ -45,7 +42,7 @@ input,select{
 }
 
 button{
-  margin-right:5px;
+  margin:3px;
   padding:6px 10px;
   border:none;
   border-radius:8px;
@@ -58,7 +55,7 @@ button{
 <body>
 
 <div class="header">
-  <h1>🌟 나의 사랑하는 별에게 🌟</h1>
+  <h1>글 목록</h1>
 </div>
 
 <div class="card">
@@ -141,11 +138,33 @@ function render(){
       <h3>${p.pinned ? "📌 " : ""}${p.title}</h3>
       <small>${p.writer} · ${p.date}</small>
       <p>${p.content}</p>
+
+      ${p.writer === user ? `
+        <button onclick="edit('${p.id}')">수정</button>
+        <button onclick="del('${p.id}','${p.writer}')">삭제</button>
+        <button onclick="pin('${p.id}',${p.pinned})">
+          ${p.pinned ? "고정해제" : "고정"}
+        </button>
+      ` : ""}
     `;
 
     box.appendChild(div);
   });
 }
+
+window.del = async (id,writer)=>{
+  if(sessionStorage.getItem("user")!==writer) return alert("본인만 가능");
+  await deleteDoc(doc(db,"글",id));
+};
+
+window.pin = async (id,pinned)=>{
+  await updateDoc(doc(db,"글",id),{ pinned: !pinned });
+};
+
+window.edit = (id)=>{
+  localStorage.setItem("editId",id);
+  location.href="admin.html";
+};
 
 document.getElementById("searchTitle").oninput = render;
 document.getElementById("searchWriter").oninput = render;
@@ -154,4 +173,4 @@ document.getElementById("sort").onchange = render;
 </script>
 
 </body>
-</html>ㅍ
+</html>
