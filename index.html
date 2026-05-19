@@ -1,61 +1,71 @@
-<style>
-body{
-  margin:0;
-  font-family: Arial;
-  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
-  color:white;
-}
-
-/* 카드 */
-.card{
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(0,200,255,0.2);
-}
-
-/* 버튼 */
-button{
-  padding:10px 15px;
-  border:none;
-  border-radius:10px;
-  background:#00bcd4;
-  color:white;
-  cursor:pointer;
-}
-
-button:hover{
-  background:#009bb0;
-}
-
-/* 입력 */
-input, textarea{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-}
-</style>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>로그인</title>
+
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:Arial;
+  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
+  color:white;
+}
+
+.card{
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  padding:30px;
+  border-radius:15px;
+  text-align:center;
+  box-shadow: 0 0 20px rgba(0,200,255,0.3);
+}
+
+input,button{
+  width:200px;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+}
+
+button{
+  background:#00bcd4;
+  color:white;
+  cursor:pointer;
+}
+button:hover{
+  background:#009bb0;
+}
+</style>
 </head>
 
-<body style="text-align:center; margin-top:150px;">
+<body>
 
-<h2>비밀번호 입력</h2>
-
-<input type="password" id="pw">
-<br><br>
-<button onclick="login()">입장</button>
+<div class="card">
+  <h2>로그인</h2>
+  <input type="password" id="pw" placeholder="비밀번호">
+  <br>
+  <button onclick="login()">입장</button>
+</div>
 
 <script>
 function login(){
-  const pw = document.getElementById("pw").value;
+  if(document.getElementById("pw").value === "0416"){
+    sessionStorage.setItem("auth","ok");
+    location.href="home.html";
+  } else {
+    alert("비밀번호 틀림");
+  }
+}
+</script>
+
+</body>
+</html>
 
   if(pw === "0416"){
     sessionStorage.setItem("auth","ok");
