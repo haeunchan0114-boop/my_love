@@ -2,14 +2,11 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 보는 곳!</title>
+<title>글 보는 곳</title>
 
 <style>
-*{ box-sizing:border-box; }
-
 body{
   margin:0;
-  min-height:100vh;
   font-family:Arial;
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
@@ -25,29 +22,22 @@ body{
   margin:20px auto;
 }
 
-/* 🔥 소제목 + 컨트롤 유지 */
 .controls{
   text-align:center;
-  margin-bottom:15px;
 }
 
 input,select{
   padding:8px;
   margin:5px;
-  border:none;
   border-radius:8px;
+  border:none;
 }
 
-/* 🔥 글 카드 */
 .post{
   background: rgba(255,255,255,0.12);
   padding:15px;
-  margin:15px 0;
+  margin:10px 0;
   border-radius:15px;
-}
-
-.post p{
-  white-space:pre-wrap;
 }
 
 button{
@@ -57,44 +47,28 @@ button{
   border-radius:8px;
   background:#00bcd4;
   color:white;
-  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<script>
-if(sessionStorage.getItem("auth") !== "ok"){
-  location.href="index.html";
-}
-</script>
-
-<!-- 🔥 제목 -->
 <div class="header">
-  <div style="font-size:34px;font-weight:bold;">
-    🌟 나의 사랑하는 별에게 🌟
-  </div>
-  <div style="font-size:16px;opacity:0.8;">
-    우리의 빛나는 글들
-  </div>
+  <h1>🌟 나의 사랑하는 별에게 🌟</h1>
 </div>
 
 <div class="card">
 
-  <!-- 🔥 소제목 바로 아래 UI (요구대로 유지) -->
   <div class="controls">
-
-    <input id="searchTitle" placeholder="제목 검색">
-    <input id="searchWriter" placeholder="작성자 검색">
+    <input id="searchTitle" placeholder="제목">
+    <input id="searchWriter" placeholder="작성자">
 
     <select id="sort">
       <option value="new">최신순</option>
       <option value="old">오래된순</option>
     </select>
 
-    <button onclick="location.href='admin.html'">글 쓰러가기!</button>
-
+    <button onclick="location.href='admin.html'">글 쓰기</button>
   </div>
 
   <div id="posts"></div>
@@ -125,52 +99,33 @@ const db = getFirestore(app);
 
 let posts = [];
 
-/* 🔥 실시간 */
-onSnapshot(collection(db,"posts"), snap=>{
+onSnapshot(collection(db,"글"), snap=>{
   posts = [];
-
   snap.forEach(d=>{
-    posts.push({
-      id: d.id,
-      ...d.data()
-    });
+    posts.push({ id:d.id, ...d.data() });
   });
-
   render();
 });
 
-/* 🔥 렌더 */
 function render(){
 
   const box = document.getElementById("posts");
   box.innerHTML = "";
 
-  const user = sessionStorage.getItem("user");
-
-  const titleQ = document.getElementById("searchTitle").value;
-  const writerQ = document.getElementById("searchWriter").value;
+  const t = document.getElementById("searchTitle").value;
+  const w = document.getElementById("searchWriter").value;
   const sort = document.getElementById("sort").value;
+  const user = sessionStorage.getItem("user");
 
   let list = [...posts];
 
-  /* 🔍 필터 */
-  if(titleQ){
-    list = list.filter(p => p.title.includes(titleQ));
-  }
+  if(t) list = list.filter(p => p.title.includes(t));
+  if(w) list = list.filter(p => p.writer.includes(w));
 
-  if(writerQ){
-    list = list.filter(p => p.writer.includes(writerQ));
-  }
-
-  /* 📌 고정 + 정렬 */
   list.sort((a,b)=>{
-
     if(a.pinned && !b.pinned) return -1;
     if(!a.pinned && b.pinned) return 1;
-
-    return sort === "new"
-      ? b.time - a.time
-      : a.time - b.time;
+    return sort==="new" ? b.time - a.time : a.time - b.time;
   });
 
   list.forEach(p=>{
@@ -196,29 +151,20 @@ function render(){
   });
 }
 
-/* 삭제 */
-window.deletePost = async function(id,writer){
-  if(sessionStorage.getItem("user") !== writer){
-    alert("본인만 가능");
-    return;
-  }
-  await deleteDoc(doc(db,"posts",id));
+window.deletePost = async (id,writer)=>{
+  if(sessionStorage.getItem("user") !== writer) return alert("본인만 가능");
+  await deleteDoc(doc(db,"글",id));
 };
 
-/* 고정 */
-window.togglePin = async function(id,pinned){
-  await updateDoc(doc(db,"posts",id),{
-    pinned: !pinned
-  });
+window.togglePin = async (id,pinned)=>{
+  await updateDoc(doc(db,"글",id),{ pinned: !pinned });
 };
 
-/* 수정 */
-window.editPost = function(id){
+window.editPost = (id)=>{
   localStorage.setItem("editId",id);
   location.href="admin.html";
 };
 
-/* 🔥 실시간 입력 반영 */
 document.getElementById("searchTitle").oninput = render;
 document.getElementById("searchWriter").oninput = render;
 document.getElementById("sort").onchange = render;
