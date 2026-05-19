@@ -23,7 +23,7 @@ body{
   border-radius:15px;
 }
 
-input,textarea,button{
+input,textarea{
   width:100%;
   padding:10px;
   margin-top:10px;
@@ -33,6 +33,11 @@ input,textarea,button{
 }
 
 button{
+  width:100%;
+  margin-top:15px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
   background:#00bcd4;
   color:white;
 }
@@ -56,7 +61,7 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <button onclick="save()">저장</button>
 </div>
 
-<!-- Firebase -->
+<!-- 🔥 Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -77,16 +82,27 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// 🔥 기존 save() 구조 그대로 유지 + 저장 방식만 변경
 window.save = async function(){
 
-  const user = sessionStorage.getItem("user");
+  let user = sessionStorage.getItem("user");
 
-  await addDoc(collection(db, "posts"), {
+  let now = new Date();
+
+  let dateStr =
+    `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  let post = {
     writer: user,
     title: document.getElementById("title").value,
     content: document.getElementById("content").value,
-    date: new Date().toLocaleString()
-  });
+    date: dateStr,
+    time: now.getTime(),
+    pinned: false
+  };
+
+  await addDoc(collection(db, "posts"), post);
 
   location.href = "home.html";
 };
