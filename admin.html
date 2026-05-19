@@ -17,10 +17,6 @@ body{
 .card{
   width:400px;
   margin:80px auto;
-  background: rgba(255,255,255,0.12);
-  padding:25px;
-  border-radius:15px;
-  box-shadow: 0 0 20px rgba(0,200,255,0.2);
 }
 
 input,textarea{
@@ -38,11 +34,6 @@ button{
   border:none;
   border-radius:10px;
   background:#00bcd4;
-  color:white;
-  cursor:pointer;
-}
-button:hover{
-  background:#009bb0;
 }
 </style>
 </head>
@@ -58,11 +49,9 @@ if(sessionStorage.getItem("auth") !== "ok"){
 <div class="card">
   <h2>글 작성</h2>
 
-  <!-- 🔥 이름은 여기서만 -->
   <input id="writer" placeholder="이름">
-
   <input id="title" placeholder="제목">
-  <textarea id="content" rows="8" placeholder="내용"></textarea>
+  <textarea id="content" rows="8"></textarea>
 
   <button onclick="save()">저장</button>
 </div>
@@ -78,26 +67,24 @@ if(editIndex !== null){
 function save(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  let writerVal = document.getElementById("writer").value;
-  let titleVal = document.getElementById("title").value;
-  let contentVal = document.getElementById("content").value;
-
   let d = new Date();
   let dateStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
+  let writer = document.getElementById("writer").value;
+
   if(editIndex !== null){
     posts[editIndex] = {
-      writer: writerVal || "익명",
-      title: titleVal,
-      content: contentVal,
+      writer: writer || "익명",
+      title: title.value,
+      content: content.value,
       date: dateStr
     };
     localStorage.removeItem("editIndex");
   } else {
     posts.push({
-      writer: writerVal || "익명",
-      title: titleVal,
-      content: contentVal,
+      writer: writer || "익명",
+      title: title.value,
+      content: content.value,
       date: dateStr
     });
   }
