@@ -94,20 +94,27 @@ if(sessionStorage.getItem("auth") !== "ok"){
 let currentPage = 1;
 const perPage = 3;
 
+// 🔥 글 가져오기 + 예전 데이터 자동 보정
 function getPosts(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  // 🔥 예전 글 자동 시간 보정
-  posts = posts.map(p=>{
+  posts = posts.map(p => {
+
     if(!p.time){
       let d = new Date(p.date);
       if(isNaN(d.getTime())) d = new Date();
 
       p.time = d.getTime();
+
       p.date =
         `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ` +
         `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
     }
+
+    if(!p.pinned){
+      p.pinned = false;
+    }
+
     return p;
   });
 
@@ -115,6 +122,7 @@ function getPosts(){
   return posts;
 }
 
+// 🔥 렌더링
 function render(reset = true){
 
   let posts = getPosts();
@@ -127,6 +135,7 @@ function render(reset = true){
     currentPage = 1;
   }
 
+  // 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -134,7 +143,7 @@ function render(reset = true){
     );
   }
 
-  // 🔥 고정글 + 시간 정렬
+  // 🔥 고정 + 시간 정렬
   posts.sort((a,b)=>{
 
     if(a.pinned && !b.pinned) return -1;
@@ -171,6 +180,9 @@ function render(reset = true){
       ${isOwner ? `
         <button onclick="edit(${realIndex})">수정</button>
         <button onclick="del(${realIndex})">삭제</button>
+        <button onclick="togglePin(${realIndex})">
+          ${p.pinned ? "고정 해제" : "고정"}
+        </button>
       ` : ""}
     `;
 
@@ -180,7 +192,7 @@ function render(reset = true){
   renderPage(posts.length);
 }
 
-// 페이지
+// 🔥 페이지
 function renderPage(total){
   let pageCount = Math.ceil(total / perPage);
 
@@ -204,6 +216,22 @@ function renderPage(total){
   }
 
   document.body.appendChild(div);
+}
+
+// 🔥 고정 토글 (핵심 기능)
+function togglePin(i){
+  let posts = getPosts();
+  let user = sessionStorage.getItem("user");
+
+  if(posts[i].writer !== user){
+    alert("본인 글만 고정 가능");
+    return;
+  }
+
+  posts[i].pinned = !posts[i].pinned;
+
+  localStorage.setItem("posts", JSON.stringify(posts));
+  render(false);
 }
 
 // 삭제
@@ -238,10 +266,13 @@ function edit(i){
   location.href="admin.html";
 }
 
+// 이벤트
 document.getElementById("search").oninput = () => render(true);
 document.getElementById("sort").onchange = () => render(true);
 
 document.getElementById("sort").value = "new";
+
+// 🔥 최초 실행 = 최신순
 render(true);
 </script>
 
