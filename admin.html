@@ -7,22 +7,42 @@
 <style>
 body{
   margin:0;
+  min-height:100vh;
   font-family:Arial;
+
+  /* 🔥 배경 깨짐 방지 */
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
   color:white;
 }
 
+/* 🔥 카드 중앙 안정화 */
 .card{
   width:400px;
-  margin:80px auto;
+  background: rgba(255,255,255,0.12);
+  padding:25px;
+  border-radius:15px;
+  box-shadow: 0 0 20px rgba(0,200,255,0.2);
 }
 
+/* 🔥 중요: 박스 깨짐 방지 */
 input,textarea{
   width:100%;
   padding:10px;
   margin-top:10px;
   border:none;
   border-radius:10px;
+
+  box-sizing:border-box; /* 🔥 핵심 */
+}
+
+textarea{
+  resize:none;
 }
 
 button{
@@ -32,6 +52,8 @@ button{
   border:none;
   border-radius:10px;
   background:#00bcd4;
+  color:white;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -49,7 +71,7 @@ if(sessionStorage.getItem("auth") !== "ok"){
 
   <input id="writer" placeholder="이름">
   <input id="title" placeholder="제목">
-  <textarea id="content" rows="8"></textarea>
+  <textarea id="content" rows="8" placeholder="내용"></textarea>
 
   <button onclick="save()">저장</button>
 </div>
@@ -65,7 +87,7 @@ if(editIndex !== null){
 function save(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  let writer = document.getElementById("writer").value;
+  let writer = document.getElementById("writer").value || "익명";
   let title = document.getElementById("title").value;
   let content = document.getElementById("content").value;
 
