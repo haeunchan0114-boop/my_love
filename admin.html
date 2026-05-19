@@ -73,6 +73,7 @@ function save(){
 
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
   let user = sessionStorage.getItem("user");
+
   let now = new Date();
 
   let dateStr =
@@ -90,6 +91,8 @@ function save(){
   if(editIndex !== null){
     posts[editIndex] = post;
     localStorage.removeItem("editIndex");
+    localStorage.removeItem("editTitle");
+    localStorage.removeItem("editContent");
   } else {
     posts.push(post);
   }
