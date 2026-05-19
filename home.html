@@ -53,7 +53,6 @@ button{
   border-radius:8px;
   background:#00bcd4;
   color:white;
-  cursor:pointer;
 }
 
 #pagination button{
@@ -82,61 +81,66 @@ if(sessionStorage.getItem("auth") !== "ok"){
 <div class="card">
 
   <div class="controls">
-    <input id="search" placeholder="제목 / 작성자 검색">
-
+    <input id="search" placeholder="제목 / 작성자">
     <select id="sort">
-      <option value="new" selected>최신순</option>
+      <option value="new">최신순</option>
       <option value="old">오래된순</option>
     </select>
-
-    <button onclick="location.href='admin.html'">글 쓰기</button>
+    <button onclick="location.href='admin.html'">글 쓰러가기!</button>
   </div>
 
   <div id="posts"></div>
 </div>
 
 <script>
-// 🔥 폰 안정화
-let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-if(!Array.isArray(posts)){
-  posts = [];
-  localStorage.setItem("posts", JSON.stringify(posts));
-}
 
-let currentPage = 1;
-const perPage = 3;
+// 🔥 완전 안전 로딩
+function safeGetPosts(){
+  let posts = [];
 
-function getPosts(){
-  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  try{
+    posts = JSON.parse(localStorage.getItem("posts")) || [];
+  }catch(e){
+    posts = [];
+  }
 
   if(!Array.isArray(posts)){
     posts = [];
   }
 
-  posts = posts.map(p=>{
-    if(!p.time){
-      let d = new Date(p.date);
-      if(isNaN(d.getTime())) d = new Date();
+  return posts.map(p=>{
+    try{
+      if(!p.time){
+        let d = new Date(p.date);
+        if(isNaN(d.getTime())) d = new Date();
 
-      p.time = d.getTime();
+        p.time = d.getTime();
 
-      p.date =
-        `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ` +
-        `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        p.date =
+          `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()} ` +
+          `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+      }
+
+      if(typeof p.pinned !== "boolean"){
+        p.pinned = false;
+      }
+
+      return p;
+    }catch(e){
+      return null;
     }
-    return p;
-  });
-
-  localStorage.setItem("posts", JSON.stringify(posts));
-  return posts;
+  }).filter(Boolean);
 }
+
+let currentPage = 1;
+const perPage = 3;
 
 function render(reset=true){
 
-  let posts = getPosts();
+  let posts = safeGetPosts();
   let user = sessionStorage.getItem("user");
 
-  const keyword = document.getElementById("search").value;
+  let keyword = document.getElementById("search").value;
   let sort = document.getElementById("sort").value;
 
   if(reset) currentPage = 1;
@@ -149,6 +153,7 @@ function render(reset=true){
   }
 
   posts.sort((a,b)=>{
+
     if(a.pinned && !b.pinned) return -1;
     if(!a.pinned && b.pinned) return 1;
 
@@ -161,13 +166,13 @@ function render(reset=true){
   box.innerHTML="";
 
   let start = (currentPage-1)*perPage;
-  let pagePosts = posts.slice(start,start+perPage);
+  let page = posts.slice(start,start+perPage);
 
-  pagePosts.forEach(p=>{
+  page.forEach(p=>{
 
     let isOwner = (p.writer===user);
 
-    let realIndex = getPosts().findIndex(x =>
+    let realIndex = safeGetPosts().findIndex(x =>
       x.title===p.title && x.time===p.time
     );
 
@@ -195,17 +200,18 @@ function render(reset=true){
 }
 
 function renderPage(total){
-  let pageCount=Math.ceil(total/perPage);
 
-  let old=document.getElementById("pagination");
+  let pages = Math.ceil(total/perPage);
+
+  let old = document.getElementById("pagination");
   if(old) old.remove();
 
-  const div=document.createElement("div");
+  const div = document.createElement("div");
   div.id="pagination";
   div.style.textAlign="center";
 
-  for(let i=1;i<=pageCount;i++){
-    const btn=document.createElement("button");
+  for(let i=1;i<=pages;i++){
+    let btn=document.createElement("button");
     btn.innerText=i;
     btn.onclick=()=>{currentPage=i;render(false);};
     div.appendChild(btn);
@@ -215,8 +221,8 @@ function renderPage(total){
 }
 
 function togglePin(i){
-  let posts=getPosts();
-  let user=sessionStorage.getItem("user");
+  let posts = safeGetPosts();
+  let user = sessionStorage.getItem("user");
 
   if(posts[i].writer!==user){
     alert("본인만 가능");
@@ -229,8 +235,8 @@ function togglePin(i){
 }
 
 function del(i){
-  let posts=getPosts();
-  let user=sessionStorage.getItem("user");
+  let posts = safeGetPosts();
+  let user = sessionStorage.getItem("user");
 
   if(posts[i].writer!==user){
     alert("본인만 가능");
@@ -243,8 +249,8 @@ function del(i){
 }
 
 function edit(i){
-  let posts=getPosts();
-  let user=sessionStorage.getItem("user");
+  let posts = safeGetPosts();
+  let user = sessionStorage.getItem("user");
 
   if(posts[i].writer!==user){
     alert("본인만 가능");
@@ -260,8 +266,6 @@ function edit(i){
 
 document.getElementById("search").oninput=()=>render(true);
 document.getElementById("sort").onchange=()=>render(true);
-
-document.getElementById("sort").value="new";
 
 render(true);
 </script>
