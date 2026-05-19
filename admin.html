@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 쓰기</title>
+<title>글 쓰는 곳!</title>
 
 <style>
 body{
@@ -57,10 +57,9 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <input id="title" placeholder="제목">
   <textarea id="content" rows="8" placeholder="내용"></textarea>
 
-  <button onclick="save()">저장</button>
+  <button id="saveBtn">저장하기!</button>
 </div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
@@ -86,8 +85,8 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 🔥 수정 글 Firebase에서 다시 가져오기 */
-window.onload = async () => {
+/* 🔥 수정 글 불러오기 (무조건 실행) */
+window.addEventListener("load", async () => {
 
   if(editId){
 
@@ -101,7 +100,7 @@ window.onload = async () => {
       document.getElementById("content").value = data.content || "";
     }
   }
-};
+});
 
 /* 🔥 저장 */
 async function savePost(){
@@ -109,6 +108,11 @@ async function savePost(){
   const user = sessionStorage.getItem("user");
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
+
+  if(!title || !content){
+    alert("내용을 입력해줘!");
+    return;
+  }
 
   const now = new Date();
 
@@ -142,7 +146,8 @@ async function savePost(){
   location.href = "home.html";
 }
 
-window.save = savePost;
+/* 🔥 핵심: 버튼 연결 */
+document.getElementById("saveBtn").addEventListener("click", savePost);
 
 </script>
 
