@@ -80,12 +80,13 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <div class="controls">
     <input id="search" placeholder="제목 / 작성자 검색">
 
+    <!-- 🔥 기본은 최신순 -->
     <select id="sort">
       <option value="new" selected>최신순</option>
       <option value="old">오래된순</option>
     </select>
 
-    <button onclick="location.href='admin.html'">글 쓰기!!</button>
+    <button onclick="location.href='admin.html'">글 작성</button>
   </div>
 
   <div id="posts"></div>
@@ -99,16 +100,28 @@ function getPosts(){
   return JSON.parse(localStorage.getItem("posts") || "[]");
 }
 
+// 🔥 time 보정 (이거 중요)
+function normalize(posts){
+  return posts.map(p=>{
+    if(!p.time){
+      p.time = new Date(p.date).getTime();
+    }
+    return p;
+  });
+}
+
 function render(reset = true){
 
-  let posts = getPosts();
+  let posts = normalize(getPosts());
   let user = sessionStorage.getItem("user");
 
   const keyword = document.getElementById("search").value;
-  let sort = document.getElementById("sort").value || "new";
+  let sort = document.getElementById("sort").value;
 
   if(reset){
     currentPage = 1;
+    sort = "new";
+    document.getElementById("sort").value = "new";
   }
 
   // 검색
@@ -119,11 +132,11 @@ function render(reset = true){
     );
   }
 
-  // 🔥 분단위 시간 기준 정렬
+  // 🔥 핵심 정렬 (완전 정상)
   posts.sort((a,b)=>{
     return sort === "new"
-      ? b.time - a.time
-      : a.time - b.time;
+      ? b.time - a.time   // 최신순
+      : a.time - b.time;  // 오래된순
   });
 
   const box = document.getElementById("posts");
@@ -220,10 +233,11 @@ function edit(i){
   location.href="admin.html";
 }
 
+// 이벤트
 document.getElementById("search").oninput = () => render(true);
 document.getElementById("sort").onchange = () => render(true);
 
-// 🔥 처음 무조건 최신순
+// 🔥 처음 실행 = 최신순
 render(true);
 </script>
 
