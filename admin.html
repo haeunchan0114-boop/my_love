@@ -8,11 +8,11 @@
 body{
   margin:0;
   min-height:100vh;
-  font-family:Arial;
-  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   display:flex;
   justify-content:center;
   align-items:center;
+  font-family:Arial;
+  background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
   color:white;
 }
 
@@ -74,14 +74,18 @@ function save(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
   let user = sessionStorage.getItem("user");
-
   let now = new Date();
+
+  // 🔥 분단위 시간
+  let dateStr =
+    `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
   let post = {
     writer: user,
     title: document.getElementById("title").value,
     content: document.getElementById("content").value,
-    date: `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}`,
+    date: dateStr,
     time: now.getTime()
   };
 
