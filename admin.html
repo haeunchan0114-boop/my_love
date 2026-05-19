@@ -21,6 +21,7 @@ body{
   background: rgba(255,255,255,0.12);
   padding:25px;
   border-radius:15px;
+  box-shadow:0 0 20px rgba(0,200,255,0.2);
 }
 
 input,textarea{
@@ -32,6 +33,10 @@ input,textarea{
   box-sizing:border-box;
 }
 
+textarea{
+  resize:none;
+}
+
 button{
   width:100%;
   margin-top:15px;
@@ -40,6 +45,10 @@ button{
   border-radius:10px;
   background:#00bcd4;
   color:white;
+  cursor:pointer;
+}
+button:hover{
+  background:#009bb0;
 }
 </style>
 </head>
@@ -58,16 +67,13 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <input id="title" placeholder="제목">
   <textarea id="content" rows="8" placeholder="내용"></textarea>
 
-  <label>
-    <input type="checkbox" id="pin"> 글 고정
-  </label>
-
   <button onclick="save()">저장</button>
 </div>
 
 <script>
 let editIndex = localStorage.getItem("editIndex");
 
+// 수정 모드
 if(editIndex !== null){
   document.getElementById("title").value = localStorage.getItem("editTitle");
   document.getElementById("content").value = localStorage.getItem("editContent");
@@ -77,6 +83,7 @@ function save(){
 
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
   let user = sessionStorage.getItem("user");
+
   let now = new Date();
 
   let dateStr =
@@ -89,12 +96,14 @@ function save(){
     content: document.getElementById("content").value,
     date: dateStr,
     time: now.getTime(),
-    pinned: document.getElementById("pin").checked
+    pinned: false
   };
 
   if(editIndex !== null){
     posts[editIndex] = post;
     localStorage.removeItem("editIndex");
+    localStorage.removeItem("editTitle");
+    localStorage.removeItem("editContent");
   } else {
     posts.push(post);
   }
