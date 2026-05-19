@@ -67,7 +67,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {
   getFirestore,
   collection,
-  addDoc
+  addDoc,
+  doc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -82,16 +84,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+let editId = localStorage.getItem("editId");
+
+if(editId){
+  document.getElementById("title").value = localStorage.getItem("editTitle");
+  document.getElementById("content").value = localStorage.getItem("editContent");
+}
+
+/* 🔥 저장 */
 async function savePost(){
 
   const title = document.getElementById("title").value;
   const content = document.getElementById("content").value;
   const user = sessionStorage.getItem("user");
-
-  if(!title || !content){
-    alert("내용 입력!");
-    return;
-  }
 
   const now = new Date();
 
@@ -99,18 +104,33 @@ async function savePost(){
     `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
     `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-  await addDoc(collection(db, "posts"), {
-    writer: user,
-    title,
-    content,
-    date: dateStr,
-    time: now.getTime()
-  });
+  if(editId){
+
+    await updateDoc(doc(db, "posts", editId), {
+      title,
+      content
+    });
+
+    localStorage.removeItem("editId");
+    localStorage.removeItem("editTitle");
+    localStorage.removeItem("editContent");
+
+  } else {
+
+    await addDoc(collection(db, "posts"), {
+      writer: user,
+      title,
+      content,
+      date: dateStr,
+      time: now.getTime(),
+      pinned: false
+    });
+
+  }
 
   location.href = "home.html";
 }
 
-// ⭐ 버튼 연결 필수
 window.save = savePost;
 
 </script>
