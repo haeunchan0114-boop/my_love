@@ -23,7 +23,7 @@ body{
   border-radius:15px;
 }
 
-input,textarea{
+input,textarea,button{
   width:100%;
   padding:10px;
   margin-top:10px;
@@ -33,11 +33,6 @@ input,textarea{
 }
 
 button{
-  width:100%;
-  margin-top:15px;
-  padding:10px;
-  border:none;
-  border-radius:10px;
   background:#00bcd4;
   color:white;
 }
@@ -61,63 +56,40 @@ if(sessionStorage.getItem("auth") !== "ok"){
   <button onclick="save()">저장</button>
 </div>
 
-<script>
-// 🔥 안전 로딩
-let posts = [];
-try{
-  posts = JSON.parse(localStorage.getItem("posts")) || [];
-}catch(e){
-  posts = [];
-}
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-if(!Array.isArray(posts)){
-  posts = [];
-}
+const firebaseConfig = {
+  apiKey: "너 API키",
+  authDomain: "너 authDomain",
+  projectId: "너 projectId",
+  storageBucket: "너 storageBucket",
+  messagingSenderId: "너 senderId",
+  appId: "너 appId"
+};
 
-let editIndex = localStorage.getItem("editIndex");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-if(editIndex !== null){
-  document.getElementById("title").value = localStorage.getItem("editTitle");
-  document.getElementById("content").value = localStorage.getItem("editContent");
-}
+window.save = async function(){
 
-function save(){
+  const user = sessionStorage.getItem("user");
 
-  let posts = [];
-  try{
-    posts = JSON.parse(localStorage.getItem("posts")) || [];
-  }catch(e){
-    posts = [];
-  }
-
-  if(!Array.isArray(posts)) posts = [];
-
-  let user = sessionStorage.getItem("user");
-  let now = new Date();
-
-  let dateStr =
-    `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
-    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-  let post = {
+  await addDoc(collection(db, "posts"), {
     writer: user,
     title: document.getElementById("title").value,
     content: document.getElementById("content").value,
-    date: dateStr,
-    time: now.getTime(),
-    pinned: false
-  };
+    date: new Date().toLocaleString()
+  });
 
-  if(editIndex !== null){
-    posts[editIndex] = post;
-    localStorage.removeItem("editIndex");
-  } else {
-    posts.push(post);
-  }
-
-  localStorage.setItem("posts", JSON.stringify(posts));
-  location.href="home.html";
-}
+  location.href = "home.html";
+};
 </script>
 
 </body>
