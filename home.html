@@ -93,10 +93,15 @@ if(sessionStorage.getItem("auth") !== "ok"){
 
 <script>
 let currentPage = 1;
-const perPage = 5;
+const perPage = 3; // 🔥 5개 → 3개로 변경
 
 function getPosts(){
   return JSON.parse(localStorage.getItem("posts") || "[]");
+}
+
+// 🔥 고유 ID 생성 (버그 해결 핵심)
+function savePosts(posts){
+  localStorage.setItem("posts", JSON.stringify(posts));
 }
 
 function render(){
@@ -119,9 +124,12 @@ function render(){
 
   // 🔥 정렬 (완전 정상)
   posts.sort((a,b)=>{
+    let da = new Date(a.date);
+    let db = new Date(b.date);
+
     return sort === "new"
-      ? new Date(b.date) - new Date(a.date)
-      : new Date(a.date) - new Date(b.date);
+      ? db - da
+      : da - db;
   });
 
   const box = document.getElementById("posts");
@@ -136,7 +144,7 @@ function render(){
 
     let isOwner = (p.writer === user);
 
-    // 🔥 핵심: 안전한 index 찾기 (이게 안되면 버튼 다 망가짐)
+    // 🔥 안전 index (title+date 기반)
     let realIndex = getPosts().findIndex(x =>
       x.title === p.title &&
       x.date === p.date &&
@@ -199,7 +207,7 @@ function del(i){
   }
 
   posts.splice(i,1);
-  localStorage.setItem("posts", JSON.stringify(posts));
+  savePosts(posts);
   render();
 }
 
