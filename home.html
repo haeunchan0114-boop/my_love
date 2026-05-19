@@ -47,6 +47,15 @@ button{
 button:hover{
   background:#009bb0;
 }
+
+#pagination button{
+  margin:3px;
+  padding:6px 10px;
+  border:none;
+  border-radius:6px;
+  background:#00bcd4;
+  color:white;
+}
 </style>
 </head>
 
@@ -66,25 +75,64 @@ if(sessionStorage.getItem("auth") !== "ok"){
 </div>
 
 <script>
+let currentPage = 1;
+const postsPerPage = 5;
+
 function loadPosts(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
   const box = document.getElementById("posts");
 
   box.innerHTML = "";
 
-  posts.forEach((p, i)=>{
+  let start = (currentPage - 1) * postsPerPage;
+  let end = start + postsPerPage;
+
+  let pagePosts = posts.slice(start, end);
+
+  pagePosts.forEach((p, i)=>{
+    const realIndex = start + i;
+
     const div = document.createElement("div");
     div.className = "post";
 
     div.innerHTML = `
       <h3>${p.title}</h3>
+      <small style="opacity:0.7;">${p.date || ""}</small>
       <p>${p.content}</p>
-      <button onclick="edit(${i})">수정</button>
-      <button onclick="del(${i})">삭제</button>
+      <button onclick="edit(${realIndex})">수정</button>
+      <button onclick="del(${realIndex})">삭제</button>
     `;
 
     box.appendChild(div);
   });
+
+  renderPagination(posts.length);
+}
+
+function renderPagination(total){
+  let pageCount = Math.ceil(total / postsPerPage);
+
+  let old = document.getElementById("pagination");
+  if(old) old.remove();
+
+  const div = document.createElement("div");
+  div.id = "pagination";
+  div.style.textAlign = "center";
+  div.style.margin = "20px";
+
+  for(let i=1;i<=pageCount;i++){
+    const btn = document.createElement("button");
+    btn.innerText = i;
+
+    btn.onclick = () => {
+      currentPage = i;
+      loadPosts();
+    };
+
+    div.appendChild(btn);
+  }
+
+  document.body.appendChild(div);
 }
 
 function del(i){
