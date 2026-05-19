@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>글 목록</title>
+</head>
+
+<body>
+
+<script>
+if(sessionStorage.getItem("auth") !== "ok"){
+  location.href="index.html";
+}
+</script>
+
+<h2>글 목록</h2>
+
+<!-- 글 쓰기 버튼 (너만 사용) -->
+<button onclick="location.href='admin.html'">글 쓰기</button>
+
+<div id="posts"></div>
+
+</body>
+</html>
