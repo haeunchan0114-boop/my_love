@@ -111,9 +111,23 @@ const db = getFirestore(app);
 
 let allPosts = [];
 
+// 🔥 실시간 받기
 onSnapshot(collection(db, "posts"), (snap) => {
   allPosts = [];
-  snap.forEach(doc => allPosts.push(doc.data()));
+
+  snap.forEach(doc => {
+    let d = doc.data();
+
+    // ⭐ 안전 처리 (글 안 뜨는 문제 해결 핵심)
+    d.title = d.title || "";
+    d.content = d.content || "";
+    d.writer = d.writer || "";
+    d.date = d.date || "";
+    d.time = d.time || new Date(d.date || Date.now()).getTime();
+
+    allPosts.push(d);
+  });
+
   render();
 });
 
@@ -122,46 +136,53 @@ const perPage = 3;
 
 function render(reset=true){
 
-  let posts = [...allPosts];
+  try{
 
-  const keyword = document.getElementById("search").value;
-  const sort = document.getElementById("sort").value;
+    let posts = [...allPosts];
 
-  if(reset) currentPage = 1;
+    const keyword = document.getElementById("search").value;
+    const sort = document.getElementById("sort").value;
 
-  if(keyword){
-    posts = posts.filter(p =>
-      (p.title||"").includes(keyword) ||
-      (p.writer||"").includes(keyword)
-    );
+    if(reset) currentPage = 1;
+
+    if(keyword){
+      posts = posts.filter(p =>
+        p.title.includes(keyword) ||
+        p.writer.includes(keyword)
+      );
+    }
+
+    posts.sort((a,b)=>{
+      const ta = Number(a.time) || 0;
+      const tb = Number(b.time) || 0;
+
+      return sort === "new" ? tb - ta : ta - tb;
+    });
+
+    const box = document.getElementById("posts");
+    box.innerHTML = "";
+
+    const start = (currentPage-1)*perPage;
+    const page = posts.slice(start, start+perPage);
+
+    page.forEach(p=>{
+      const div = document.createElement("div");
+      div.className="post";
+
+      div.innerHTML = `
+        <h3>${p.title}</h3>
+        <small>${p.writer} · ${p.date}</small>
+        <p>${p.content}</p>
+      `;
+
+      box.appendChild(div);
+    });
+
+    renderPage(posts.length);
+
+  } catch(e){
+    console.log(e);
   }
-
-  posts.sort((a,b)=>{
-    return sort === "new"
-      ? b.time - a.time
-      : a.time - b.time;
-  });
-
-  const box = document.getElementById("posts");
-  box.innerHTML = "";
-
-  const start = (currentPage-1)*perPage;
-  const page = posts.slice(start, start+perPage);
-
-  page.forEach(p=>{
-    const div = document.createElement("div");
-    div.className="post";
-
-    div.innerHTML = `
-      <h3>${p.title}</h3>
-      <small>${p.writer} · ${p.date}</small>
-      <p>${p.content}</p>
-    `;
-
-    box.appendChild(div);
-  });
-
-  renderPage(posts.length);
 }
 
 function renderPage(total){
@@ -185,6 +206,7 @@ function renderPage(total){
   document.body.appendChild(div);
 }
 
+// 이벤트
 document.getElementById("search").oninput=()=>render(true);
 document.getElementById("sort").onchange=()=>render(true);
 
