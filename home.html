@@ -7,8 +7,13 @@
 <style>
 body{
   margin:0;
+  min-height:100vh;
   font-family:Arial;
+
+  /* 🔥 배경 깨짐 방지 핵심 */
   background: linear-gradient(to bottom, #061a2b, #0d3b66, #145da0);
+  background-repeat:no-repeat;
+  background-attachment:fixed;
   color:white;
 }
 
@@ -43,9 +48,9 @@ input,select{
   border-radius:15px;
 }
 
-/* 🔥 핵심: 줄바꿈 유지 */
+/* 줄바꿈 유지 */
 .post p{
-  white-space: pre-wrap;
+  white-space:pre-wrap;
 }
 
 button{
@@ -93,24 +98,9 @@ if(sessionStorage.getItem("auth") !== "ok"){
 let currentPage = 1;
 const postsPerPage = 5;
 
-function fixDate(){
-  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-
-  posts = posts.map(p=>{
-    if(!p.date){
-      let d = new Date();
-      p.date = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-    }
-    return p;
-  });
-
-  localStorage.setItem("posts", JSON.stringify(posts));
-}
-
 function loadPosts(){
-  fixDate();
 
-  let posts = JSON.parse(localStorage.getItem("posts") || "[]").slice();
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
   let user = sessionStorage.getItem("user") || "";
 
   const keyword = document.getElementById("search").value;
@@ -118,6 +108,7 @@ function loadPosts(){
 
   currentPage = 1;
 
+  // 검색
   if(keyword){
     posts = posts.filter(p =>
       p.title.includes(keyword) ||
@@ -125,10 +116,16 @@ function loadPosts(){
     );
   }
 
+  // 🔥 날짜 정렬 (핵심 수정)
   posts.sort((a,b)=>{
     let da = new Date(a.date);
     let db = new Date(b.date);
-    return sort === "new" ? db - da : da - db;
+
+    if(sort === "new"){
+      return db - da;   // 최신순
+    } else {
+      return da - db;   // 오래된순
+    }
   });
 
   const box = document.getElementById("posts");
