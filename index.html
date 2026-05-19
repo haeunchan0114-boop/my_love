@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>로그인</title>
+</head>
+
+<body style="text-align:center; margin-top:150px;">
+
+<h2>비밀번호 입력</h2>
+
+<input type="password" id="pw">
+<br><br>
+<button onclick="login()">입장</button>
+
+<script>
+function login(){
+  const pw = document.getElementById("pw").value;
+
+  if(pw === "0416"){
+    sessionStorage.setItem("auth","ok");
+    location.href="home.html";
+  } else {
+    alert("비밀번호 틀림");
+  }
+}
+</script>
+
+</body>
+</html>
