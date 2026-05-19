@@ -231,4 +231,133 @@ onSnapshot(
     posts = [];
     snap.forEach((d)=>{
       const data = d.data();
-      if(!data.title
+      if(!data.title && !data.content){
+        return;
+      }
+      posts.push({
+        id:d.id,
+        writer:data.writer || "",
+        title:data.title || "",
+        content:data.content || "",
+        date:data.date || "",
+        time:Number(data.time) || 0,
+        pinned:data.pinned || false
+      });
+    });
+    render();
+  }
+);
+
+/* 렌더 함수 */
+function render(){
+  const box = document.getElementById("posts");
+  const pageBox = document.getElementById("pagination");
+  box.innerHTML = "";
+  pageBox.innerHTML = "";
+  
+  let list = [...posts];
+
+  const titleKeyword = document.getElementById("searchTitle").value.trim().toLowerCase();
+  const writerKeyword = document.getElementById("searchWriter").value.trim().toLowerCase();
+  const sort = document.getElementById("sort").value;
+  const user = sessionStorage.getItem("user");
+
+  if(titleKeyword){
+    list = list.filter(p=> p.title.toLowerCase().includes(titleKeyword) );
+  }
+
+  if(writerKeyword){
+    list = list.filter(p=> p.writer.toLowerCase().includes(writerKeyword) );
+  }
+
+  list.sort((a,b)=>{
+    if(a.pinned && !b.pinned) return -1;
+    if(!a.pinned && b.pinned) return 1;
+    if(sort === "new"){ return b.time - a.time; }
+    return a.time - b.time;
+  });
+
+  if(list.length === 0){ return; }
+
+  const totalPages = Math.ceil(list.length / postsPerPage);
+  if(currentPage > totalPages) currentPage = totalPages || 1;
+
+  const startIndex = (currentPage - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const paginatedList = list.slice(startIndex, endIndex);
+
+  paginatedList.forEach((p)=>{
+    const div = document.createElement("div");
+    div.className = "post";
+    let html = "";
+
+    html += `<h3>${p.pinned ? "📌 " : ""}${p.title}</h3>`;
+    html += `<small>${p.writer} · ${p.date}</small>`;
+
+    if(p.content){
+      html += `<p>${p.content}</p>`;
+    }
+
+    if(p.writer === user){
+      html += `
+        <button onclick="edit('${p.id}')">수정</button>
+        <button onclick="del('${p.id}','${p.writer}')">삭제</button>
+        <button onclick="pin('${p.id}', ${p.pinned})">${p.pinned ? "고정해제" : "고정"}</button>
+      `;
+    }
+    div.innerHTML = html;
+    box.appendChild(div);
+  });
+
+  if (totalPages > 1) {
+    const prevBtn = document.createElement("button");
+    prevBtn.innerText = "이전";
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => { currentPage--; render(); };
+    pageBox.appendChild(prevBtn);
+
+    for (let i = 1; i <= totalPages; i++) {
+      const pageBtn = document.createElement("button");
+      pageBtn.innerText = i;
+      if (i === currentPage) pageBtn.className = "active";
+      pageBtn.onclick = () => { currentPage = i; render(); };
+      pageBox.appendChild(pageBtn);
+    }
+
+    const nextBtn = document.createElement("button");
+    nextBtn.innerText = "다음";
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => { currentPage++; render(); };
+    pageBox.appendChild(nextBtn);
+  }
+}
+
+window.del = async (id,writer)=>{
+  if(sessionStorage.getItem("user") !== writer){
+    alert("본인만 가능");
+    return;
+  }
+  await deleteDoc(doc(db,"posts",id));
+};
+
+window.pin = async (id,pinned)=>{
+  await updateDoc(doc(db,"posts",id), { pinned: !pinned });
+};
+
+window.edit = (id)=>{
+  localStorage.setItem("editId", id);
+  location.href = "admin.html";
+};
+
+const triggerSearch = () => {
+  currentPage = 1;
+  render();
+};
+
+document.getElementById("searchTitle").addEventListener("input", triggerSearch);
+document.getElementById("searchWriter").addEventListener("input", triggerSearch);
+document.getElementById("sort").addEventListener("change", triggerSearch);
+</script>
+
+</body>
+</html>
