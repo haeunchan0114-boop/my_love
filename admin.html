@@ -82,30 +82,39 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 🔥 기존 save() 구조 그대로 유지 + 저장 방식만 변경
-window.save = async function(){
+// ✅ 글 저장 함수
+async function savePost(){
 
-  let user = sessionStorage.getItem("user");
+  const title = document.getElementById("title").value;
+  const content = document.getElementById("content").value;
+  const user = sessionStorage.getItem("user");
 
-  let now = new Date();
+  if(!title || !content){
+    alert("내용 입력!");
+    return;
+  }
 
-  let dateStr =
+  const now = new Date();
+
+  const dateStr =
     `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
     `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-  let post = {
+  await addDoc(collection(db, "posts"), {
     writer: user,
-    title: document.getElementById("title").value,
-    content: document.getElementById("content").value,
+    title,
+    content,
     date: dateStr,
     time: now.getTime(),
     pinned: false
-  };
-
-  await addDoc(collection(db, "posts"), post);
+  });
 
   location.href = "home.html";
-};
+}
+
+// ⭐ 핵심: 버튼 연결 (이거 없으면 클릭 안 됨)
+window.save = savePost;
+
 </script>
 
 </body>
