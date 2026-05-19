@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 작성</title>
+<title>나의 사랑하는 별에게</title>
 
 <style>
 body{
@@ -12,29 +12,31 @@ body{
   color:white;
 }
 
-.card{
-  width:400px;
-  margin:80px auto;
-  background: rgba(255,255,255,0.12);
-  padding:25px;
-  border-radius:15px;
-  box-shadow: 0 0 20px rgba(0,200,255,0.2);
+.header{
+  text-align:center;
+  padding:20px;
+  font-size:26px;
+  font-weight:bold;
 }
 
-input,textarea{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
+.card{
+  width:80%;
+  margin:20px auto;
+}
+
+.post{
+  background: rgba(255,255,255,0.12);
+  padding:15px;
+  margin:15px 0;
+  border-radius:15px;
+  box-shadow: 0 0 15px rgba(0,200,255,0.2);
 }
 
 button{
-  width:100%;
-  margin-top:15px;
-  padding:10px;
+  margin-right:5px;
+  padding:6px 10px;
   border:none;
-  border-radius:10px;
+  border-radius:8px;
   background:#00bcd4;
   color:white;
   cursor:pointer;
@@ -53,42 +55,53 @@ if(sessionStorage.getItem("auth") !== "ok"){
 }
 </script>
 
+<div class="header">나의 사랑하는 별에게</div>
+
 <div class="card">
-  <h2>글 작성 / 수정</h2>
-
-  <input id="title" placeholder="제목">
-  <textarea id="content" rows="8" placeholder="내용"></textarea>
-
-  <button onclick="save()">저장</button>
+  <button onclick="location.href='admin.html'">글 작성</button>
+  <div id="posts"></div>
 </div>
 
 <script>
-let editIndex = localStorage.getItem("editIndex");
+function loadPosts(){
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  const box = document.getElementById("posts");
 
-if(editIndex !== null){
-  document.getElementById("title").value = localStorage.getItem("editTitle");
-  document.getElementById("content").value = localStorage.getItem("editContent");
+  box.innerHTML = "";
+
+  posts.forEach((p, i)=>{
+    const div = document.createElement("div");
+    div.className = "post";
+
+    div.innerHTML = `
+      <h3>${p.title}</h3>
+      <p>${p.content}</p>
+      <button onclick="edit(${i})">수정</button>
+      <button onclick="del(${i})">삭제</button>
+    `;
+
+    box.appendChild(div);
+  });
 }
 
-function save(){
+function del(i){
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+  posts.splice(i,1);
+  localStorage.setItem("posts", JSON.stringify(posts));
+  loadPosts();
+}
+
+function edit(i){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
-  if(editIndex !== null){
-    posts[editIndex] = {
-      title: title.value,
-      content: content.value
-    };
-    localStorage.removeItem("editIndex");
-  } else {
-    posts.push({
-      title: title.value,
-      content: content.value
-    });
-  }
+  localStorage.setItem("editIndex", i);
+  localStorage.setItem("editTitle", posts[i].title);
+  localStorage.setItem("editContent", posts[i].content);
 
-  localStorage.setItem("posts", JSON.stringify(posts));
-  location.href="home.html";
+  location.href="admin.html";
 }
+
+loadPosts();
 </script>
 
 </body>
