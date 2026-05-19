@@ -2,10 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 쓰는 곳!</title>
+<title>글 쓰기</title>
 
 <style>
-/* 🔥 핵심: 전체 박스 계산 통일 */
 *{
   box-sizing:border-box;
 }
@@ -21,42 +20,41 @@ body{
   color:white;
 }
 
-/* 카드 */
+/* 🔥 로그인창처럼 딱 고정 폭 */
 .card{
-  width:380px;
+  width:320px;   /* ← 로그인창 느낌 */
   background: rgba(255,255,255,0.12);
   padding:25px;
   border-radius:15px;
 
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:10px;
 }
 
-/* 🔥 완전 동일 정렬 */
+/* 🔥 완전 동일 폭 기준 */
 input, textarea, button{
   width:100%;
   border:none;
   border-radius:10px;
   font-family:inherit;
-  font-size:14px;
 }
 
 /* 제목 */
 input{
-  padding:12px;
+  padding:10px;
 }
 
 /* 본문 */
 textarea{
-  padding:12px;
-  height:160px;
+  padding:10px;
+  height:140px;
   resize:none;
 }
 
-/* 저장 버튼 */
+/* 버튼 */
 button{
-  padding:12px;
+  padding:10px;
   background:#00bcd4;
   color:white;
   cursor:pointer;
@@ -66,13 +64,19 @@ button{
 button:hover{
   background:#009bb0;
 }
+
+/* 타이틀 */
+h2{
+  margin:0;
+  text-align:center;
+}
 </style>
 </head>
 
 <body>
 
 <div class="card">
-  <h2 style="text-align:center;margin:0;">글 쓰기</h2>
+  <h2>글 쓰기</h2>
 
   <input id="title" placeholder="제목">
   <textarea id="content" placeholder="내용"></textarea>
@@ -105,7 +109,6 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 🔥 수정 데이터 로딩 */
 window.addEventListener("load", async () => {
 
   if(editId){
@@ -122,7 +125,6 @@ window.addEventListener("load", async () => {
   document.getElementById("saveBtn").addEventListener("click", savePost);
 });
 
-/* 🔥 저장 */
 async function savePost(){
 
   const title = document.getElementById("title").value;
@@ -130,7 +132,7 @@ async function savePost(){
   const user = sessionStorage.getItem("user");
 
   if(!title || !content){
-    alert("제목/내용 입력");
+    alert("내용 입력");
     return;
   }
 
