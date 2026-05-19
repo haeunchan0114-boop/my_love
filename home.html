@@ -10,7 +10,7 @@ body{
   min-height:100vh;
   font-family:Arial;
   
-  /* 🔥 오직 무수한 별빛들이 가득한 밤하늘 배경만 깨끗하게 유지 */
+  /* 오직 무수한 별빛들이 가득한 밤하늘 배경만 깨끗하게 유지 */
   background: 
     radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
     radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
@@ -25,11 +25,11 @@ body{
     linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 75%, #103b66 100%);
     
   color:white;
-  background-attachment: fixed; /* 스크롤해도 별들이 고정되어 아름답게 유지됨 */
+  background-attachment: fixed;
   overflow-x: hidden;
 }
 
-/* 🔥 떨어지는 별똥별 효과 (유지) */
+/* 떨어지는 별똥별 효과 */
 .shooting-stars {
   position: fixed;
   top: 0;
@@ -76,6 +76,22 @@ body{
   text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
 .sub{ margin-top:10px; font-size:16px; opacity:0.85; letter-spacing: 2px; }
+
+/* 🔥 디데이 스타일 추가 */
+.dday-box {
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff7597;
+  text-shadow: 0 0 10px rgba(255, 117, 151, 0.6);
+  background: rgba(255, 255, 255, 0.1);
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .card{ width:85%; max-width: 800px; margin:20px auto; padding-bottom: 60px; }
 .controls{ text-align:center; margin-bottom:25px; }
 
@@ -94,7 +110,6 @@ button{
 }
 button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6); }
 
-/* 글 상자가 밤하늘 위에 뜬 것처럼 보이게 하는 글래모피즘 효과 */
 .post{
   background: rgba(255, 255, 255, 0.07); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.08);
@@ -106,7 +121,6 @@ button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 2
 .post button { background: rgba(255, 255, 255, 0.15); box-shadow: none; font-weight: normal; font-size: 13px; padding: 5px 10px; }
 .post button:hover { background: rgba(255, 255, 255, 0.25); box-shadow: none; }
 
-/* 페이지네이션 디자인 */
 .pagination {
   text-align: center;
   margin-top: 30px;
@@ -143,6 +157,7 @@ button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 2
 <div class="header">
   <h1>🌟 나의 사랑하는 별에게 🌟</h1>
   <div class="sub">우리의 빛나는 글들</div>
+  <div class="dday-box" id="ddayDisplay">💕 함께한 지 1일</div>
 </div>
 
 <div class="card">
@@ -196,6 +211,22 @@ let posts = [];
 /* 페이징 변수 선언 */
 let currentPage = 1;
 const postsPerPage = 5;
+
+/* 🔥 디데이 실시간 계산 스크립트 (2025년 4월 16일 = 1일) */
+function calculateDday() {
+  const startDate = new Date("2025-04-16T00:00:00");
+  const today = new Date();
+  
+  // 시간 정규화 (날짜 수만 정확히 세기 위함)
+  startDate.setHours(0,0,0,0);
+  today.setHours(0,0,0,0);
+  
+  const diffTime = today.getTime() - startDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  
+  document.getElementById("ddayDisplay").innerText = `💖 우리가 함께한 지 ${diffDays}일째`;
+}
+calculateDday();
 
 /* 실시간 데이터 */
 onSnapshot(
