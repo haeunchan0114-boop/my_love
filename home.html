@@ -10,29 +10,69 @@ body{
   min-height:100vh;
   font-family:Arial;
   
-  /* 🔥 별이 쏟아지는 깊은 밤바다 컨셉 */
+  /* 🔥 별이 쏟아지는 밤하늘 배경 (물결과 분리하기 위해 고정) */
   background: 
-    /* 은하수처럼 작은 별들 */
     radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
     radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
     radial-gradient(circle at 70% 25%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 90px 90px,
     radial-gradient(circle at 90% 75%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 110px 110px,
-    
-    /* 중간 크기 별들 */
     radial-gradient(circle at 25% 65%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1.5px) 0 0 / 150px 150px,
     radial-gradient(circle at 55% 80%, rgba(255, 255, 255, 0.25) 1.5px, transparent 1.5px) 0 0 / 130px 130px,
     radial-gradient(circle at 85% 45%, rgba(255, 255, 255, 0.3) 1.5px, transparent 1.5px) 0 0 / 160px 160px,
-    
-    /* 유독 빛나는 큰 별들 */
     radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.4) 2px, transparent 2px) 0 0 / 220px 220px,
     radial-gradient(circle at 15% 45%, rgba(255, 255, 255, 0.35) 2px, transparent 2px) 0 0 / 260px 260px,
     radial-gradient(circle at 75% 60%, rgba(255, 255, 255, 0.4) 2.5px, transparent 2.5px) 0 0 / 300px 300px,
-    
-    /* 깊은 심해에서 해변으로 이어지는 밤바다 그라데이션 */
-    linear-gradient(to bottom, #020813 0%, #051429 35%, #0b2b4e 65%, #144775 85%, #1c6294 100%);
+    linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 70%, #103b66 100%);
     
   color:white;
-  background-attachment: fixed; /* 스크롤해도 배경은 고정되어 별바다가 유지됨 */
+  background-attachment: fixed;
+  overflow-x: hidden; /* 물결이 좌우로 움직일 때 스크롤바 생김 방지 */
+  position: relative;
+}
+
+/* 🔥 하단 일렁이는 바다 물결 컨테이너 */
+.ocean { 
+  height: 140px; /* 물결 높이 */
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #144775;
+  box-shadow: 0 -10px 30px rgba(16, 59, 102, 0.5);
+  z-index: -1; /* 글을 가리지 않도록 뒤로 보냄 */
+}
+
+/* 개별 물결 곡선 스타일링 */
+.wave {
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,100 350,20 500,60 C650,100 850,20 1000,60 C1150,100 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%23144775; opacity:0.5;"/></svg>') repeat-x;
+  position: absolute;
+  top: -60px;
+  width: 6400px;
+  height: 60px;
+  animation: wave 12s cubic-bezier( 0.36, 0.45, 0.63, 0.53) infinite;
+  transform: translate3d(0, 0, 0);
+}
+
+/* 두 번째 물결 (엇갈리게 움직여서 입체감 생성) */
+.wave:nth-of-type(2) {
+  top: -50px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,90 350,30 500,60 C650,90 850,30 1000,60 C1150,90 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%231c6294; opacity:0.4;"/></svg>') repeat-x;
+  animation: wave 9s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -2s infinite;
+  opacity: 1;
+}
+
+/* 세 번째 앞쪽 물결 */
+.wave:nth-of-type(3) {
+  top: -40px;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 C150,80 350,40 500,60 C650,80 850,40 1000,60 C1150,80 1300,60 1300,60 L1300,120 L0,120 Z" style="fill:%23144775; opacity:1;"/></svg>') repeat-x;
+  animation: wave 6s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -1s infinite;
+}
+
+/* 물결이 흘러가는 애니메이션 */
+@keyframes wave {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-1600px); }
 }
 
 .header{
@@ -44,7 +84,6 @@ body{
   margin:0;
   font-size:36px;
   font-weight: bold;
-  /* 글자가 바다 위에 뜬 별처럼 빛나는 효과 */
   text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
 
@@ -57,8 +96,9 @@ body{
 
 .card{
   width:85%;
-  max-width: 800px; /* 너무 퍼지지 않게 밸런스 조절 */
+  max-width: 800px;
   margin:20px auto;
+  padding-bottom: 160px; /* 물결에 글이 파묻히지 않도록 아래쪽 여백 확보 */
 }
 
 .controls{
@@ -110,7 +150,6 @@ button:hover{
 }
 
 .post{
-  /* 바다 위에 투명한 유리판이 떠 있는 듯한 글래모피즘 효과 */
   background: rgba(255, 255, 255, 0.07);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -137,7 +176,6 @@ button:hover{
   color: rgba(255, 255, 255, 0.95);
 }
 
-/* 포스트 내부 버튼 스타일 미세 조정 */
 .post button {
   background: rgba(255, 255, 255, 0.15);
   box-shadow: none;
@@ -153,6 +191,12 @@ button:hover{
 </head>
 
 <body>
+
+<div class="ocean">
+  <div class="wave"></div>
+  <div class="wave"></div>
+  <div class="wave"></div>
+</div>
 
 <div class="header">
   <h1>🌟 나의 사랑하는 별에게 🌟</h1>
