@@ -2,12 +2,15 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>글 보는 공간!</title>
+<title>글 쓰는 공간!</title>
 
 <style>
 body{
   margin:0;
-  min-height:100vh;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   font-family:Arial;
   
   background: 
@@ -24,11 +27,10 @@ body{
     linear-gradient(to bottom, #020813 0%, #051429 40%, #0b2b4e 75%, #103b66 100%);
     
   color:white;
-  background-attachment: fixed;
-  overflow-x: hidden;
+  overflow: hidden;
+  position: relative;
 }
 
-/* 떨어지는 별똥별 효과 */
 .shooting-stars {
   position: fixed;
   top: 0;
@@ -58,8 +60,8 @@ body{
   height: 1px;
   background: linear-gradient(90deg, #fff, transparent);
 }
-.star:nth-child(1) { left: 30%; animation-delay: 0s; animation-duration: 3s; }
-.star:nth-child(2) { left: 60%; animation-delay: 1.5s; animation-duration: 4.5s; }
+.star:nth-child(1) { left: 20%; animation-delay: 0s; animation-duration: 3s; }
+.star:nth-child(2) { left: 50%; animation-delay: 1.5s; animation-duration: 4.5s; }
 .star:nth-child(3) { left: 80%; animation-delay: 3s; animation-duration: 3.5s; }
 
 @keyframes animateStar {
@@ -68,79 +70,74 @@ body{
   100% { transform: rotate(-45deg) translateX(-1000px); opacity: 0; }
 }
 
-/* 기본 UI 구성 요소 */
-.header{ text-align:center; padding:40px 20px 20px 20px; }
-.header h1{
-  margin:0; font-size:36px; font-weight: bold;
-  text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
-}
-.sub{ margin-top:10px; font-size:16px; opacity:0.85; letter-spacing: 2px; }
-
-/* 디데이 스타일 */
-.dday-box {
-  margin-top: 15px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #ff7597;
-  text-shadow: 0 0 10px rgba(255, 117, 151, 0.6);
-  background: rgba(255, 255, 255, 0.1);
-  display: inline-block;
-  padding: 6px 16px;
-  border-radius: 20px;
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.card{ width:85%; max-width: 800px; margin:20px auto; padding-bottom: 60px; }
-.controls{ text-align:center; margin-bottom:25px; }
-
-input, select{
-  padding:10px 12px; margin:5px; border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius:8px; background: rgba(255, 255, 255, 0.12); color: white; outline: none; transition: all 0.3s;
-}
-input:focus, select:focus { background: rgba(255, 255, 255, 0.2); border-color: #00bcd4; }
-input::placeholder { color: rgba(255, 255, 255, 0.5); }
-select option { background: #051429; color: white; }
-
-button{
-  padding:9px 15px; margin:5px; border:none; border-radius:8px;
-  background: linear-gradient(135deg, #00bcd4, #0097a7); color:white; font-weight: bold;
-  cursor:pointer; box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4); transition: all 0.3s;
-}
-button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6); }
-
-.post{
-  background: rgba(255, 255, 255, 0.07); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.08);
+.card{
+  width:360px;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  padding: 30px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.post h3 { margin: 0 0 8px 0; font-size: 20px; }
-.post small { color: rgba(255, 255, 255, 0.6); }
-.post p{ white-space:pre-wrap; margin-top:15px; line-height: 1.6; color: rgba(255, 255, 255, 0.95); }
-.post button { background: rgba(255, 255, 255, 0.15); box-shadow: none; font-weight: normal; font-size: 13px; padding: 5px 10px; }
-.post button:hover { background: rgba(255, 255, 255, 0.25); box-shadow: none; }
 
-.pagination {
+.title{
   text-align: center;
-  margin-top: 30px;
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-}
-.pagination button {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: none;
-  font-weight: normal;
-  padding: 6px 12px;
-}
-.pagination button.active {
-  background: #00bcd4;
+  font-size: 26px;
   font-weight: bold;
-  box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+  margin-bottom: 10px;
+  text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 4px rgba(255, 255, 255, 0.6);
 }
-.pagination button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+
+input, textarea{
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 15px;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  outline: none;
+  transition: all 0.3s;
+}
+
+input:focus, textarea:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #00bcd4;
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+textarea{
+  height: 200px;
+  resize: none;
+  line-height: 1.5;
+}
+
+button{
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #00bcd4, #0097a7);
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 188, 212, 0.4);
+  transition: all 0.3s;
+  margin-top: 5px;
+}
+
+button:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.6);
 }
 </style>
 </head>
@@ -153,43 +150,40 @@ button:hover{ transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 188, 2
   <div class="star"></div>
 </div>
 
-<div class="header">
-  <h1>🌟 나의 사랑하는 별에게 🌟</h1>
-  <div class="sub">우리의 빛나는 글들</div>
-  <div class="dday-box" id="ddayDisplay">💕 함께한 지 1일</div>
-</div>
-
 <div class="card">
-  <div class="controls">
-    <input id="searchTitle" placeholder="글 제목">
-    <input id="searchWriter" placeholder="글 쓴 사람">
-    <select id="sort">
-      <option value="new">최신순</option>
-      <option value="old">오래된순</option>
-    </select>
-    <button onclick="
-      localStorage.removeItem('editId');
-      location.href='admin.html';
-    ">
-      글 쓰러가기
-    </button>
+
+  <div class="title">
+    🌟 글 쓰는 공간 🌟
   </div>
 
-  <div id="posts"></div>
-  <div id="pagination" class="pagination"></div>
+  <input
+    id="title"
+    placeholder="제목"
+  >
+
+  <textarea
+    id="content"
+    placeholder="내용"
+  ></textarea>
+
+  <button id="saveBtn">
+    저장하기!
+  </button>
+
 </div>
 
 <script type="module">
+
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
 import {
   getFirestore,
   collection,
-  onSnapshot,
+  addDoc,
   doc,
-  deleteDoc,
-  updateDoc
+  updateDoc,
+  getDoc
 }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -204,159 +198,118 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-let posts = [];
 
-let currentPage = 1;
-const postsPerPage = 5;
+console.log("🔥 Firebase 연결 완료");
 
-/* 디데이 실시간 계산 스크립트 (2026년 4월 16일 = 1일) */
-function calculateDday() {
-  const startDate = new Date("2026-04-16T00:00:00");
-  const today = new Date();
-  
-  startDate.setHours(0,0,0,0);
-  today.setHours(0,0,0,0);
-  
-  const diffTime = today.getTime() - startDate.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
-  
-  document.getElementById("ddayDisplay").innerText = `💖 우리가 함께한 지 ${diffDays}일째`;
-}
-calculateDday();
+let editId = localStorage.getItem("editId");
 
-/* 실시간 데이터 */
-onSnapshot(
-  collection(db,"posts"),
-  (snap)=>{
-    posts = [];
-    snap.forEach((d)=>{
-      const data = d.data();
-      if(!data.title && !data.content){
-        return;
+/* 🔥 수정 글 불러오기 */
+window.addEventListener("load", async ()=>{
+  if(editId){
+    try{
+      const ref = doc(db,"posts",editId);
+      const snap = await getDoc(ref);
+
+      if(snap.exists()){
+        const data = snap.data();
+        document.getElementById("title").value = data.title || "";
+        document.getElementById("content").value = data.content || "";
       }
-      posts.push({
-        id:d.id,
-        writer:data.writer || "",
-        title:data.title || "",
-        content:data.content || "",
-        date:data.date || "",
-        time:Number(data.time) || 0,
-        pinned:data.pinned || false
-      });
-    });
-    render();
+    }catch(e){
+      console.log("불러오기 실패:", e);
+    }
   }
-);
+});
 
-/* 렌더 함수 */
-function render(){
-  const box = document.getElementById("posts");
-  const pageBox = document.getElementById("pagination");
-  box.innerHTML = "";
-  pageBox.innerHTML = "";
-  
-  let list = [...posts];
+/* 🔥 저장 */
+document.getElementById("saveBtn").addEventListener("click", async ()=>{
+  try{
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+    const user = sessionStorage.getItem("user");
 
-  const titleKeyword = document.getElementById("searchTitle").value.trim().toLowerCase();
-  const writerKeyword = document.getElementById("searchWriter").value.trim().toLowerCase();
-  const sort = document.getElementById("sort").value;
-  const user = sessionStorage.getItem("user");
-
-  if(titleKeyword){
-    list = list.filter(p=> p.title.toLowerCase().includes(titleKeyword) );
-  }
-
-  if(writerKeyword){
-    list = list.filter(p=> p.writer.toLowerCase().includes(writerKeyword) );
-  }
-
-  list.sort((a,b)=>{
-    if(a.pinned && !b.pinned) return -1;
-    if(!a.pinned && b.pinned) return 1;
-    if(sort === "new"){ return b.time - a.time; }
-    return a.time - b.time;
-  });
-
-  if(list.length === 0){ return; }
-
-  const totalPages = Math.ceil(list.length / postsPerPage);
-  if(currentPage > totalPages) currentPage = totalPages || 1;
-
-  const startIndex = (currentPage - 1) * postsPerPage;
-  const endIndex = startIndex + postsPerPage;
-  const paginatedList = list.slice(startIndex, endIndex);
-
-  paginatedList.forEach((p)=>{
-    const div = document.createElement("div");
-    div.className = "post";
-    let html = "";
-
-    html += `<h3>${p.pinned ? "📌 " : ""}${p.title}</h3>`;
-    html += `<small>${p.writer} · ${p.date}</small>`;
-
-    if(p.content){
-      html += `<p>${p.content}</p>`;
+    if(!user){
+      alert("로그인 필요");
+      return;
     }
 
-    if(p.writer === user){
-      html += `
-        <button onclick="edit('${p.id}')">수정</button>
-        <button onclick="del('${p.id}','${p.writer}')">삭제</button>
-        <button onclick="pin('${p.id}', ${p.pinned})">${p.pinned ? "고정해제" : "고정"}</button>
-      `;
-    }
-    div.innerHTML = html;
-    box.appendChild(div);
-  });
-
-  if (totalPages > 1) {
-    const prevBtn = document.createElement("button");
-    prevBtn.innerText = "이전";
-    prevBtn.disabled = currentPage === 1;
-    prevBtn.onclick = () => { currentPage--; render(); };
-    pageBox.appendChild(prevBtn);
-
-    for (let i = 1; i <= totalPages; i++) {
-      const pageBtn = document.createElement("button");
-      pageBtn.innerText = i;
-      if (i === currentPage) pageBtn.className = "active";
-      pageBtn.onclick = () => { currentPage = i; render(); };
-      pageBox.appendChild(pageBtn);
+    if(!title || !content){
+      alert("제목과 내용을 입력하세요");
+      return;
     }
 
-    const nextBtn = document.createElement("button");
-    nextBtn.innerText = "다음";
-    nextBtn.disabled = currentPage === totalPages;
-    nextBtn.onclick = () => { currentPage++; render(); };
-    pageBox.appendChild(nextBtn);
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+                    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    /* 🔥 수정 */
+    if(editId){
+      const ref = doc(db,"posts",editId);
+      const snap = await getDoc(ref);
+
+      if(snap.exists()){
+        await updateDoc(ref,{
+          title,
+          content
+        });
+      } else {
+        await addDoc(
+          collection(db,"posts"),
+          {
+            writer:user,
+            title,
+            content,
+            date:dateStr,
+            time:Date.now(),
+            pinned:false
+          }
+        );
+      }
+      localStorage.removeItem("editId");
+    }
+    /* 🔥 새 글 */
+    else {
+      await addDoc(
+        collection(db,"posts"),
+        {
+          writer:user,
+          title,
+          content,
+          date:dateStr,
+          time:Date.now(),
+          pinned:false
+        }
+      );
+    }
+
+    /* 🔥 [이스터에그 멀티 팝업 처리부] */
+    let hasEasterEgg = false;
+
+    // 1. '귀여운 하은' 조건 검사
+    if(title.includes("귀여운 하은") || content.includes("귀여운 하은")) {
+      alert("아니야 부정할게~! 난 안귀여워");
+      hasEasterEgg = true;
+    }
+    
+    // 2. '사랑해' 조건 검사
+    if(content.includes("사랑해")) {
+      alert("내가 더 사랑해 💖");
+      hasEasterEgg = true;
+    }
+
+    // 3. 둘 다 해당 안 될 때만 기본 알림 출력
+    if(!hasEasterEgg) {
+      alert("저장 완료!");
+    }
+    
+    location.href = "home.html";
+
+  }catch(err){
+    console.error("🔥 저장 실패:", err);
+    alert("저장 실패");
   }
-}
+});
 
-window.del = async (id,writer)=>{
-  if(sessionStorage.getItem("user") !== writer){
-    alert("본인만 가능");
-    return;
-  }
-  await deleteDoc(doc(db,"posts",id));
-};
-
-window.pin = async (id,pinned)=>{
-  await updateDoc(doc(db,"posts",id), { pinned: !pinned });
-};
-
-window.edit = (id)=>{
-  localStorage.setItem("editId", id);
-  location.href = "admin.html";
-};
-
-const triggerSearch = () => {
-  currentPage = 1;
-  render();
-};
-
-document.getElementById("searchTitle").addEventListener("input", triggerSearch);
-document.getElementById("searchWriter").addEventListener("input", triggerSearch);
-document.getElementById("sort").addEventListener("change", triggerSearch);
 </script>
 
 </body>
