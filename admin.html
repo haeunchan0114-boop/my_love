@@ -13,7 +13,6 @@ body{
   align-items:center;
   font-family:Arial;
   
-  /* 메인·로그인 화면과 완벽히 일치하는 무수한 별빛 밤하늘 배경 */
   background: 
     radial-gradient(circle at 10% 15%, rgba(255, 255, 255, 0.2) 1px, transparent 1px) 0 0 / 80px 80px,
     radial-gradient(circle at 40% 35%, rgba(255, 255, 255, 0.15) 1px, transparent 1px) 0 0 / 100px 100px,
@@ -32,7 +31,6 @@ body{
   position: relative;
 }
 
-/* 떨어지는 별똥별 효과 */
 .shooting-stars {
   position: fixed;
   top: 0;
@@ -70,29 +68,6 @@ body{
   0% { transform: rotate(-45deg) translateX(0); opacity: 1; }
   70% { opacity: 1; }
   100% { transform: rotate(-45deg) translateX(-1000px); opacity: 0; }
-}
-
-/* 🔥 배경음악 뮤트/재생 버튼 스타일 */
-.music-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 10px 14px;
-  border-radius: 50%;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: 0 0 10px rgba(255,255,255,0.1);
-  transition: all 0.3s;
-}
-.music-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
 }
 
 .card{
@@ -169,10 +144,6 @@ button:hover{
 
 <body>
 
-<audio id="bgm" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-
-<button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
-
 <div class="shooting-stars">
   <div class="star"></div>
   <div class="star"></div>
@@ -200,31 +171,6 @@ button:hover{
   </button>
 
 </div>
-
-<script>
-/* 🔥 배경음악 재생/토글 스크립트 */
-const bgm = document.getElementById("bgm");
-const musicBtn = document.getElementById("musicBtn");
-
-function toggleMusic() {
-  if (bgm.paused) {
-    bgm.play();
-    musicBtn.innerText = "🎵";
-    musicBtn.style.boxShadow = "0 0 15px rgba(0, 188, 212, 0.8)";
-  } else {
-    bgm.pause();
-    musicBtn.innerText = "🔇";
-    musicBtn.style.boxShadow = "none";
-  }
-}
-
-window.addEventListener("click", () => {
-  if (bgm.paused && musicBtn.innerText !== "🔇") {
-    bgm.play().catch(() => {});
-    musicBtn.style.boxShadow = "0 0 15px rgba(0, 188, 212, 0.8)";
-  }
-}, { once: true });
-</script>
 
 <script type="module">
 
@@ -336,7 +282,7 @@ document.getElementById("saveBtn").addEventListener("click", async ()=>{
       );
     }
 
-    /* 🔥 [이스터에그 작동부] 내용에 '사랑해'가 포함되었을 때 */
+    /* 🔥 [이스터에그 수정 완료] 내용에 '사랑해' 단어가 포함되어 있으면 팝업창 변경 */
     if(content.includes("사랑해")) {
       alert("내가 더 사랑해 💖");
     } else {
