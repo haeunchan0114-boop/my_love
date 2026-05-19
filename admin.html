@@ -76,16 +76,21 @@ if(editIndex !== null){
 function save(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
+  let today = new Date();
+  let dateStr = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+
   if(editIndex !== null){
     posts[editIndex] = {
       title: title.value,
-      content: content.value
+      content: content.value,
+      date: dateStr
     };
     localStorage.removeItem("editIndex");
   } else {
     posts.push({
       title: title.value,
-      content: content.value
+      content: content.value,
+      date: dateStr
     });
   }
 
