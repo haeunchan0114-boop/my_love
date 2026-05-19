@@ -100,7 +100,7 @@ function loadPosts(){
   fixOldPosts();
 
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
-  let user = sessionStorage.getItem("user") || "";
+  let user = sessionStorage.getItem("user");
 
   const box = document.getElementById("posts");
   box.innerHTML = "";
@@ -121,7 +121,7 @@ function loadPosts(){
       <h3>${p.title}</h3>
 
       <small style="opacity:0.7;">
-        ${p.writer || "익명"} · ${p.date || ""}
+        ${p.writer} · ${p.date}
       </small>
 
       <p>${p.content}</p>
