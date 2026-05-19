@@ -76,22 +76,26 @@ if(editIndex !== null){
 function save(){
   let posts = JSON.parse(localStorage.getItem("posts") || "[]");
 
+  let writerVal = document.getElementById("writer").value;
+  let titleVal = document.getElementById("title").value;
+  let contentVal = document.getElementById("content").value;
+
   let d = new Date();
   let dateStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
 
   if(editIndex !== null){
     posts[editIndex] = {
-      title: title.value,
-      content: content.value,
-      writer: writer.value || "익명",
+      writer: writerVal || "익명",
+      title: titleVal,
+      content: contentVal,
       date: dateStr
     };
     localStorage.removeItem("editIndex");
   } else {
     posts.push({
-      title: title.value,
-      content: content.value,
-      writer: writer.value || "익명",
+      writer: writerVal || "익명",
+      title: titleVal,
+      content: contentVal,
       date: dateStr
     });
   }
