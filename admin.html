@@ -17,7 +17,6 @@ body{
   color:white;
 }
 
-/* 🔥 로그인 화면이랑 동일 구조 */
 .title{
   font-size:28px;
   font-weight:bold;
@@ -25,7 +24,7 @@ body{
 }
 
 .card{
-  width:260px;  /* 로그인과 동일 */
+  width:280px;
   background: rgba(255,255,255,0.12);
   padding:30px;
   border-radius:15px;
@@ -34,17 +33,18 @@ body{
   gap:10px;
 }
 
-/* 👉 글쓰기만 크게 */
-textarea{
-  height:180px;
-}
-
 input, textarea{
   width:100%;
   padding:10px;
   border:none;
   border-radius:10px;
   box-sizing:border-box;
+  font-family:Arial;
+}
+
+textarea{
+  height:180px;
+  resize:none;
 }
 
 button{
@@ -61,7 +61,8 @@ button{
 
 <body>
 
-<div class="title">✍ 글 쓰기</div>
+<!-- ✅ 이모지 제거 -->
+<div class="title">글 쓰기</div>
 
 <div class="card">
   <input id="title" placeholder="제목">
@@ -94,9 +95,7 @@ const db = getFirestore(app);
 
 let editId = localStorage.getItem("editId");
 
-/* 🔥 수정 불러오기 */
 window.addEventListener("load", async () => {
-
   if(editId){
     const snap = await getDoc(doc(db,"글",editId));
     if(snap.exists()){
@@ -107,60 +106,47 @@ window.addEventListener("load", async () => {
   }
 });
 
-/* 🔥 저장 버튼 (이 방식이 제일 안정적) */
 document.getElementById("saveBtn").addEventListener("click", savePost);
 
 async function savePost(){
 
-  try{
+  const title = document.getElementById("title").value.trim();
+  const content = document.getElementById("content").value.trim();
+  const user = sessionStorage.getItem("user");
 
-    const title = document.getElementById("title").value.trim();
-    const content = document.getElementById("content").value.trim();
-    const user = sessionStorage.getItem("user");
-
-    if(!title || !content){
-      alert("제목/내용 입력");
-      return;
-    }
-
-    if(!user){
-      alert("로그인 정보 없음");
-      return;
-    }
-
-    const now = new Date();
-
-    const dateStr =
-      `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
-      `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    if(editId){
-
-      await updateDoc(doc(db,"글",editId),{
-        title,
-        content
-      });
-
-      localStorage.removeItem("editId");
-
-    } else {
-
-      await addDoc(collection(db,"글"),{
-        writer:user,
-        title,
-        content,
-        date:dateStr,
-        time:Date.now(),
-        pinned:false
-      });
-    }
-
-    window.location.href="home.html";
-
-  } catch(err){
-    console.error(err);
-    alert("저장 실패 (콘솔 확인)");
+  if(!title || !content){
+    alert("제목과 내용을 입력해주세요");
+    return;
   }
+
+  const now = new Date();
+
+  const dateStr =
+    `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()} ` +
+    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  if(editId){
+
+    await updateDoc(doc(db,"글",editId),{
+      title,
+      content
+    });
+
+    localStorage.removeItem("editId");
+
+  } else {
+
+    await addDoc(collection(db,"글"),{
+      writer:user,
+      title,
+      content,
+      date:dateStr,
+      time:Date.now(),
+      pinned:false
+    });
+  }
+
+  location.href="home.html";
 }
 </script>
 
