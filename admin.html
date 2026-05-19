@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>글 작성</title>
+</head>
+
+<body>
+
+<script>
+if(sessionStorage.getItem("auth") !== "ok"){
+  location.href="index.html";
+}
+</script>
+
+<h2>글 작성</h2>
+
+<input id="title" placeholder="제목"><br><br>
+<textarea id="content" placeholder="내용"></textarea><br><br>
+
+<button onclick="save()">저장</button>
+
+<script>
+function save(){
+  let posts = JSON.parse(localStorage.getItem("posts") || "[]");
+
+  posts.push({
+    title: document.getElementById("title").value,
+    content: document.getElementById("content").value
+  });
+
+  localStorage.setItem("posts", JSON.stringify(posts));
+
+  alert("저장됨");
+  location.href="home.html";
+}
+</script>
+
+</body>
+</html>
